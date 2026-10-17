@@ -18,6 +18,13 @@ STATE = None
 state_dir = None
 
 
+
+def git_repo():
+    """A real temporary git working tree, so the in-git-tree checks are exercised."""
+    path = tempfile.mkdtemp()
+    subprocess.run(["git", "init", "-q", path], check=True)
+    return path
+
 def run(payload):
     proc = subprocess.run(
         ["python3", str(SCRIPT)],
@@ -130,7 +137,7 @@ def main():
     assert code == 0, (code, err)
     assert (state_dir / sid).read_text(encoding="utf-8").strip() == "mocks"
     outside = tempfile.mkdtemp()
-    repo = str(Path.home() / "Workspace/Projects/Personal/Reviewer+")
+    repo = git_repo()
     def mock_pre(tool, tool_input, prompt=""):
         return run({"hook_event_name": "PreToolUse", "session_id": sid, "prompt": prompt,
                     "tool_name": tool, "tool_input": tool_input})
@@ -254,7 +261,7 @@ def read_only_cases():
     assert not old.exists() and fresh.exists()
     # Mock mode is unchanged: lane A inside a git tree is still a mock-round block.
     sid = "test-ro-mocks"
-    repo = str(Path.home() / "Workspace/Projects/Personal/Reviewer+")
+    repo = git_repo()
     run({"hook_event_name": "UserPromptSubmit", "session_id": sid, "prompt": "/explore-design hero"})
     code, err = run({"hook_event_name": "PreToolUse", "session_id": sid, "prompt": "", "tool_name": "Bash",
                      "tool_input": {"command": WRAPPER + " --cwd '" + repo + "' --lane A"}})

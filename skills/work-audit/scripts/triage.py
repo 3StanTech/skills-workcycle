@@ -5,7 +5,7 @@
             (--range <base>..<head> | --worktree | --files <path> [<path> ...])
             [--files-root <dir>] [--base-dir <dir>]      (--files only)
             [--scope-kind session|range|plan|roadmap]   (default: session; range with --range)
-            [--client-root <dir> ...]                   (default: ~/Workspace/Projects/DDM)
+            [--client-root <dir> ...]                   (repeatable; no default)
             [--json]
 
 Sources: --range runs `git diff --numstat <base>..<head>` per repo; --worktree runs
@@ -35,7 +35,6 @@ import sys
 
 MAX_FILES = 25
 MAX_LINES = 800
-DEFAULT_CLIENT_ROOT = "~/Workspace/Projects/DDM"
 
 RISKY = {
     "data": [r"(^|/)migrations?/", r"(^|/)schema\.", r"\.sql$", r"(^|/)prisma/", r"drizzle",
@@ -147,7 +146,7 @@ def triage(args) -> dict:
     if len(args.repo) > 1 or scope_kind == "roadmap":
         why = f"{len(args.repo)} repos" if len(args.repo) > 1 else "roadmap scope"
         reasons.append({"rule": "scope", "detail": why})
-    roots = args.client_root or [DEFAULT_CLIENT_ROOT]
+    roots = args.client_root or []
     hits = [r for r in [*args.repo, *(args.files or [])] if any(under(r, c) for c in roots)]
     if hits:
         reasons.append({"rule": "client", "detail": ", ".join(hits)})

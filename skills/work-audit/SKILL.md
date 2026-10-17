@@ -3,8 +3,8 @@ name: work-audit
 description: >-
   Audit that auto-fixes clear issues before commit, at Light depth (1 auditor,
   3 lenses) or Full depth (fleet, 7 lenses) chosen by a triage verdict; modes
-  `report` and `fix <findings-file>`; /implement runs Light automatically as its
-  final review. Trigger: /work-audit, $work-audit, "audit our work", "check what
+  `report` and `fix <findings-file>`; /implement runs it as its final review, with
+  the auditor and depth named or confirmed by the owner. Trigger: /work-audit, $work-audit, "audit our work", "check what
   we built", "work audit". Scopes: this session (default), a commit range, or a
   plan/roadmap's repos and live targets. Host-neutral (Codex and Grok have no
   built-in review). Use when something was built and needs a thorough check
@@ -70,10 +70,10 @@ Phases 0, 1 and 4 run in the main session. The rest go to agents when available,
 
 ### Phase 0 — Triage and roster (main session)
 
-1. Run `python3 ~/.agents/skills/work-audit/scripts/triage.py` with the scope's repos and `--range`, `--worktree` or `--files` (non-git work: add `--base-dir <snapshot>` to count real diff lines; `--scope-kind plan|roadmap` when relevant). Print its three lines verbatim in chat. The owner may override the verdict.
-2. **Roster**, first hit wins: a tier named in the request, then the plan's Orchestration Reviewer column (the auditor), then `python3 ~/.agents/skills/stance/scripts/route.py resolve --task-type review --host <host>` (read-only, lane A). Fixer: the plan's named implementer, else `route.py resolve --task-type standard`. Re-check: the auditor tier (any family). "Reviews" or "reviewer" in the request or plan means the auditor.
+1. Run `python3 ~/.agents/skills/work-audit/scripts/triage.py` with the scope's repos and `--range`, `--worktree` or `--files` (non-git work: add `--base-dir <snapshot>` to count real diff lines; `--scope-kind plan|roadmap` when relevant; pass each client root listed under `work-audit client roots` in `~/.agents/local/workcycle.md` as `--client-root`, none when absent). Print its three lines verbatim in chat. The owner may override the verdict.
+2. **Roster**, first hit wins: a tier named in the request, then the plan's Orchestration Reviewer column (the auditor), then a question to the owner whose "routing default" option is `python3 ~/.agents/skills/stance/scripts/route.py resolve --task-type review --host <host>` (read-only, lane A); the routing row is never a silent pick. Fixer: the plan's named implementer, else `route.py resolve --task-type standard`. Re-check: the auditor tier (any family). "Reviews" or "reviewer" in the request or plan means the auditor.
 3. **Release authority:** from the request; default never commit. **Live targets:** those the plan lists; default none.
-4. Ask **only** for values still missing (`route.py` exit 3, or uncertain scope). When all are known, ask nothing. Anything the request states is not asked again.
+4. The auditor is always named or confirmed by the owner (request, plan Reviewer, or a question); a routing row alone never counts. Otherwise ask **only** for values still missing (`route.py` exit 3, or uncertain scope). When all are known, ask nothing. Anything the request states is not asked again.
 5. **Plan-only turn:** read-only auditors (lane A) still run; fixes wait for a later typed `/work-audit`.
 
 **Fallback:** if `route.py` or the helper route is unavailable, the main session runs the lenses as sequential read-only passes, then fixes, and the report says "sequential, no Orchestration".
@@ -153,7 +153,7 @@ Short summary: scope, depth and verdict, what was audited, fixed, and waiting on
 
 - **Instruction file:** `CLAUDE.md`/`AGENTS.md`/`master.md`; the ripple lens checks the source of truth.
 - **Commit handoff:** the workspace commit flow; never invent one.
-- **Called by `/implement` §3** as its final review (Light by default).
+- **Called by `/implement` §3** as its final review, at the depth the plan records or the owner picks after triage.
 - **Cross-session (optional):** a second session may run the audit and report via SendMessage; the coordinator relays its questions.
 
 ## Guardrails
@@ -163,4 +163,4 @@ Short summary: scope, depth and verdict, what was audited, fixed, and waiting on
 - **Never auto-apply** irreversible destruction or ambiguous fixes.
 - **No report file inside the repository**; the findings file lives outside git.
 - **Never claim parallel coverage** for a sequential run.
-- **Tiers:** from the request, the plan or the routing table, never assumed.
+- **Tiers:** from the request or the plan; the auditor is always named or confirmed by the owner (the routing `review` row is only the suggested option); never assumed.

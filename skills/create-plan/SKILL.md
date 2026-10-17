@@ -50,6 +50,8 @@ Ask **at least one round** of clarifying questions before writing the plan, even
 
 Skip this step only when the request explicitly opts out ("no questions", "just plan it"). If more questions surface while writing, ask another round rather than inventing answers.
 
+**Auditor, always:** in this round ask for the final-review auditor (model + effort, two questions, no "(Recommended)" label on a tier) and the audit depth (Light / Full / ask after triage), even when no implementer was named. If the routing table's `review` row resolves (`python3 ~/.agents/skills/stance/scripts/route.py resolve --task-type review --host <host>`), show it as one option labelled "routing default" for the owner to confirm. Skip only what the request already names. Record both in Orchestration.
+
 **Roadmap phase:** always ask, every phase, for the implementer roster (model, effort and stance, unless the request already named them) and for permission before creating test infrastructure (databases, branches, preview deploys), even when the previous phase's answer looks obvious. If a test environment recorded in the roadmap is still valid, offer it as the first option.
 
 **More than one phase emerging:** if the plan turns out to need 2 or more phases that each need their own plan, and no roadmap exists, ask: create a roadmap with the `roadmap` skill (Recommended) / keep it as one plan.
@@ -212,7 +214,7 @@ Execute these tasks during implementation in the order given.
 
 ## Orchestration
 
-<If the user named no implementer: "Implementer: current session. Stance: <stated or Vibin>." and nothing else.>
+<If the user named no implementer: "Implementer: current session. Stance: <stated or Vibin>. Reviewer: <model> <effort> · Audit depth: <Light | Full | ask after triage>." and nothing else.>
 
 <If the user named a roster ("implement using <model> <effort> <stance>", "orchestrate to …"), or tasks will be delegated through the routing table, fill this section so /implement can run it without re-planning. Follow `~/.agents/skills/stance/SKILL.md` for stance defaults, routes and splitting. Classify each task's type, then resolve each row with `python3 ~/.agents/skills/stance/scripts/route.py resolve --task-type <t> --host <host the implementer will run on> [--project <dir>] [--named M:E | --roster M:E]` and copy its model, effort, speed, route, source, escalation and fallback. Use concrete model IDs (never aliases; the subagent alias is derived at launch); speed is `standard` unless the user said fast. Exit 3 means ask the owner for that row. The planner may propose a cheaper tier for mechanical tasks; the user approves it with the plan.>
 

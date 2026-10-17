@@ -120,11 +120,17 @@ over because a launch failed or verification found a defect.
 5. **Final review = work-audit** (outside WarFleet). After proof passes, run
    `~/.agents/skills/work-audit/scripts/triage.py` on this run's scope (record `git rev-parse HEAD` per repo
    before wave 1 as `<start>`; `--range <start>..HEAD` for commits made in this run, else
-   `--worktree`; for non-git work `--files`, with `--base-dir <pre-edit snapshot>` when one exists) and print its
-   verdict. **LIGHT** → run `/work-audit light <scope>` now, auditor = the plan's Reviewer column
-   (any family), else the `review` row. **FULL** → decision point: *Run Full audit
-   (Recommended)* / *Run Light instead* / *Skip for now*, with the triage reasons in the
-   question. Audit findings return to the named implementer as ordinary repairs (stance §6
+   `--worktree`; for non-git work `--files`, with `--base-dir <pre-edit snapshot>` when one exists; each client root listed under
+   `work-audit client roots` in `~/.agents/local/workcycle.md` as `--client-root`) and print its
+   verdict. **Depth:** use the plan's recorded audit depth; if it says "ask after triage" or records
+   none, ask Light vs Full with the verdict as the recommended option. **Auditor** = the plan's
+   Reviewer (any family); if the plan has none, ask, showing the routing `review` row as the
+   "routing default" option to confirm. Never start an audit on a tier the owner did not name or
+   confirm. With no recorded depth and a **FULL** verdict, the depth question is: *Run Full audit
+   (Recommended)* / *Run Light instead* / *Skip for now*, with the triage reasons in it. Then run
+   `/work-audit light <scope>` or `/work-audit full <scope>` for the depth recorded or chosen; on
+   *Skip for now*, run no audit, report "audit skipped by the owner" and recommend
+   `/work-audit full <scope>` as the next step. Audit findings return to the named implementer as ordinary repairs (stance §6
    ladder). Cross-reference and consistency checks (new files referenced, project docs updated,
    naming conventions) are the audit's ripple lens. In WarFleet the reviewing Admiral's final
    review applies instead.

@@ -32,7 +32,7 @@ Find the roadmap in this order (first match wins):
 `<handoffs-root>` is the project's outside-Git process folder, the same one `handoff` and `prime` use:
 - project is a git repo: `<project-parent>/<project-name>-handoffs/`
 - project folder is not a git repo (it may contain one): `<project>/handoffs/`
-- no project: `~/Workspace/handoffs/`
+- no project: the no-project handoffs folder in `~/.agents/local/workcycle.md`, else `~/.agents/handoffs/`
 
 If several active roadmaps match and the user did not name one, ask a decision-point question. If none exists and the trigger was not "start a roadmap", say so and offer step 3.
 

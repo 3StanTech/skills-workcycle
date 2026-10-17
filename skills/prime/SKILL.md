@@ -22,7 +22,7 @@ Open a session with what is open and true right now, in six lines and three opti
 
 First match wins: the project the user named → the session's cwd (nearest folder with
 `master.md` or `.git`) → ask a decision-point question listing the folders under
-`~/Workspace/Projects/`. Never open with another project's agenda because its handoff is newer.
+the projects root in `~/.agents/local/workcycle.md` (if absent, the folders beside the cwd). Never open with another project's agenda because its handoff is newer.
 
 ## 2. Find urgent stops first (every branch)
 

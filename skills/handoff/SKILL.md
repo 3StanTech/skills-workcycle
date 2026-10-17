@@ -18,7 +18,7 @@ Make the current work resumable cold: update the doc that owns it (or write one 
 
 **Template:** `references/template.md`. **Checker:** `~/.agents/skills/roadmap/scripts/doc_check.py`.
 
-**Paths.** `<handoffs-root>` is: project is a git repo → `<project-parent>/<project-name>-handoffs/`; project folder is not a git repo (it may contain one) → `<project>/handoffs/`; no project → `~/Workspace/handoffs/`.
+**Paths.** `<handoffs-root>` is: project is a git repo → `<project-parent>/<project-name>-handoffs/`; project folder is not a git repo (it may contain one) → `<project>/handoffs/`; no project → the no-project handoffs folder in `~/.agents/local/workcycle.md`, else `~/.agents/handoffs/`.
 
 ---
 

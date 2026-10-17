@@ -24,7 +24,7 @@ The same four aims as [explore](../explore/SKILL.md) (the goal, the problem, the
 
 ## Boundary
 
-- **No product source.** Mocks, images, specimens and Lavish pages live only in a mocks folder outside every git tree: `<project>/<slug>-mocks/` for a non-git project folder, `<project-parent>/<project>-handoffs/<slug>-mocks/` for a git repo, or `Clients/<client>/<slug>-mocks/` for DDM work. The plan-only hook enforces this for headless launches.
+- **No product source.** Mocks, images, specimens and Lavish pages live only in a mocks folder outside every git tree: `<project>/<slug>-mocks/` for a non-git project folder, `<project-parent>/<project>-handoffs/<slug>-mocks/` for a git repo, or the mocks rule in `~/.agents/local/workcycle.md` when it has one for this work. The plan-only hook enforces this for headless launches.
 - **Image workers** need an explicit model and effort from the owner (`~/AGENTS.md` → Delegation) and launch through the `headless` wrappers with `--cwd` set to the mocks folder. One worker at a time.
 - **Never AI-generate** a logo, a real person's likeness, or readable text. Layer text, prices and logos in code.
 - **Honest content.** Unconfirmed facts carry a visible "Confirm with <owner>" tag and go in `owner-questions.md`. Never invent testimonials or product facts.
@@ -91,8 +91,10 @@ Follow explore's Stage 4: components with effort and dependencies, minimum versi
 
 ```
 /create-plan plans/explore-YYYY-MM-DD-<slug>.md
-implement using <model> <effort> <stance>
+implement using <model-id> <effort> <chillin|vibin|supersoldiers>
 ```
+
+Then print the roster guide (installed model IDs and efforts, the stance lines, the fallback note) per [explore](../explore/SKILL.md) §5 item 4. Carry a roster the user already named verbatim; never pre-fill a tier.
 
 ## Resumability
 

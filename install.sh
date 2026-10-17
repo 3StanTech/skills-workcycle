@@ -2,11 +2,16 @@
 # install.sh — link this bundle into the flat layout every host reads.
 #
 # Usage: install.sh [--check]
-#   skills/<name>/ (with SKILL.md) -> $HOME/.agents/skills/<name>
+#   skills/<name>/ (with SKILL.md) -> $HOME/.agents/skills/<name>   (Codex and Grok read this)
+#                                  -> <host>/skills/<name> for each installed host (its config
+#                                     folder exists): ~/.claude, ~/.hermes, ~/.pi/agent; the
+#                                     skills subfolder is created when missing
 #   hooks/<file> (not test_*)      -> $HOME/.agents/hooks/<file>
 #   scripts/<file>                 -> $HOME/.agents/scripts/<file>
+#   skills/stance/data/routing.example.json -> routing.json beside it, only if missing
 # Never replaces a real file or folder, or a link pointing elsewhere: reported as conflict.
-# Idempotent. After installing, run ~/.agents/scripts/link-hosts.sh for Claude/Hermes/Pi.
+# A host link that already resolves to the same skill counts as installed.
+# Idempotent. Re-run after installing a new host.
 #   --check  change nothing; print `bundlelink<TAB><bundle><TAB><missing|conflict|broken> <dest>`
 #            per finding; exit 1 if any.
 # Exit 0 ok, 1 findings/conflicts, 2 bad usage.
@@ -73,6 +78,32 @@ for d in "$BUNDLE"/skills/*/; do
   n=$(basename "$d")
   link_one "$BUNDLE/skills/$n" "$HOME/.agents/skills/$n"
 done
+# Host folders: an existing link that resolves to the same skill is fine (e.g. relative links).
+link_host() {
+  src=$1 dest=$2
+  if [ -L "$dest" ] && [ -e "$dest" ]; then
+    if [ "$(CDPATH= cd -P -- "$dest" 2>/dev/null && pwd)" = "$(CDPATH= cd -P -- "$src" && pwd)" ]; then
+      ok=$((ok + 1)); return
+    fi
+    report conflict "$dest"; return
+  fi
+  link_one "$src" "$dest"
+}
+
+for conf in "$HOME/.claude" "$HOME/.hermes" "$HOME/.pi/agent"; do
+  [ -d "$conf" ] || continue
+  host="$conf/skills"
+  if [ ! -d "$host" ]; then
+    if [ "$check" -eq 1 ]; then report missing "$host"; continue; fi
+    mkdir -p "$host" || { fail mkdir "$host"; continue; }
+  fi
+  for d in "$BUNDLE"/skills/*/; do
+    [ -f "$d/SKILL.md" ] || continue
+    n=$(basename "$d")
+    link_host "$BUNDLE/skills/$n" "$host/$n"
+  done
+done
+
 for f in "$BUNDLE"/hooks/*; do
   [ -f "$f" ] || continue
   n=$(basename "$f")
@@ -84,6 +115,18 @@ for f in "$BUNDLE"/scripts/*; do
   n=$(basename "$f")
   link_one "$BUNDLE/scripts/$n" "$HOME/.agents/scripts/$n"
 done
+
+example="$BUNDLE/skills/stance/data/routing.example.json"
+table="$BUNDLE/skills/stance/data/routing.json"
+if [ -f "$example" ] && [ ! -e "$table" ]; then
+  if [ "$check" -eq 1 ]; then
+    report missing "$table"
+  elif cp "$example" "$table"; then
+    echo "created $table (empty routing table: agents ask for tiers until you fill it)"
+  else
+    fail cp "$table"
+  fi
+fi
 
 [ "$check" -eq 1 ] || echo "linked=$linked ok=$ok conflict=$bad"
 [ "$bad" -eq 0 ]

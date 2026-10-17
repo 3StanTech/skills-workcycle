@@ -37,7 +37,7 @@ Save artifacts outside git (the session scratchpad, or the project's handoffs fo
 - **Browser scripts retry once on puppeteer "detached Frame" errors** and log the retry.
 - **One current script per scenario.** Each evidence folder has a `scripts/README.md` listing one current script per scenario with its expected output. Superseded scripts move to `scripts/old/` and are never listed in a plan's re-run list.
 
-Example: `~/Workspace/Projects/Personal/Reviewer+-handoffs/moods-mocks/verify/scripts/timed-reload.cjs` (Node timer plus a database truth check).
+Example: `<project>-handoffs/<slug>-mocks/verify/scripts/timed-reload.cjs` (Node timer plus a database truth check).
 
 ## Allowed automated tests
 

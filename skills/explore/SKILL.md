@@ -262,10 +262,11 @@ Keep it short enough to check at a glance. Mark every claim as **evidence** or *
 4. **Ready-to-paste prompt.** End with the exact next prompt in a code block, **trimmed to what the doc does not already say**:
    - Always: the command and the explore doc path, plus the output plan path if it matters.
    - Only if needed: which components or phases are in this round (when the doc lists more), decisions made after the doc was written, and any gate the user wants that the doc doesn't define.
-   - A last line `implement using <model> <effort> <stance>` for the user to fill in, or the roster they already named. It is the roster create-plan records in Orchestration, not a go to implement.
+   - A last line `implement using <model-id> <effort> <chillin|vibin|supersoldiers>` for the user to fill in, or the roster they already named, verbatim. Never pre-fill a tier: a filled value counts as the user naming it. It is the roster create-plan records in Orchestration, not a go to implement.
+   - Directly under the code block, print a short **roster guide**: (a) the model IDs installed on this machine with their efforts, read from `~/.agents/skills/headless/data/claude-models.json`, `grok-models.json` (only if Grok is active in the routing table) and `codex debug models --bundled` (only if `codex` is installed), skipping families that are not installed; without the orchestration bundle (no headless catalogs) say "the session implements itself (Chillin)" instead; (b) one line per stance: chillin = the session works alone, vibin = up to 3 helpers, supersoldiers = one helper per independent task; (c) "Delete the last line to fall back to your routing table, or to be asked."
    - Never repeat constraints, links, headlines, or rules already recorded in the doc or the project's instruction files. The next agent reads those itself.
 
-   Good: `/create-plan plans/explore-2026-09-29-bakery-redesign.md, production rebuild from mock-b.html only.`
+   Good: `/create-plan plans/explore-2026-09-29-bakery-redesign.md, production rebuild from mock-b.html only.` then, on its own line, `implement using <model-id> medium vibin` (shape only; the user fills the model).
    Too long: re-listing the doc's constraints, links, and component steps inside the prompt.
 
 **Artifact chain:** explore or explore-design writes `plans/explore-YYYY-MM-DD-<slug>.md` → create-plan writes `plans/YYYY-MM-DD-<slug>.md` → implement reads the plan path. Implement never takes an explore doc.

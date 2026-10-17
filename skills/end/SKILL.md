@@ -1,6 +1,6 @@
 ---
 name: end
-description: Project-context auto-update (the \end protocol). Fold the current session's decisions, findings, and status changes into the owning project's master.md, then (DDM only) re-bake the DDM Command Dashboard. Use when the user types /end or \end, or says "run the end protocol".
+description: Project-context auto-update (the \end protocol). Fold the current session's decisions, findings, and status changes into the owning project's master.md, then run any local extra close steps. Use when the user types /end or \end, or says "run the end protocol".
 ---
 
 # `\end` — project context auto-update
@@ -9,7 +9,7 @@ Keep one consistent, up-to-date context file per project so every new chat start
 
 ## 1. Resolve the project scope
 
-Find the owning project: the nearest directory at-or-above the session's working files that contains a `master.md`. Known projects live under `~/Workspace/Projects/<name>/`. If the session touched **DDM** work (the freelance web-dev business), the target is always `~/Workspace/Projects/DDM/master.md`. If no `master.md` exists for a genuine project yet, create one (sections: Overview · Key decisions · Current status · File index) with a sibling `CHANGELOG.md` when dated history is useful. Seed Overview and File index with a cheap survey, not a deep scan: `README*`, `CLAUDE.md`/`AGENTS.md`, the package manifest, the top-level listing (5–15 load-bearing paths), and `git log --oneline -10`. Never invent goals, clients or stack details the survey and session did not show. Keep process content outside Git or locally ignored; do not create a tracked process file. If the session spans multiple projects, run the fold once per project, each strictly scoped.
+Find the owning project: the nearest directory at-or-above the session's working files that contains a `master.md`. If `~/.agents/local/workcycle.md` exists, read it first: its projects root and project rules (for example a fixed target for one kind of work) win over this search. If no `master.md` exists for a genuine project yet, create one (sections: Overview · Key decisions · Current status · File index) with a sibling `CHANGELOG.md` when dated history is useful. Seed Overview and File index with a cheap survey, not a deep scan: `README*`, `CLAUDE.md`/`AGENTS.md`, the package manifest, the top-level listing (5–15 load-bearing paths), and `git log --oneline -10`. Never invent goals, clients or stack details the survey and session did not show. Keep process content outside Git or locally ignored; do not create a tracked process file. If the session spans multiple projects, run the fold once per project, each strictly scoped.
 
 **Two files per project, since 2026-07-30:** `master.md` is **current state only**; session history lives in a sibling `CHANGELOG.md`. Read `master.md` always; read `CHANGELOG.md` only when you need history.
 
@@ -29,15 +29,9 @@ Find the owning project: the nearest directory at-or-above the session's working
 
 11. **Closed audit files.** In `<handoffs-root>/audits/` (`<handoffs-root>` as in the `handoff` skill), move each `*.md` whose `Status: Closed` line is present and whose `## Open items` section is empty or says none into `<handoffs-root>/audits/archive/` (create it if missing; never delete; if a file of that name already exists there, append `-2`, `-3`, … before `.md` instead of overwriting). Leave every other file. List the moved paths in the report under **Archived audits**.
 
-## 3. DDM only — re-bake the Command Dashboard
+## 3. Local extra steps
 
-The dashboard is **DDM-scoped by design**: it must present only DDM business state (pipeline, pricing, templates, open items). Never fold other projects' info into it.
-
-Mechanism (self-contained file; no runtime MCP calls — this is its only refresh path):
-1. Target: `~/Workspace/Artifacts/ddm-command-dashboard/index.html`. Back it up to the session scratchpad, then validate the input markers before replacing the baked block; do not create a duplicate dashboard.
-2. Replace the contents of the `<script type="text/plain" id="master-src">` block with the new `master.md` verbatim, **followed by `CHANGELOG.md` verbatim** (guard: assert neither contains `</script>`). Since the 2026-07-30 split the changelog is a separate file — concatenating both keeps the dashboard showing everything it showed before. Drop `CHANGELOG.md`'s own `# … — Changelog` title line so the baked document reads as one continuous file.
-3. Update the `const BAKED_DATE = '...';` constant to today.
-4. Verify: `BAKED_DATE` correct, `<script`/`</script>` counts balanced, baked block's "Last updated" matches master.md.
+If `~/.agents/local/workcycle.md` lists steps under `/end extra steps`, run them exactly as written (each says which projects it applies to). Skip this section when the file or the section is absent.
 
 ## 4. Close checks (no git operations)
 
