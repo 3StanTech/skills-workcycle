@@ -1,0 +1,4 @@
+interface:
+  display_name: "Remind"
+  short_description: "Park a reminder that resurfaces at the next /end, session, phase or date"
+  default_prompt: "Use $remind to remind me of this at the next /end."

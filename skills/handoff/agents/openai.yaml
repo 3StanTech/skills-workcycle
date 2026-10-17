@@ -1,0 +1,4 @@
+interface:
+  display_name: "Handoff"
+  short_description: "Pause or urgently stop work so a new session resumes it reliably"
+  default_prompt: "Use $handoff to make this work resumable in a new session: pause mode (/handoff) updates the owning doc and probes what the next session needs; urgent mode (/handoff now) writes the resume note first, then secures and records the rest."

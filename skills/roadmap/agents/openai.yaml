@@ -1,0 +1,4 @@
+interface:
+  display_name: "Roadmap"
+  short_description: "Living state doc for multi-phase initiatives; read first, update last"
+  default_prompt: "Use $roadmap to resume, update or check this initiative's ROADMAP.md."
