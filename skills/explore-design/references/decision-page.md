@@ -10,7 +10,7 @@ An HTML review page, opened in Lavish, that lets the owner answer a doc's open d
 
 ## Build
 
-Read the Lavish playbooks first: `npx -y lavish-axi playbook plan` and `npx -y lavish-axi playbook input` (add `comparison`, `diagram` or `code` when an exhibit needs them). Then follow four rules:
+Read the Lavish playbooks first: `npx -y lavish-axi@0.1.90 playbook plan` and `npx -y lavish-axi@0.1.90 playbook input` (add `comparison`, `diagram` or `code` when an exhibit needs them). Then follow four rules:
 
 1. **Each decision sits on the claim it changes.** Not in a separate "Open questions" list. The recommended option is pre-selected, and an option that removes a claim says so ("claim 3 goes").
 2. **The behaviours that change are the top level.** Write each as a sentence that can be true or false, inside a collapsed `details` element. Closed, the outline reads as the summary; open, it shows how and where.

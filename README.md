@@ -16,6 +16,7 @@ The build cycle as agent skills: explore an idea, plan it, implement it, audit t
 | `prime` | Start a session warm from project state, read-only |
 | `remind` | Park a reminder in an existing project file so it resurfaces later |
 | `end` | Fold the session's decisions into the owning project's `master.md` |
+| `lavish` | Open agent-written HTML in Lavish Editor for annotation (manual: `/lavish`; explore-design opens it itself) |
 
 Hooks (`hooks/`) and `scripts/wait-ci-deploy.sh` (bounded wait for CI and deploy after a push) ship with it.
 
@@ -24,7 +25,7 @@ Hooks (`hooks/`) and `scripts/wait-ci-deploy.sh` (bounded wait for CI and deploy
 ### 1. Prerequisites
 
 - Python 3 and git.
-- Node.js, for `explore-design` and create-plan decision pages (they run `npx -y lavish-axi`, which downloads on first use).
+- Node.js, for `lavish`, `explore-design` and create-plan decision pages (they run the pinned `npx -y lavish-axi@0.1.90`, which downloads on first use).
 - Optional: `gh` (and `jq` for the Netlify check) for `scripts/wait-ci-deploy.sh`.
 - Optional: [`skills-orchestration`](https://github.com/3StanTech/skills-orchestration) for helpers, model routing and headless Claude/Codex/Grok workers. Without it, `implement` runs single-agent in your session.
 
@@ -146,11 +147,16 @@ rm -rf ~/.agents/bundles/skills-workcycle
 - Python 3 and git.
 - `skills-orchestration` is optional. Without it, the Orchestration sections of `create-plan` and `implement` do not apply, `implement` runs single-agent in the session (Chillin semantics, no helpers, no routing table), and the create-plan hook skips launch detection.
 - `scripts/wait-ci-deploy.sh` needs `gh`, and `jq` for the Netlify check.
-- `explore-design` (refine step and decision pages) and `create-plan` decision pages need Node.js: they run the Lavish review tool with `npx -y lavish-axi`. The optional `/lavish` command is a separate third-party skill (`github.com/kunchenguid/lavish-axi`, MIT), not needed and not included here.
+- `explore-design` (refine step and decision pages) and `create-plan` decision pages need Node.js: they run the Lavish review tool with `npx -y lavish-axi@0.1.90` (pinned; bump every call site and `skills/lavish/NOTICE` together). The `/lavish` command is included as `skills/lavish`, adapted from Kun Chen's skill (see Credits and `skills/lavish/NOTICE`).
 
 ## Not in this repo
 
 Secrets, runtime state (`~/.agents/state/`), the optional Netlify site map (`~/.agents/scripts/netlify-sites.json`), your policy file `~/AGENTS.md` (start from `AGENTS.example.md`) and your local settings `~/.agents/local/workcycle.md`.
+
+## Credits
+
+- The `lavish` skill is adapted from Kun Chen's [lavish-axi](https://github.com/kunchenguid/lavish-axi) skill (MIT; notice in `skills/lavish/NOTICE`). Lavish Editor itself is Kun Chen's npm package `lavish-axi`, run with `npx` and not redistributed here.
+- The Lavish workflow here (the `lavish` skill plus explore-design's `lavish-review.md` and `decision-page.md`) also adapts four rules from Thariq Shihipar's [html-plan](https://github.com/anthropics/claude-plugins-community/tree/main/html-plan) skill (Claude Code team, Anthropic; [announcement](https://x.com/trq212/status/2107192901537329354)).
 
 ## License
 

@@ -6,11 +6,15 @@ description: >-
   phase, or on a date; also list or clear reminders. Trigger: /remind, "remind me
   (again) of X at/when/after …", "what reminders do I have", "clear the reminder
   about X". Not for durable facts (master.md via /end) or timed alerts (schedule).
+disable-model-invocation: true
+user-invocable: true
 ---
 
 # Remind
 
 Store a one-line reminder where the next matching checkpoint will read it, and surface it there.
+
+This skill is hidden from the model's skill list on purpose (`disable-model-invocation`); run it by name (`/remind`).
 
 **Decision points:** If an interactive question tool (e.g. `AskUserQuestion`) is available, use it with 2–4 prefilled options, recommended option first and labeled "(Recommended)". Otherwise, print the same options as a numbered list in chat, state the recommended number, and wait for a reply. Never proceed past a decision point on an assumption.
 
