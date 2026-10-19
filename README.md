@@ -124,6 +124,8 @@ python3 -m unittest discover -s skills/work-audit/tests
 CREATE_PLAN_GUARD_SCRIPT=$PWD/hooks/create-plan-no-implement.py python3 -m unittest discover -s hooks -p 'test_*.py'
 ```
 
+The same suites run on GitHub Actions for every push and pull request to `main` (`.github/workflows/test.yml`).
+
 ### 8. Uninstall
 
 Remove the hook entries from each host config, then every link that resolves into the bundle (including relative host links), then the clone:
