@@ -52,8 +52,11 @@ Orchestration-only section.
 4. **Resolve ownership:** record any named implementer before source changes. If
    none is named and delegation is not otherwise authorized, the current model may
    implement locally.
-5. **Resolve stance:** if none is stated, announce “No stance was specified, so
-   I’ll use Vibin.” A stance does not select or launch a model.
+5. **Resolve stance:** sole/session-only implementation or no helpers/subagents means
+   **Chillin**, even without a stance name. Apply explicit delegation constraints first;
+   only with neither a stance nor such a constraint, announce “No stance was specified, so
+   I’ll use Vibin.” A stance does not select or launch a model. An explicit no-delegation
+   instruction also excludes optional review/capability helpers and headless substitutes.
 6. **Honor the plan's Orchestration section.** If it carries a roster, that is the
    approved dispatch: run its waves in order with the exact model ID, effort,
    speed, route, lane and file ownership per task, and the stated stance and
