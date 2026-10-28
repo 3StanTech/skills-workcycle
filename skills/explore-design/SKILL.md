@@ -85,20 +85,21 @@ Follow explore's Stage 4: components with effort and dependencies, minimum versi
 
 ## 5. Write the explore doc
 
-1. Write `plans/explore-YYYY-MM-DD-<slug>.md` in **explore's §5 format** (outside git), including its Start here block. Fill **Design decisions** with the approved mock file, its export, the mocks folder and every gate decision. The approved mock is the spec for `/implement` (`~/.agents/skills/implement/references/mock-to-code.md`).
+1. Write `plans/explore-YYYY-MM-DD-<slug>.md` in **explore's §5 format** (outside git), including its Start here block and Decisions made in chat. Fill **Design decisions** with the approved mock file, its export, the mocks folder and every gate decision. The approved mock is the spec for `/implement` (`~/.agents/skills/implement/references/mock-to-code.md`).
 2. When decisions remain open, build a [decision page](references/decision-page.md) beside the doc and open it in Lavish.
-3. End with the ready-to-paste prompt, trimmed to what the doc does not already say:
+3. **Run the cold-start gate** (`~/.agents/skills/handoff/references/cold-start-gate.md`) on the mocks README and then on the explore doc.
+4. End with the ready-to-paste prompt, trimmed to what the doc does not already say:
 
 ```
 /create-plan plans/explore-YYYY-MM-DD-<slug>.md
 implement using <model-id> <effort> <chillin|vibin|supersoldiers>
 ```
 
-Then print the roster guide (installed model IDs and efforts, the stance lines, the fallback note) per [explore](../explore/SKILL.md) §5 item 4. Carry a roster the user already named verbatim; never pre-fill a tier.
+Then print the roster guide (installed model IDs and efforts, the stance lines, the fallback note) per [explore](../explore/SKILL.md) §5 item 5. Carry a roster the user already named verbatim; never pre-fill a tier.
 
 ## Resumability
 
-The mocks folder must survive a session limit with nothing lost (`~/AGENTS.md` → Resumable outputs). Rewrite the README's Start here at every gate: the goal, the gate reached, decisions so far, files to open, and the next action. A fresh session given only the README path continues the round. When the owner says the next step happens in a new session (or the round ends with the explore doc), run the `handoff` skill (pause mode) on the README and the explore doc before reporting.
+The mocks folder must survive a session limit with nothing lost (`~/AGENTS.md` → Resumable outputs). Rewrite the README's Start here at every gate in the gate's shape (`~/.agents/skills/handoff/references/cold-start-gate.md`): the goal and the gate reached, a dated Verified line, Read first, the Next paste command, and "No `/prime` or `/handoff` needed"; then run the gate on the README. A fresh session given only the README path continues the round. Mid-gate stops use `/handoff` or `/handoff now`.
 
 ## Guardrails
 

@@ -14,7 +14,7 @@ Create a detailed implementation plan that captures full context, rationale, and
 
 **Decision points:** If an interactive question tool (e.g. `AskUserQuestion`) is available, use it with 2–4 prefilled options, recommended option first and labeled "(Recommended)". Otherwise, print the same options as a numbered list in chat, state the recommended number, and wait for a reply. Never proceed past a decision point on an assumption.
 
-**Input:** The requirement to plan — a new command, workflow, structural change, template update, explore doc path, etc. If an explore doc exists at `plans/explore-YYYY-MM-DD-<slug>.md`, read it first and plan from it.
+**Input:** The requirement to plan — a new command, workflow, structural change, template update, explore doc path, etc. If an explore doc exists at `plans/explore-YYYY-MM-DD-<slug>.md`, read it first and plan from it. An explore doc path is the resume point: start from its Start here and Read first, with no `/prime` or `/handoff`, and re-check its Verified line cheaply (HEAD, `git status --short`, the paths you will plan against); report any mismatch in one line and fold it into the plan's Current State.
 
 You are writing a **plan**, not implementing. Research thoroughly, reason carefully, then write a comprehensive plan document.
 
@@ -50,7 +50,7 @@ Ask **at least one round** of clarifying questions before writing the plan, even
 
 Skip this step only when the request explicitly opts out ("no questions", "just plan it"). If more questions surface while writing, ask another round rather than inventing answers.
 
-**Auditor, always:** in this round ask for the final-review auditor (model + effort, two questions, no "(Recommended)" label on a tier) and the audit depth (Light / Full / ask after triage), even when no implementer was named. If the routing table's `review` row resolves (`python3 ~/.agents/skills/stance/scripts/route.py resolve --task-type review --host <host>`), show it as one option labelled "routing default" for the owner to confirm. Skip only what the request already names. Record both in Orchestration.
+**Auditor, always:** in this round ask for the final-review auditor (model + effort, two questions, no "(Recommended)" label on a tier) and the audit depth (Light / Full / ask after triage), even when no implementer was named. Offer the tiers `python3 ~/.agents/skills/stance/scripts/route.py menu` lists, none preselected. Skip only what the request already names. Record both in Orchestration.
 
 **Roadmap phase:** always ask, every phase, for the implementer roster (model, effort and stance, unless the request already named them) and for permission before creating test infrastructure (databases, branches, preview deploys), even when the previous phase's answer looks obvious. If a test environment recorded in the roadmap is still valid, offer it as the first option.
 
@@ -90,6 +90,7 @@ Fill every section of the format below. Replace all placeholders with specific, 
 - **Verified <YYYY-MM-DD HH:MM>:** <repo, branch, HEAD SHA, or "not a git repo"; any server, branch or DB the work reuses, with expiry>
 - **Read first:** <paths and why; "this plan only" when it carries everything>
 - **Next:** `/implement <this path>`
+- No `/prime` or `/handoff` needed. cold-start pass <YYYY-MM-DD>
 
 ---
 
@@ -158,6 +159,10 @@ Fill every section of the format below. Replace all placeholders with specific, 
 1. **<Decision>**: <Rationale>
 2. **<Decision>**: <Rationale>
 
+### Decisions made in chat
+
+- <YYYY-MM-DD: each owner decision from the question rounds or later chat, or "None">
+
 ### Alternatives considered
 
 <Other approaches considered and why they were rejected>
@@ -216,16 +221,16 @@ Execute these tasks during implementation in the order given.
 
 <If the user named no implementer: "Implementer: current session. Stance: <stated or Vibin>. Reviewer: <model> <effort> · Audit depth: <Light | Full | ask after triage>." and nothing else.>
 
-<If the user named a roster ("implement using <model> <effort> <stance>", "orchestrate to …"), or tasks will be delegated through the routing table, fill this section so /implement can run it without re-planning. Follow `~/.agents/skills/stance/SKILL.md` for stance defaults, routes and splitting. Classify each task's type, then resolve each row with `python3 ~/.agents/skills/stance/scripts/route.py resolve --task-type <t> --host <host the implementer will run on> [--project <dir>] [--named M:E | --roster M:E]` and copy its model, effort, speed, route, source, escalation and fallback. Use concrete model IDs (never aliases; the subagent alias is derived at launch); speed is `standard` unless the user said fast. Exit 3 means ask the owner for that row. The planner may propose a cheaper tier for mechanical tasks; the user approves it with the plan.>
+<If the user named a roster ("implement using <model> <effort> <stance>", "orchestrate to …"), or tasks will be delegated, fill this section so /implement can run it without re-planning. Follow `~/.agents/skills/stance/SKILL.md` for stance defaults, routes and splitting. Each row's tier is the one the owner named (source `named`) or the approved roster's (source `roster`); a task with neither is asked in step 2 (offer `route.py menu`). Classify each task's type, then resolve each row with `python3 ~/.agents/skills/stance/scripts/route.py resolve --task-type <t> --host <host the implementer will run on> --named M:E | --roster M:E` and copy its model, effort, speed, route and source. Escalation is "ask owner" (asked at the second failure, never pre-set); fallback is the owner's or none. Use concrete model IDs (never aliases; the subagent alias is derived at launch); speed is `standard` unless the user said fast. The planner may propose a cheaper tier for mechanical tasks; the user approves it with the plan.>
 
 **Stance:** <supersoldiers | vibin | chillin> — **Integration owner:** <who merges parallel work> — **Final review:** <planner, or WarFleet reviewing Admiral>
 
 | Wave | Task (step #) | Task type | Model ID | Effort | Speed | Route | Source | Lane | Owned files | Depends on | Allowed checks | Smoke test | Fallback | Escalation | Helper budget | Reviewer |
 | ---- | ------------- | --------- | -------- | ------ | ----- | ----- | ------ | ---- | ----------- | ---------- | -------------- | ---------- | -------- | ---------- | ------------- | -------- |
-| 1 | Step 1 | <mechanical/standard/hard/review/network> | <e.g. claude-sonnet-5-5> | <high> | standard | <subagent / native:codex / headless:claude / headless:codex / headless:grok> | <named/roster/project/global> | <A/B/C> | <paths> | — | <headless:claude lane B: permission rules passed as `--allow-tools`, e.g. `Bash(npx vitest run:*)`; otherwise —> | <command, or none> | <tier/route, or none> | <tier from the row> | <helpers, or one-line reason for fewer than the stance default> | <auditor tier for implement's final work-audit; any family; "<model> <effort> reviews" in the request fills it> |
+| 1 | Step 1 | <mechanical/standard/hard/review/network> | <e.g. claude-sonnet-5-5> | <high> | standard | <subagent / native:codex / headless:claude / headless:codex / headless:grok> | <named/roster> | <A/B/C> | <paths> | — | <headless:claude lane B: permission rules passed as `--allow-tools`, e.g. `Bash(npx vitest run:*)`; otherwise —> | <command, or none> | <tier/route, or none> | ask owner | <helpers, or one-line reason for fewer than the stance default> | <auditor tier for implement's final work-audit; any family; "<model> <effort> reviews" in the request fills it> |
 
 **Readiness** (checked at plan time; fix or ask before marking the plan Ready):
-- [ ] `python3 ~/.agents/skills/stance/scripts/route.py validate` exits 0 (every tier in its catalog, inactive families skipped)
+- [ ] `python3 ~/.agents/skills/stance/scripts/route.py validate` exits 0 (catalogs parse; every family in `families.json` is known)
 - [ ] Every wave's context packet passes `python3 ~/.agents/skills/stance/scripts/packet-check.py <packet>`
 - [ ] Network-dependent tasks have a smoke test and a fallback (`~/.agents/skills/stance/references/capabilities.md` §4)
 - [ ] The needed wrappers are present; `claude --version` is recorded (fast-mode headless needs the catalog's `fast_min_cli`)
@@ -294,7 +299,7 @@ After writing the plan:
 4. Name the next step explicitly: run `/implement plans/YYYY-MM-DD-<slug>.md` (or pass that path as the implement argument)
 5. If a roadmap governs the work, run the `roadmap` skill's Update step: set the phase row to Planned with the plan path, record the owner decisions from step 2 under Locked decisions, rewrite Resume here, and add a session-log line
 
-6. Keep Start here true. When the owner says the follow-up happens in a new session, run the `handoff` skill (pause mode) on the plan: it reads the plan as the next session will, probes every tool, access, env and interactive-step assumption, adds owner pre-flight items, then ends with the one-line prompt to paste there.
+6. **Run the cold-start gate** (`~/.agents/skills/handoff/references/cold-start-gate.md`) on the plan as the last write: Start here, chat decisions, scratchpad sweep, paths, the implement probes (repos' HEAD and status, `gh auth status` when the plan pushes, expiry of reused test infrastructure), `doc_check.py`, stamp. A new session then starts `/implement` from the paste line alone.
 
 **Decision page:** with 4+ open decisions or a plan over ~15 KB, also build a Lavish decision page (`~/.agents/skills/explore-design/references/decision-page.md`); the Markdown plan stays the source of truth.
 

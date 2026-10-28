@@ -1,15 +1,30 @@
 #!/usr/bin/env python3
-"""Read-only checker for roadmap and handoff documents.
+"""Read-only checker for stage and continuity documents.
 
-Finds the drift that makes a continuity doc lie to the next session:
+Kinds: explore (explore and explore-design docs), plan, mocks (a mocks folder
+README), findings (a work-audit findings file), roadmap, handoff. --kind picks
+one; omitted, the kind is detected from the title line, filename and headings.
 
-  header    missing Status / Last updated, or Last updated older than the
-            newest session-log date or the repo's newest commit
+Finds the drift that makes a doc lie to the next session:
+
+  header    missing Status (all kinds but mocks); roadmap and handoff also need
+            Last updated, not older than the newest session-log date or the
+            repo's newest commit
   sections  required headings missing
-  resume    Resume here / Next actions empty or longer than 5 items
-  size      doc over its byte budget (roadmap 16 KB, handoff 8 KB)
+  resume    Resume here / Next actions empty or longer than 5 items (roadmap,
+            handoff)
+  size      doc over its byte budget (roadmap 16 KB, handoff 8 KB, explore 20 KB,
+            plan 40 KB, findings 16 KB, mocks 16 KB)
   secret    something that looks like a credential (always an error)
-  path      a backticked ~/, /Users/ or doc-relative path that does not exist
+  path      a backticked ~/, /Users/ or doc-relative path that does not exist;
+            a line marked "(created by Step N)" is skipped
+  starthere Start here lacks the goal, a dated Verified line, Read first, or a
+            Next line with a backticked command (explore, plan, mocks, findings)
+  scratch   a session-scratchpad, /tmp or /private/tmp path (all kinds)
+  stamp     no "cold-start pass YYYY-MM-DD" (all kinds but handoffs with an
+            Interrupted block)
+  prime     Start here does not say no /prime is needed (explore, plan, mocks,
+            findings)
   plan      a phase row whose status disagrees with its plan's **Status:**
   phase     readiness notes kept for a phase that already shipped
   log       session log not newest-first
@@ -18,6 +33,9 @@ Finds the drift that makes a continuity doc lie to the next session:
   interrupt an urgent-stop "Interrupted" block (any heading level) with no
             next action or no `resume from` paste line; the block and its
             "Unverified (urgent stop)" subsection are otherwise optional
+
+A Closed (or Done) doc is history: starthere, prime and stamp are not enforced,
+nor are a closed roadmap's size, phase, log and resume checks.
 
 Prints one JSON object to stdout ({file, kind, errors, warnings, info}).
 Exit 0 when there are no errors, 1 when there are errors, 2 on bad usage.
@@ -31,7 +49,17 @@ import re
 import subprocess
 import sys
 
-BUDGET = {"roadmap": 16 * 1024, "handoff": 8 * 1024}
+KINDS = ["explore", "plan", "mocks", "findings", "roadmap", "handoff"]
+STAGE = {"explore", "plan", "mocks", "findings"}  # docs with a Start here block
+
+BUDGET = {
+    "roadmap": 16 * 1024,
+    "handoff": 8 * 1024,
+    "explore": 20 * 1024,
+    "plan": 40 * 1024,
+    "findings": 16 * 1024,
+    "mocks": 16 * 1024,
+}
 
 REQUIRED = {
     "roadmap": [
@@ -44,7 +72,16 @@ REQUIRED = {
         "Session log",
     ],
     "handoff": ["Goal", "Next actions", "Current state"],
+    "explore": ["Confirmed restatement", "Discovery Notes"],
+    "plan": ["Design Decisions", "Step-by-Step Tasks", "Success Criteria"],
+    "findings": ["Findings", "Open items"],
+    "mocks": [],
 }
+
+SCRATCH = re.compile(
+    r"(?:(?<![\w.~-])(?:/private)?/tmp/[^\s`'\")]+|/var/folders/\S+|\S*/scratchpad(?:/\S*)?)"
+)
+STAMP = re.compile(r"(?i)cold-start pass:?\s+20\d\d-\d\d-\d\d")
 
 SECRET_PATTERNS = [
     (r"postgres(?:ql)?://[^\s:`]+:[^\s@`]+@", "a database URL with a password"),
@@ -70,14 +107,16 @@ SHA = re.compile(r"^[0-9a-f]{7,12}$")
 
 def parse_args():
     p = argparse.ArgumentParser(
-        description="Check a roadmap or handoff Markdown doc for drift. Read-only.",
+        description="Check a stage or continuity Markdown doc for drift. Read-only.",
     )
-    p.add_argument("file", help="path to ROADMAP.md or a handoff .md")
+    p.add_argument(
+        "file", help="path to an explore doc, plan, mocks README, findings file, ROADMAP.md or handoff"
+    )
     p.add_argument(
         "--kind",
-        choices=["auto", "roadmap", "handoff"],
+        choices=["auto", *KINDS],
         default="auto",
-        help="doc kind (default: auto, from the filename and headings)",
+        help="doc kind (default: auto, from the title line, filename and headings)",
     )
     p.add_argument(
         "--repo",
@@ -113,6 +152,26 @@ def header_field(text, name):
     return m.group(1).strip() if m else None
 
 
+def detect_kind(path, text, secs):
+    name = os.path.basename(path).lower()
+    parent = os.path.basename(os.path.dirname(path)).lower()
+    title = next((l for l in text.splitlines() if l.startswith("# ")), "").lower()
+    if title.startswith("# explore"):
+        return "explore"
+    if title.startswith("# plan"):
+        return "plan"
+    if title.startswith("# handoff"):
+        return "handoff"
+    if "roadmap" in name or "phase status" in secs:
+        return "roadmap"
+    in_audits = "audits" in os.path.normpath(path).lower().split(os.sep)
+    if in_audits or "audit" in title or ("findings" in secs and "open items" in secs):
+        return "findings"
+    if parent.endswith("-mocks") or "mocks" in title:
+        return "mocks"
+    return "handoff"
+
+
 def git(repo, *args):
     try:
         r = subprocess.run(
@@ -137,23 +196,25 @@ def main():
 
     kind = a.kind
     if kind == "auto":
-        name = os.path.basename(path).lower()
-        kind = "roadmap" if "roadmap" in name or "phase status" in secs else "handoff"
+        kind = detect_kind(path, text, secs)
 
     errors, warnings, info = [], [], []
+    continuity = kind in ("roadmap", "handoff")
 
     # header
     status = header_field(text, "Status")
     updated = header_field(text, "Last updated")
     if not status:
-        warnings.append("header: no 'Status:' line")
+        if kind != "mocks":
+            warnings.append("header: no 'Status:' line")
     else:
         info.append(f"status: {status}")
+    closed = bool(status and re.match(r"\W*(closed|done)\b", status, re.I))
     updated_date = None
     if updated:
         m = DATE.search(updated)
         updated_date = m.group(1) if m else None
-    if not updated_date:
+    if not updated_date and continuity:
         warnings.append("header: no 'Last updated: YYYY-MM-DD' line")
 
     # required sections
@@ -164,7 +225,7 @@ def main():
     # resume list length
     resume_name = "Resume here" if kind == "roadmap" else "Next actions"
     title, span = find_section(secs, resume_name)
-    if span:
+    if span and continuity:
         items = [l for l in lines[span[0] + 1 : span[1]] if re.match(r"^\d+\.\s", l)]
         if not items:
             warnings.append(f"resume: '{title}' has no numbered actions")
@@ -195,6 +256,8 @@ def main():
     # paths
     seen = set()
     for n, line in enumerate(lines, 1):
+        if re.search(r"(?i)\(created by\b", line):
+            continue
         for tok in BACKTICK.findall(line):
             tok = tok.strip()
             if tok in seen or " " in tok and not tok.startswith(("~/", "/")):
@@ -205,12 +268,62 @@ def main():
                 cand = os.path.expanduser(tok.rstrip(".,;:)"))
             elif re.match(r"^(plans|runs|handoffs)/\S+$", tok):
                 cand = os.path.join(base, tok)
+                # a doc inside plans/ (or runs/, handoffs/) anchors to its parent folder
+                if os.path.basename(base) in ("plans", "runs", "handoffs"):
+                    up = os.path.join(os.path.dirname(base), tok)
+                    if os.path.exists(re.sub(r":\d+(-\d+)?$", "", up)):
+                        cand = up
             else:
                 continue
             seen.add(tok)
             cand = re.sub(r":\d+(-\d+)?$", "", cand)
             if not os.path.exists(cand):
                 warnings.append(f"path: line {n} `{tok}` does not exist")
+
+    # scratchpad and temp paths vanish with the session
+    for n, line in enumerate(lines, 1):
+        m = SCRATCH.search(line)
+        if m:
+            warnings.append(
+                f"scratch: line {n} `{m.group(0).strip('`')}` is a session or temp path;"
+                " move what the next stage needs beside the doc"
+            )
+
+    # Start here: what a cold session needs to start the next stage
+    title, span = find_section(secs, "Start here")
+    start = "\n".join(lines[span[0] + 1 : span[1]]) if span else ""
+    if kind in STAGE:
+        if not span:
+            warnings.append("starthere: no '## Start here' section")
+        else:
+            bullet = r"(?im)^\s*[-*]\s+\**\s*"
+            if not re.search(bullet + r"goal", start):
+                warnings.append("starthere: no Goal line")
+            if not re.search(bullet + r"verified\b[^\n]*20\d\d-\d\d-\d\d", start):
+                warnings.append("starthere: no dated 'Verified YYYY-MM-DD' line")
+            if not re.search(bullet + r"read first", start):
+                warnings.append("starthere: no 'Read first' line")
+            nxt = re.search(bullet + r"next\b[^\n]*", start)
+            if not nxt:
+                warnings.append("starthere: no 'Next' line")
+            elif not BACKTICK.search(nxt.group(0)):
+                warnings.append("starthere: the 'Next' line has no backticked command to paste")
+            if not re.search(r"(?i)\bno\b[\s`*]*/prime\b", start):
+                warnings.append(
+                    "prime: Start here does not say no `/prime` (or `/handoff`) is needed"
+                )
+
+    # cold-start stamp
+    urgent = any(re.match(r"^#{2,6}\s+interrupted", l, re.I) for l in lines)
+    if not (kind == "handoff" and urgent):
+        m = STAMP.search(text)
+        if m:
+            info.append(f"stamp: {m.group(0)}")
+        else:
+            warnings.append(
+                "stamp: no 'cold-start pass YYYY-MM-DD'; run the cold-start gate"
+                " (handoff/references/cold-start-gate.md)"
+            )
 
     # phase table vs plan status, and shipped phases still carrying readiness notes
     shipped_phases = set()
@@ -320,9 +433,11 @@ def main():
             if shas and not any(h.startswith(s) or s.startswith(h) for s in shas):
                 info.append(f"repo HEAD {h} is not mentioned in the doc")
 
-    # a closed roadmap is history: compaction warnings no longer apply
-    if kind == "roadmap" and status and status.lower().startswith("closed"):
-        moot = ("size:", "phase:", "log:", "resume:")
+    # a closed doc is history: gate and compaction warnings no longer apply
+    if closed:
+        moot = ("starthere:", "prime:", "stamp:")
+        if kind == "roadmap":
+            moot += ("size:", "phase:", "log:", "resume:")
         info.extend(f"(closed, not enforced) {w}" for w in warnings if w.startswith(moot))
         warnings = [w for w in warnings if not w.startswith(moot)]
 

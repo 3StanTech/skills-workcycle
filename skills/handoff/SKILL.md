@@ -1,11 +1,12 @@
 ---
 name: handoff
 description: >-
-  Make work resumable in a new session on any host: pause it cleanly, stop it
-  urgently, or resume it. Pause triggers: /handoff, "prepare to pause", "make it
-  resumable", "continue in a new session", "context is nearly full", and any
-  skill's "next step happens in a new session". Urgent triggers: /handoff now,
-  "limit is about to hit", "stop now", "I have to go". Resume trigger: "resume
+  Make work resumable in a new session on any host: pause it mid-task, stop it
+  urgently, or resume it. Stage docs (explore, plan, roadmap, findings) are
+  already cold-start ready through the gate their skills run, so handoff is for
+  everything else. Pause triggers: /handoff, "prepare to pause", "make it
+  resumable", "continue in a new session", "context is nearly full". Urgent
+  triggers: /handoff now, "limit is about to hit", "stop now", "I have to go". Resume trigger: "resume
   from <path>". Works with or without a roadmap, plan or explore doc. Not for the
   session-close ritual (`/end`).
 ---
@@ -16,7 +17,7 @@ Make the current work resumable cold: update the doc that owns it (or write one 
 
 **Decision points:** If an interactive question tool (e.g. `AskUserQuestion`) is available, use it with 2–4 prefilled options, recommended option first and labeled "(Recommended)". Otherwise, print the same options as a numbered list in chat, state the recommended number, and wait for a reply. Never proceed past a decision point on an assumption.
 
-**Template:** `references/template.md`. **Checker:** `~/.agents/skills/roadmap/scripts/doc_check.py`.
+**Template:** `references/template.md`. **Gate:** `references/cold-start-gate.md` (the stage skills run it as their last step; pause mode reuses it). **Checker:** `~/.agents/skills/roadmap/scripts/doc_check.py`.
 
 **Paths.** `<handoffs-root>` is: project is a git repo → `<project-parent>/<project-name>-handoffs/`; project folder is not a git repo (it may contain one) → `<project>/handoffs/`; no project → the no-project handoffs folder in `~/.agents/local/workcycle.md`, else `~/.agents/handoffs/`.
 
@@ -41,7 +42,7 @@ Make the current work resumable cold: update the doc that owns it (or write one 
    - Launch configs that pointed at the scratchpad are repointed.
 3. **Stop or record running things.** Stop dev servers (`preview_stop`) and background jobs. Record each headless helper in the owning doc as its full registry entry `{"engine","id","task","lane","topic"}`; the resuming session imports those entries per headless contract §3 (imported entries). For in-session subagents, record the packet and a WIP note to relaunch from; they cannot be resumed from a new session. Reset browser viewport emulation.
 4. **Verify current state** with cheap checks: `git status --short`, `git branch --show-current`, `git log --oneline -5`, ahead/behind the remote; the plan's `**Status:**`; test branches or databases the next session reuses and their expiry. Anything not checked goes under **Not verified**.
-5. **Probe what the next session will hit.** Read the doc as a fresh session given only its path, on any host, with no `/prime`, roadmap Resume or chat history. Start here names the paste command and says no `/prime` is needed. Facts from other files the session would otherwise open (other repos' `master.md`, chat-only answers, IDs, versions, quotas) are copied in as a short dated list with source paths. Every path is absolute or anchored to one stated root, and exists or is marked as created by a named step. Then probe, read-only, and record each result with a date:
+5. **Run the gate's steps 1–5** (`references/cold-start-gate.md`) on the owning doc: Start here, chat decisions, scratchpad sweep, paths, probes. Read the doc as a fresh session given only its path, on any host, with no `/prime`, roadmap Resume or chat history. Facts from other files the session would otherwise open (other repos' `master.md`, IDs, versions, quotas) are copied in as a short dated list with source paths. A mid-task pause probes beyond the next stage, read-only, recording each result with a date:
 
    | Assumption | Probe |
    |---|---|
@@ -59,8 +60,7 @@ Make the current work resumable cold: update the doc that owns it (or write one 
 7. **Align and hand over.**
    - The roadmap's Resume here, any handoff pointer and the doc say the same thing.
    - Carry due reminders: copy any `next close` line from `master.md` → `## Reminders` into Open questions and show it in the reply (leave it; `/end` clears it).
-   - Run `python3 ~/.agents/skills/roadmap/scripts/doc_check.py --text [--kind handoff] [--repo <repo>] <file>`. Fix every ERROR; fix each WARN or say why it stays.
-   - Note "cold-start pass <YYYY-MM-DD>" in Start here.
+   - Gate step 6: `python3 ~/.agents/skills/roadmap/scripts/doc_check.py --text [--kind <kind>] [--repo <repo>] <file>`. Fix every ERROR; fix each WARN or say why it stays. Then note "cold-start pass <YYYY-MM-DD>" in Start here (the handoff file's header for a handoff).
    - Reply with three lines: the path, the most important next action, and the paste line `resume from <path>`.
 
 ## 3. Urgent mode (`/handoff now`)

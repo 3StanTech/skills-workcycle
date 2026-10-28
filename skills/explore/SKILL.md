@@ -187,6 +187,7 @@ Keep it short enough to check at a glance. Mark every claim as **evidence** or *
 - **Verified YYYY-MM-DD HH:MM:** {repo, branch, HEAD SHA, or "not a git repo"}
 - **Read first:** {paths and why; "this doc only" when it carries everything}
 - **Next:** {the `/create-plan` command; never `/implement`, since an explore doc is not a plan}
+- No `/prime` or `/handoff` needed. cold-start pass {YYYY-MM-DD}
 
 ---
 
@@ -253,17 +254,23 @@ Keep it short enough to check at a glance. Mark every claim as **evidence** or *
 ## Discovery Notes
 
 {Key decisions, alternatives considered, user preferences, assumptions still standing}
+
+### Decisions made in chat
+
+- {YYYY-MM-DD: each decision the owner made in chat during or after the stages, or "None"}
 ```
 
-   The doc must be cold-start ready (`~/AGENTS.md` → Resumable outputs). When the owner says the next step happens in a new session, run the `handoff` skill (pause mode) on the explore doc before reporting. With 4+ open decisions or a doc over ~15 KB, also build a decision page (`~/.agents/skills/explore-design/references/decision-page.md`).
+   With 4+ open decisions or a doc over ~15 KB, also build a decision page (`~/.agents/skills/explore-design/references/decision-page.md`).
 
-3. Report the file path and recommend `/create-plan`, feeding this explore doc as context. That is the only next step: explore never recommends `/implement`, however well-defined the idea, because an explore doc is not a plan and implementing from it skips the plan the owner approves.
+3. **Run the cold-start gate** (`~/.agents/skills/handoff/references/cold-start-gate.md`) on the doc as the last write, so a new session can start create-plan from the paste line alone.
 
-4. **Ready-to-paste prompt.** End with the exact next prompt in a code block, **trimmed to what the doc does not already say**:
+4. Report the file path and recommend `/create-plan`, feeding this explore doc as context. That is the only next step: explore never recommends `/implement`, however well-defined the idea, because an explore doc is not a plan and implementing from it skips the plan the owner approves.
+
+5. **Ready-to-paste prompt.** End with the exact next prompt in a code block, **trimmed to what the doc does not already say**:
    - Always: the command and the explore doc path, plus the output plan path if it matters.
    - Only if needed: which components or phases are in this round (when the doc lists more), decisions made after the doc was written, and any gate the user wants that the doc doesn't define.
    - A last line `implement using <model-id> <effort> <chillin|vibin|supersoldiers>` for the user to fill in, or the roster they already named, verbatim. Never pre-fill a tier: a filled value counts as the user naming it. It is the roster create-plan records in Orchestration, not a go to implement.
-   - Directly under the code block, print a short **roster guide**: (a) the model IDs installed on this machine with their efforts, read from `~/.agents/skills/headless/data/claude-models.json`, `grok-models.json` (only if Grok is active in the routing table) and `codex debug models --bundled` (only if `codex` is installed), skipping families that are not installed; without the orchestration bundle (no headless catalogs) say "the session implements itself (Chillin)" instead; (b) one line per stance: chillin = the session works alone, vibin = up to 3 helpers, supersoldiers = one helper per independent task; (c) "Delete the last line to fall back to your routing table, or to be asked."
+   - Directly under the code block, print a short **roster guide**: (a) the model IDs and efforts available on this machine, from `python3 ~/.agents/skills/stance/scripts/route.py menu` (active families only, per `~/.agents/skills/headless/data/families.json`); without the orchestration bundle say "the session implements itself (Chillin)" instead; (b) one line per stance: chillin = the session works alone, vibin = up to 3 helpers, supersoldiers = one helper per independent task; (c) "Delete the last line to be asked."
    - Never repeat constraints, links, headlines, or rules already recorded in the doc or the project's instruction files. The next agent reads those itself.
 
    Good: `/create-plan plans/explore-2026-09-29-bakery-redesign.md, production rebuild from mock-b.html only.` then, on its own line, `implement using <model-id> medium vibin` (shape only; the user fills the model).

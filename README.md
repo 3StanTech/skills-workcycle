@@ -11,7 +11,7 @@ The build cycle as agent skills: explore an idea, plan it, implement it, audit t
 | `create-plan` | Write a detailed, plan-only implementation plan before coding |
 | `implement` | Execute a clear, authorized plan, verify it and report |
 | `work-audit` | Audit that auto-fixes clear issues before commit, Light or Full depth |
-| `handoff` | Make work resumable in a new session on any host |
+| `handoff` | Pause mid-task or stop urgently, resumable on any host; owns the cold-start gate every stage doc passes |
 | `roadmap` | One living `ROADMAP.md` per multi-phase initiative |
 | `prime` | Start a session warm from project state, read-only |
 | `remind` | Park a reminder in an existing project file so it resurfaces later |
@@ -93,7 +93,7 @@ You never have to configure models. Name them when you want to: the closing prom
 implement using <model-id> <effort> <chillin|vibin|supersoldiers>
 ```
 
-and lists the model IDs installed on your machine. Fill it in, or delete it and the agent asks you (or uses your routing table, if you filled one in `skills-orchestration`). The auditor that reviews finished work is always yours to name or confirm.
+and lists the model IDs installed on your machine. Fill it in, or delete it and the agent asks you. No tier is ever defaulted: every delegated launch, the auditor that reviews finished work, and any escalation after a second failure are yours to name. With `skills-orchestration`, the model menu comes from `route.py menu`, limited to the families you mark active in its per-user `families.json`.
 
 ### 6. Local settings (optional)
 
@@ -121,6 +121,7 @@ Sections: `Projects root` (prime, end), `No-project handoffs folder` (handoff, r
 ~/.agents/bundles/skills-workcycle/install.sh --check
 cd ~/.agents/bundles/skills-workcycle
 python3 -m unittest discover -s skills/work-audit/tests
+python3 -m unittest discover -s skills/roadmap/tests
 CREATE_PLAN_GUARD_SCRIPT=$PWD/hooks/create-plan-no-implement.py python3 -m unittest discover -s hooks -p 'test_*.py'
 ```
 
@@ -147,7 +148,7 @@ rm -rf ~/.agents/bundles/skills-workcycle
 ## Dependencies
 
 - Python 3 and git.
-- `skills-orchestration` is optional. Without it, the Orchestration sections of `create-plan` and `implement` do not apply, `implement` runs single-agent in the session (Chillin semantics, no helpers, no routing table), and the create-plan hook skips launch detection.
+- `skills-orchestration` is optional. Without it, the Orchestration sections of `create-plan` and `implement` do not apply, `implement` runs single-agent in the session (Chillin semantics, no helpers, no tier resolution), and the create-plan hook skips launch detection.
 - `scripts/wait-ci-deploy.sh` needs `gh`, and `jq` for the Netlify check.
 - `explore-design` (refine step and decision pages) and `create-plan` decision pages need Node.js: they run the Lavish review tool with `npx -y lavish-axi@0.1.90` (pinned; bump every call site and `skills/lavish/NOTICE` together). The `/lavish` command is included as `skills/lavish`, adapted from Kun Chen's skill (see Credits and `skills/lavish/NOTICE`).
 

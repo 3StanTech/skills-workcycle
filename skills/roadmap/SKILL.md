@@ -17,7 +17,7 @@ Keep one living document per multi-phase initiative that every session reads fir
 
 **Terms.** An *initiative* is one body of work with a single explore doc and a definition of done. A *phase* is a slice of it that ships on its own: it gets its own plan (`create-plan`) and implementation, ends in a live check, and may take several sessions. A project can run several initiatives, so it can have several roadmaps. `master.md` stays the single project-wide state file and only points at roadmaps.
 
-**Templates:** `references/template.md` (the roadmap). **Checker:** `scripts/doc_check.py`.
+**Templates:** `references/template.md` (the roadmap). **Checker:** `scripts/doc_check.py` (every stage-doc kind: explore, plan, mocks, findings, roadmap, handoff). **Gate:** `~/.agents/skills/handoff/references/cold-start-gate.md`.
 
 ---
 
@@ -68,7 +68,7 @@ Only the chained Update then Status runs two modes in one invocation. Create and
 4. **Fill the template, distilling instead of copying.** Copy only what defines the goal: vision, definition of done, users, phase order, must-have / can-wait, out of scope, and locked UX decisions as one line each. For everything else, write the path to the source and say which section to open when.
 5. **Point to it from `master.md`.** Add one line under `## Active roadmaps` (create the section if missing): `- <Initiative> (Active, Phase <N>): <path to ROADMAP.md>`. This is the only `master.md` edit this skill makes; everything else waits for `/end`.
 6. **Supersede the handoffs.** Add this first line to every older handoff for this work: `> **Superseded for resuming:** read <path to ROADMAP.md> first. Kept as history.`
-7. **Check it:** step 5, item 7.
+7. **Check it:** step 5, items 7–8.
 
 ## 4. Resume (session start)
 
@@ -95,7 +95,7 @@ Run this whenever a chunk of work ends, and always before the session ends. Do n
 5. **Add one session-log line at the top:** date, phase and mode, outcome, pointers.
 6. **Stay within budget (16 KB).** If over: compact Closed phases further, and delete session-log lines already folded by `/end` (CHANGELOG.md now holds them).
 7. **Run the checker**: `python3 ~/.agents/skills/roadmap/scripts/doc_check.py --text --repo <repo> <ROADMAP.md>`. Fix every ERROR. Fix each WARN or state why it stays.
-8. **New session next?** Skip this step when the Update is already running inside `handoff`. Otherwise, when the owner says the next step happens in a new session, run the `handoff` skill (pause mode) instead of finishing here: it performs steps 1–7 itself, then pauses the doc Resume here points to and makes Resume here's first action the exact prompt to paste.
+8. **Run the cold-start gate** (`~/.agents/skills/handoff/references/cold-start-gate.md`) as the last write: Resume here's first action is the exact command to paste, chat decisions are in Locked decisions, no scratchpad path remains, and "cold-start pass <date>" goes on the `Last updated` line. A new session then resumes from that line alone. Skip this step when the Update is already running inside `handoff`.
 
 **Mid-task stop.** If the session ends in the middle of a task with detail that does not belong in the roadmap (a half-applied edit, a failing test being chased), write a handoff with the `handoff` skill into `roadmap-<slug>/handoffs/` and set `In-flight handoff:` to its path. When the stop is urgent (a limit about to hit), use `/handoff now`: its `Interrupted` block is the first write, and the Update waits for the resume session. The next Update consumes it: set the line back to `none` and mark the handoff superseded.
 

@@ -12,6 +12,8 @@ description: >-
 
 Open a session with what is open and true right now, in six lines and three options, without re-deriving context.
 
+Prime is for open-ended session starts. Continuing from a stage doc (explore doc, plan, roadmap, findings file) needs only its paste line; that doc passed the cold-start gate and its next skill re-checks it.
+
 > **Decision points:** If an interactive question tool (e.g. `AskUserQuestion`) is
 > available, use it with 2–4 prefilled options, recommended option first and labeled
 > "(Recommended)". Otherwise, print the same options as a numbered list in chat, state

@@ -24,7 +24,7 @@ acceptance rules govern this workflow on every host. GPT/Grok or other headless 
 `~/.agents/skills/headless/SKILL.md`.
 
 Without the Orchestration bundle (no `~/.agents/skills/stance`), implement runs
-single-agent in this session: Chillin semantics, no helpers, no routing table. Skip every
+single-agent in this session: Chillin semantics, no helpers, no tier resolution. Skip every
 Orchestration-only section.
 
 **Decision points:** If an interactive question tool (e.g. `AskUserQuestion`) is available, use it with 2–4 prefilled options, recommended option first and labeled "(Recommended)". Otherwise, print the same options as a numbered list in chat, state the recommended number, and wait for a reply. Never proceed past a decision point on an assumption.
@@ -39,7 +39,10 @@ Orchestration-only section.
    the resume point: read the plan's Start here and Read first, and do not run `/prime`
    or a roadmap Resume. When the plan has a **Carried from roadmap** section, open the
    roadmap only at the sections it cites (Locked decisions, Guarantees). That is the
-   context budget; do not re-read superseded handoffs or the full explore doc.
+   context budget; do not re-read superseded handoffs or the full explore doc. Re-check
+   the plan's Verified line cheaply (each repo's HEAD and `git status --short`, reused test
+   infrastructure's expiry); report any mismatch in one line and fold it into the plan
+   before work.
 2. **Check prerequisites:**
    - Are there open questions that must be answered before continuing?
    - Are there dependencies on external resources or user decisions?
@@ -61,9 +64,11 @@ Orchestration-only section.
    current request (e.g. `/implement <plan> using sonnet 5 high supersoldiers`)
    overrides the plan's roster — then split and route it per `stance` before wave 1.
 7. **Resolve and launch.** Every delegated task's tier comes from the plan's Orchestration
-   row; a task without one resolves it with
-   `python3 ~/.agents/skills/stance/scripts/route.py resolve --task-type <t> --host <this host> [--project <dir>]`
-   (exit 3: ask the owner for that row only). Check each packet with
+   row or a tier the owner names in the request; a task with neither is asked (model + effort,
+   that task only; offer the tiers `python3 ~/.agents/skills/stance/scripts/route.py menu` lists).
+   Resolve its route with
+   `python3 ~/.agents/skills/stance/scripts/route.py resolve --task-type <t> --host <this host> --named <M:E> | --roster <M:E>`
+   (exit 3 means no tier was given: ask). Check each packet with
    `python3 ~/.agents/skills/stance/scripts/packet-check.py <packet>` before launch. Launch per the
    route (stance §3, §5): Claude Code `subagent` rows pass the resolved alias and effort on the call,
    with no pause between planning and wave 1; headless helpers launch in the background with stdin
@@ -124,9 +129,8 @@ over because a launch failed or verification found a defect.
    `work-audit client roots` in `~/.agents/local/workcycle.md` as `--client-root`) and print its
    verdict. **Depth:** use the plan's recorded audit depth; if it says "ask after triage" or records
    none, ask Light vs Full with the verdict as the recommended option. **Auditor** = the plan's
-   Reviewer (any family); if the plan has none, ask, showing the routing `review` row as the
-   "routing default" option to confirm. Never start an audit on a tier the owner did not name or
-   confirm. With no recorded depth and a **FULL** verdict, the depth question is: *Run Full audit
+   Reviewer (any family); if the plan has none, ask for model + effort (two questions, no
+   "(Recommended)" label on a tier). Never start an audit on a tier the owner did not name. With no recorded depth and a **FULL** verdict, the depth question is: *Run Full audit
    (Recommended)* / *Run Light instead* / *Skip for now*, with the triage reasons in it. Then run
    `/work-audit light <scope>` or `/work-audit full <scope>` for the depth recorded or chosen; on
    *Skip for now*, run no audit, report "audit skipped by the owner" and recommend
@@ -137,8 +141,8 @@ over because a launch failed or verification found a defect.
 
 **Delegated tasks** (stance §6): run the packet's acceptance commands yourself when a helper
 reports `STATUS: done`; only a pass counts. A failed smoke test launches the row's fallback; a
-first acceptance failure returns to the same helper with the failing output; a second goes to the
-row's escalation tier (any family); a failed escalation is `blocked`. The auditor (the plan's Reviewer) may be any family.
+first acceptance failure returns to the same helper with the failing output; a second asks the
+owner for an escalation tier (any family, never pre-set); a failed escalation is `blocked`. The auditor (the plan's Reviewer) may be any family.
 
 Failed checks return to the same implementer with precise evidence. Final review
 starts only after the planned implementation and repair evidence is delivered. In
@@ -150,14 +154,14 @@ rewrite. Offline fixtures do not verify live provider readiness.
 ---
 
 **Outcome log.** At close (complete, partial or blocked), for every delegated task run
-`route.py check-model` for Claude subagents, then `route.py log …` and `route.py nudge …`
-(stance §7, `~/.agents/skills/stance/references/routing.md` §5). Each `log` row classifies
+`route.py check-model` for Claude subagents, then `route.py log …`
+(stance §7, `~/.agents/skills/stance/references/routes.md` → Outcome log). Each `log` row classifies
 the outcome: `--first-pass yes|no` (yes only when the helper's own acceptance passes on the
 dispatcher's first re-run), `--returned-by acceptance|seam|review|dispatcher-check|none`,
 `--repaired-by original|fresh-helper|dispatcher|escalation` (with `--repairs-of <task>` on a
 repair task's row) and `--host claude|codex|grok|hermes|pi|other`. Fix a wrong row with an
 appended `route.py correct --plan P --task T [--date D] … --note "<evidence>"`; never edit the
-log. Report the outcome lines written and any nudge line.
+log. Report the outcome lines written.
 
 ## 4. Update plan status
 
@@ -200,8 +204,11 @@ the plan status update, and again at each stop that leaves the phase unfinished 
 pending, quota exhausted, session ending). It records the phase status, commits,
 evidence, carried follow-ups, next-phase readiness, Resume here and a session-log line.
 Keep wave-by-wave run state in `roadmap-<slug>/runs/`, not in the roadmap.
-When the owner says the remaining work continues in a new session, run the `handoff`
-skill (pause mode) on the plan's Start here before stopping; if the session must stop
+
+**Cold-start gate:** rerun the gate (`~/.agents/skills/handoff/references/cold-start-gate.md`) on the plan at each wave
+boundary and at any stop, so its Start here always names the next wave or step and a new
+session resumes with `/implement <plan>` alone. A stop in the middle of a task, with detail
+the plan should not hold, runs the `handoff` skill (pause mode); if the session must stop
 now, run `/handoff now` (urgent mode).
 
 ---
@@ -272,4 +279,4 @@ Format:
 - **Never invent requirements** absent from the plan; ask decision-point questions.
 - **Never commit** or run git write operations unless the user explicitly asks.
 - **Never attribute** AI-process notes to commit messages, branch names, or PR bodies.
-- **Do not hardcode model names** as stage requirements; use strongest/fast tiers only if delegation is needed, and in this workspace the tier for any delegated run comes from the request, the plan roster or an approved routing-table row (`route.py resolve`), otherwise it is asked per the user's global delegation rules — never assumed.
+- **Do not hardcode model names** as stage requirements; use strongest/fast tiers only if delegation is needed, and in this workspace the tier for any delegated run comes from the request or the plan roster, otherwise it is asked per the user's global delegation rules — never assumed.

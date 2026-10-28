@@ -14,6 +14,9 @@ Keep it short: skills hold the procedures, this file holds only your preferences
 
 - Each project keeps its current state in `master.md` (written by `/end`); plans, handoffs and
   roadmaps live outside Git.
+- Every stage doc (explore doc, plan, roadmap, audit findings) passes the cold-start gate when
+  written, so a new session continues from its paste line alone. `handoff` is for mid-task
+  pauses and urgent stops.
 - Do not call partial or unverified work complete; list what was not verified.
 
 ## Publication and consequential actions
@@ -25,11 +28,10 @@ Keep it short: skills hold the procedures, this file holds only your preferences
 ## Delegation (only if you installed skills-orchestration)
 
 - I name helpers as `implement using <model-id> <effort> <chillin|vibin|supersoldiers>`.
-  When I name nothing, use my routing table if I filled it, otherwise ask me. Never pick a
-  model for me.
-- Always ask me for the auditor (model and effort) that reviews finished work, or to confirm
-  the suggested default.
-- Launch, auth or tier failures never switch to another model family without asking.
+  When I name nothing, ask me. Never pick a model for me.
+- Always ask me for the auditor (model and effort) that reviews finished work.
+- After a second failed attempt, ask me for the escalation tier. Launch, auth or tier failures
+  never switch to another model family without asking.
 
 ## Testing
 

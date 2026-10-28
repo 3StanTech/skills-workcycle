@@ -19,5 +19,7 @@ jobs:
           python-version: "3.12"
       - name: work-audit suite
         run: python3 -m unittest discover -s skills/work-audit/tests
+      - name: roadmap doc_check suite
+        run: python3 -m unittest discover -s skills/roadmap/tests
       - name: hook suites
         run: CREATE_PLAN_GUARD_SCRIPT="$PWD/hooks/create-plan-no-implement.py" python3 -m unittest discover -s hooks -p 'test_*.py'
