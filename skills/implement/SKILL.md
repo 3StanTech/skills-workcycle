@@ -66,8 +66,10 @@ Orchestration-only section.
 7. **Resolve and launch.** Every delegated task's tier comes from the plan's Orchestration
    row or a tier the owner names in the request; a task with neither is asked (model + effort,
    that task only; offer the tiers `python3 ~/.agents/skills/stance/scripts/route.py menu` lists).
-   Resolve its route with
-   `python3 ~/.agents/skills/stance/scripts/route.py resolve --task-type <t> --host <this host> --named <M:E> | --roster <M:E>`
+   Resolve its route with the tier's source flag: an owner-named tier uses
+   `python3 ~/.agents/skills/stance/scripts/route.py resolve --task-type <t> --host <this host> --named <M:E>`,
+   an approved roster's tier uses
+   `python3 ~/.agents/skills/stance/scripts/route.py resolve --task-type <t> --host <this host> --roster <M:E>`
    (exit 3 means no tier was given: ask). Check each packet with
    `python3 ~/.agents/skills/stance/scripts/packet-check.py <packet>` before launch. Launch per the
    route (stance §3, §5): Claude Code `subagent` rows pass the resolved alias and effort on the call,

@@ -174,6 +174,19 @@ class DocCheck(unittest.TestCase):
                 self.assertEqual(code, 0)
                 self.assertEqual(out["warnings"], [], out["warnings"])
 
+    def test_findings_named_roadmap_is_findings(self):
+        doc = FINDINGS.format(start=start())
+        cases = {
+            "audits dir": self.write(doc, "2026-10-28-roadmap.md", "audits"),
+            "work-audit title": self.write(doc, "roadmap-audit.md", "notes"),
+        }
+        for label, path in cases.items():
+            with self.subTest(case=label):
+                code, out = self.run_check(path)
+                self.assertEqual(out["kind"], "findings")
+                self.assertEqual(code, 0)
+                self.assertEqual(out["warnings"], [], out["warnings"])
+
     def test_explicit_kind_overrides_detection(self):
         path = self.write(PLAN.format(start=start()), "notes.md")
         code, out = self.run_check(path, "--kind", "explore")

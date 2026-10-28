@@ -162,10 +162,14 @@ def detect_kind(path, text, secs):
         return "plan"
     if title.startswith("# handoff"):
         return "handoff"
+    # findings first: an explicit findings title, or any doc under audits/ other than
+    # a ROADMAP.md, wins over the broad "roadmap" filename heuristic below
+    in_audits = "audits" in os.path.normpath(path).lower().split(os.sep)
+    if title.startswith(("# work-audit", "# findings")) or (in_audits and name != "roadmap.md"):
+        return "findings"
     if "roadmap" in name or "phase status" in secs:
         return "roadmap"
-    in_audits = "audits" in os.path.normpath(path).lower().split(os.sep)
-    if in_audits or "audit" in title or ("findings" in secs and "open items" in secs):
+    if "audit" in title or ("findings" in secs and "open items" in secs):
         return "findings"
     if parent.endswith("-mocks") or "mocks" in title:
         return "mocks"
