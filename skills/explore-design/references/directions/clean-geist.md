@@ -69,7 +69,7 @@ Phosphor, Solar or Iconamoon. Never Material Icons or Material Symbols.
 - Animate **only** `transform` and `opacity` (stricter than the floor).
 - **Navigation:** a compact bar floating off the top edge, centred and sized to its content, on a translucent surface with background blur. The menu icon morphs between open and closed on the base curve. On phones the menu opens as a full-height panel (base surface at high opacity, strong blur); its links enter one after another in reading order, each rising 24px while fading in, 60ms apart, the whole sequence capped at 400ms.
 - **Scroll reveals:** a section entering the viewport rises 32px and fades in over 600–800ms on the base curve, once only, triggered by `IntersectionObserver` or a motion library's in-view primitive.
-- Reduced motion follows the floor: movement becomes a plain opacity change.
+- Reduced motion follows the floor: reveals and entrances are off; other state changes may use a plain opacity change.
 
 ## 10. Tagline reveal section (mandatory in this direction)
 

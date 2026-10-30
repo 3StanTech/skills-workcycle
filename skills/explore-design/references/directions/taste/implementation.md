@@ -15,7 +15,7 @@ to an approved React/Next.js stack; they do not authorize migration or installat
 * **Styling:** Preserve the installed styling system and version. For an approved Tailwind v4 setup:
   * For v4: do NOT use `tailwindcss` plugin in `postcss.config.js`. Use `@tailwindcss/postcss` or the Vite plugin.
 * **Animation:** When Motion is already installed or approved, use **Motion** (formerly Framer Motion). Import from `motion/react` (`import { motion } from "motion/react"`). The `framer-motion` package still works as a legacy alias - prefer `motion/react` in new code.
-* **Fonts:** `next/font` in Next.js; font loading rules live in the floor ([performance](../../../../implement/references/ui-build/performance.md)).
+* **Fonts:** `next/font` (Next.js) or self-hosted `@font-face`; never link Google Fonts via `<link>` in production. Loading rules (`font-display`, preload) live in the floor ([performance](../../../../implement/references/ui-build/performance.md)).
 
 ### 3.B State
 * Local `useState` / `useReducer` for isolated UI.

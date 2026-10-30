@@ -84,13 +84,16 @@ brand can waive one, and only explicitly.
   that state every frame; use motion values, CSS, or a library's animation primitives. Use `IntersectionObserver`, CSS scroll-driven animation, or a
   motion library's scroll primitives.
 - **Reduced motion is honoured.** Under `prefers-reduced-motion: reduce`, loops, parallax,
-  scroll-linked effects and physics collapse to static or a plain fade.
+  scroll-linked effects and physics collapse to static; entrance and reveal effects are
+  off (content simply shows). A plain fade stays fine for state changes (a menu opening, a
+  toast, a hover).
 - **Grain and noise** sit on a fixed, `pointer-events: none` layer, never on a scrolling
   container.
-- **Content is visible without scroll or JS.** Reveal and entrance effects start from
-  visible content and hide it only once script has run (for example a `js` class set in
-  the head), and are off under `prefers-reduced-motion`. A static capture, a no-JS reader
-  or a crawler sees every section.
+- **Content is visible without scroll or JS.** Nothing rests hidden while it waits for a
+  reveal: an element takes its hidden start state only when its reveal begins (for example
+  a keyframe animation added as it enters the viewport), never as a default style. So a
+  no-JS reader, a crawler and a full-page capture with script running all see every
+  section, and under reduced motion reveals are off.
 - **Motion is motivated.** Every animation serves hierarchy, sequence, feedback or a state
   change, and its reason fits in one sentence; otherwise drop it.
 - **One animation engine per component tree.** Never drive the same elements from GSAP or

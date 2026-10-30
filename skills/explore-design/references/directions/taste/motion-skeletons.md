@@ -2,6 +2,13 @@
 
 Canonical code for three taste motion patterns. Read only when a build uses one of them; the floor's [motion safety](../../../../implement/references/ui-build/page-craft.md#motion-safety) still applies (reduced motion, content visible without scroll or JS, one animation engine per component tree).
 
+## Before you use them
+
+The code below is kept as upstream wrote it. Adapt it so the baseline is plain, visible, normal-flow content:
+
+- **Sticky-stack and horizontal-pan:** render the cards (or panels) stacked in normal flow. Apply the sticky / pinned / horizontal-track layout only after the effect has initialised and when reduced motion is not requested, for example by a class the effect adds (`.is-enhanced .stack-card { position: sticky }`). Without JS or under reduced motion every card and panel is readable in order; a clipped horizontal track never ships as the fallback.
+- **Scroll-reveal stagger:** do not render `initial={{ opacity: 0 }}` into server HTML. Start the hidden state only when the reveal begins (on the client, as the element enters), or animate from a visible state; under reduced motion skip the reveal.
+
 ## Sticky-stack
 
 ```tsx
