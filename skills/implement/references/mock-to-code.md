@@ -39,6 +39,8 @@ Treat each approved image or mock as a specification. For every section record:
 - Responsive first view: on a small laptop and a phone the headline, support, CTA and
   focal visual stay visible and uncluttered.
 - Preserve semantics, keyboard operation, contrast, and reduced-motion support.
+- Build on the floor: [ui-build](ui-build.md) Pillars 1–4 and
+  [page craft](ui-build/page-craft.md), launch checklist included.
 
 ## 3. Resolve missing detail in this order
 

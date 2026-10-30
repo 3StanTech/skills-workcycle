@@ -1,6 +1,6 @@
 # UI build quality
 
-Read when the plan touches a UI.
+Read when the plan touches a UI. explore-design also builds its coded mocks on this floor (Pillars 1–4).
 
 Apply responsive, usable, and fast defaults while writing UI code — quality gates baked into the build, not bolted on after.
 
@@ -20,11 +20,12 @@ If device range or primary action is genuinely ambiguous, ask a decision-point q
 
 ### 2. Build with the defaults below
 
-The three pillar sections in this file are the working defaults — apply them automatically as you write. The `ui-build/` files hold the exhaustive versions; load them when the build is substantial or when you hit a domain that needs the full checklist:
+The four pillar sections in this file are the working defaults — apply them automatically as you write. The `ui-build/` files hold the exhaustive versions; load them when the build is substantial or when you hit a domain that needs the full checklist:
 
 - `ui-build/responsive.md` — layout systems, breakpoints, images, typography, touch ergonomics. Read when building multi-viewport layouts, complex grids, or mobile navigation.
 - `ui-build/usability.md` — feedback, forms, navigation, accessibility, content. Read when building forms, multi-step flows, or anything with non-trivial interaction states.
 - `ui-build/performance.md` — assets, JavaScript, rendering, Core Web Vitals, measurement. Read when payload, load time, or runtime jank is in scope.
+- `ui-build/page-craft.md` — page composition, visual craft, motion safety, content honesty, theme, launch checklist. Read for any page or mock (landing, marketing, portfolio, app shell).
 
 ### 3. Audit before delivering
 
@@ -41,7 +42,7 @@ Fix what you find. If a fix is genuinely out of scope, say so explicitly in the 
 
 ### 4. Report (when the task is a review, not a build)
 
-If asked to audit or improve an existing build, run the three pillars as an inspection in this order: **usability breakage first** (things that stop or confuse users), **responsive breakage second** (things broken at real viewports), **performance third** (things that are slow). Report findings by severity with concrete fixes — file/line or selector-level specificity, not "consider improving performance." Quick wins (a missing viewport tag, an unoptimized hero image, a missing pending state) go at the top.
+If asked to audit or improve an existing build, run the four pillars as an inspection in this order: **usability breakage first** (things that stop or confuse users), **responsive breakage second** (things broken at real viewports), **performance third** (things that are slow), **page craft fourth** (composition, honesty and launch gaps). Report findings by severity with concrete fixes — file/line or selector-level specificity, not "consider improving performance." Quick wins (a missing viewport tag, an unoptimized hero image, a missing pending state) go at the top.
 
 If you write a report file, and the working directory is a git repository, write outputs to the project folder outside the git tree, or to the session scratchpad — never commit process artifacts.
 
@@ -94,6 +95,21 @@ Working defaults:
 - **Know the vitals** as targets: LCP under ~2.5s, CLS under 0.1, INP under 200ms.
 
 Full treatment: `ui-build/performance.md`.
+
+## Pillar 4: Page craft
+
+**Taste-neutral, every direction.** A visual direction changes how a page looks, never whether these hold.
+
+Working defaults:
+
+- **The first viewport sells**: headline, support line and primary action visible on a small laptop and a phone; one label per action intent; navigation on one line.
+- **One shape system**: one radius scale; nested radius = outer − gap; elevation from a border or a shadow, not both.
+- **Contrast everywhere it hides**: button labels on fills, ghost buttons over photos, form placeholders and helper text; themed selection, caret, scrollbars and focus rings.
+- **Motion safety**: `transform`/`opacity` by default, no per-frame scroll work, reduced motion honoured.
+- **Honest content**: nothing invented shown as real; placeholders tagged "Confirm with <owner>"; every visible string re-read.
+- **One theme per page**, and a launch checklist (title, meta, social tags, favicon, alt text, skip link, 404, legal links) before anything goes live.
+
+Full treatment: `ui-build/page-craft.md`.
 
 ## Right-sizing
 

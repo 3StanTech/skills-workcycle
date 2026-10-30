@@ -63,7 +63,7 @@ Run the gates in order. Skip any gate the brief already settles and say so. Prev
 |---|---|---|
 | **G1 Type** | A specimen page with complete pairings along feeling axes, set on the real brand colours. Only when type is still open | [coded mocks → Type gate](references/coded-mocks.md) |
 | **G2 Moods** | One probe image first, then one mood frame per direction as a contact sheet. The owner picks a direction (or a named mix) | [medium and providers](references/medium-and-providers.md), [web](references/web.md) |
-| **G3 Mocks** | Coded HTML of the picked direction on the production stack's conventions; phone and desktop screenshots in chat | [coded mocks](references/coded-mocks.md), [web](references/web.md) |
+| **G3 Mocks** | Coded HTML of the picked direction on the production stack's conventions; phone and desktop screenshots in chat | [coded mocks](references/coded-mocks.md), [web](references/web.md), [floor](../implement/references/ui-build/page-craft.md) |
 | **G4 Refine** | Lavish opens on the mock; the owner annotates; each note becomes a targeted edit; the final pick comes back through an in-page form; the approved mock is exported | [Lavish review](references/lavish-review.md) |
 
 **Modes** (from the deliverable the owner asked for):

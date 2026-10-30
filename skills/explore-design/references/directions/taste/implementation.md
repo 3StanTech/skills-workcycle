@@ -1,4 +1,4 @@
-# Layout, stack, interaction, and accessibility
+# Layout, stack, and interaction
 
 Use only for the relevant phase of the agreed brief. Scope and approval are owned by
 [medium and providers](../../medium-and-providers.md). Examples are not extra deliverables.
@@ -35,11 +35,10 @@ Discouraged by default in code, markup, and visible text. Replace symbols with i
 ### 3.E Responsiveness & Layout Mechanics
 * Standardize breakpoints (`sm 640`, `md 768`, `lg 1024`, `xl 1280`, `2xl 1536`).
 * Contain page layouts using `max-w-[1400px] mx-auto` or `max-w-7xl`.
-* **Viewport Stability:** NEVER use `h-screen` for full-height Hero sections. ALWAYS use `min-h-[100dvh]` to prevent layout jumping on mobile (iOS Safari address bar).
 * **Grid over Flex-Math:** NEVER use complex flexbox percentage math (`w-[calc(33%-1rem)]`). ALWAYS use CSS Grid (`grid grid-cols-1 md:grid-cols-3 gap-6`).
 
 ### 3.F Dependency Verification (mandatory)
-Before importing ANY 3rd-party library, check `package.json`. If the package is missing, output the install command first. **Never** assume a library exists.
+Moved to the floor: [performance.md → JavaScript discipline](../../../../implement/references/ui-build/performance.md).
 
 ---
 
@@ -97,71 +96,36 @@ LLMs default to clichés. Override these defaults proactively. Each rule has a c
 
 ### 4.4 Materiality, Shadows, Cards
 * Use cards ONLY when elevation communicates real hierarchy. Otherwise group with `border-t`, `divide-y`, or negative space.
-* When a shadow is used, tint it to the background hue. No pure-black drop shadows on light backgrounds.
 * For `VISUAL_DENSITY > 7`: generic card containers are banned. Data metrics breathe in plain layout.
-* **SHAPE CONSISTENCY LOCK (mandatory):** Pick ONE corner-radius scale for the page and stick to it. Options: all-sharp (radius 0), all-soft (radius 12-16px), all-pill (full radius for interactive). Mixed systems are allowed only when there is a documented rule (e.g. "buttons are full-pill, cards are 16px, inputs are 8px") and that rule is followed everywhere. Round buttons in a square layout, or square cards on a pill-button page, is broken design.
+* Shadow tint and the one-radius-scale rule live in the floor: [page-craft.md → Visual craft](../../../../implement/references/ui-build/page-craft.md#visual-craft).
 
 ### 4.5 Interactive UI States
-LLMs default to "static successful state only." Always implement full cycles:
-* **Loading:** Skeletal loaders matching the final layout's shape. Avoid generic circular spinners.
-* **Empty States:** Beautifully composed; indicate how to populate.
-* **Error States:** Clear, inline (forms), or contextual (toasts only for transient).
-* **Tactile Feedback:** On `:active`, use `-translate-y-[1px]` or `scale-[0.98]` to simulate a physical push.
-* **BUTTON CONTRAST CHECK (mandatory, a11y):** Before shipping any button, verify the button text is readable against the button background. White button + white text, `bg-white` CTA with `text-white` label, transparent button against the page background with no border → all banned. Audit every CTA: contrast ratio WCAG AA min (4.5:1 for body, 3:1 for large text 18px+). Same rule applies to ghost buttons over photographic backgrounds (use a backdrop, scrim, or stroke).
-* **CTA BUTTON WRAP BAN (mandatory):** Button text MUST fit on one line at desktop. If a label like "VIEW SELECTED WORK" wraps to 2 or 3 lines, the button is broken. Fix by EITHER shortening the label (3 words max for primary CTAs, ideally 1-2) OR widening the button (do not artificially constrain `max-width` on CTAs). Wrapped CTAs at desktop are a Pre-Flight Fail.
-* **NO DUPLICATE CTA INTENT (mandatory):** Two CTAs with the same intent on one page is a Pre-Flight Fail. Examples of same intent: "Get in touch" + "Contact us" + "Let's talk" + "Start a project" + "Start something" + "Reach out" = all "contact" intent → pick ONE label and use it everywhere on the page (nav, hero, footer). Same for "Try free" + "Get started" + "Sign up free" (all "signup" intent) and "View work" + "See selected work" + "Browse projects" (all "portfolio" intent). One label per intent.
-* **FORM CONTRAST CHECK (mandatory, a11y):** Form inputs, placeholder text, focus rings, helper text, and error text all pass WCAG AA contrast against the section background. Light placeholders on a near-white form, white form on white page section, form labels grayer than 4.5:1 contrast → all banned. Audit every form before shipping.
+Universal rules for this topic live in the floor: [ui-build.md Pillar 2](../../../../implement/references/ui-build.md) and [page-craft.md → Page composition and Visual craft](../../../../implement/references/ui-build/page-craft.md#page-composition) (loading, empty, error and pressed states; button and form contrast; one-line CTAs; one label per intent).
 
 ### 4.6 Data & Form Patterns
-* Label ABOVE input. Helper text optional but present in markup. Error text BELOW input. Standard `gap-2` for input blocks.
-* No placeholder-as-label. Ever.
+Universal rules for this topic live in the floor: [ui-build.md Pillar 2 → Forms that help](../../../../implement/references/ui-build.md).
 
 ### 4.7 Layout Discipline (Hard Rules. Failing any of these is shipping broken work)
 
-* **Hero MUST fit in the initial viewport.** Headline max 2 lines on desktop, subtext max **20 words** AND max 3-4 lines, CTAs visible without scroll. If the copy is too long: reduce font scale OR cut copy. If you cannot describe the value-prop in 20 words of subtext, the value-prop is unclear, not the rule too tight. Never let the hero overflow and force scroll to find the CTA.
-* **Hero font-scale discipline.** Plan font size and image size *together*. If the hero asset is large and the headline is more than 6 words, do not start at `text-7xl/text-8xl`. Default sensible range: `text-4xl md:text-5xl lg:text-6xl` for most heroes; `text-6xl md:text-7xl` only when the headline is 3-5 words. A 4-line hero headline is always a font-size error, never a copy-length error.
-* **HERO TOP PADDING CAP (mandatory):** Hero top padding max `pt-24` (≈6rem) at desktop. More than that means the hero content floats halfway down the viewport and reads as a layout bug, not as intentional space. If your hero needs more breathing room, increase font scale or asset size, not top padding.
-* **HERO STACK DISCIPLINE (max 4 text elements).** The hero is a single moment, not a feature list. Allowed text elements, max 4 in total:
-  1. Eyebrow (small uppercase label) OR brand strip OR neither - pick zero or one
-  2. Headline (max 2 lines, see above)
-  3. Subtext (max 20 words, max 4 lines)
-  4. CTAs (1 primary + max 1 secondary)
-  - **BANNED in the hero:** tiny tagline below CTAs ("Works with GitHub, GitLab, and self-hosted Git"), trust micro-strip ("Used by engineering teams at..."), pricing teaser ("Free for solo, $10/user for teams"), feature bullet list, social-proof avatar row. All of those move to dedicated sections directly below the hero.
-  - If you have an eyebrow AND a tagline below CTAs in the same hero, drop the tagline. If you have a brand strip AND a tagline, drop the tagline. One small text element per hero, max.
+Hero, navigation, grid-count, layout-repetition, eyebrow and mobile-collapse rules live in the floor: [page-craft.md → Page composition](../../../../implement/references/ui-build/page-craft.md#page-composition). The look rules below stay with taste.
+
 * **"Used by" / "Trusted by" logo wall belongs UNDER the hero, never inside it.** The hero is for the value prop and primary CTA. The logo wall is a separate section directly below. Do not stuff trust logos into the same flex row as the hero copy.
-* **Navigation MUST render on a single line on desktop.** If items don't fit at `lg` (1024px), condense labels, drop secondary items, or move to a hamburger. A two-line nav at desktop is broken design.
-* **Navigation height cap: 80px max desktop, default 64-72px.** No huge "agency" nav bars that eat 15% of the viewport.
 * **Bento grids MUST have rhythm, not one-sided repetition.** Do not stack 6 left-image / right-text rows. Vary the composition: alternate full-width feature rows, asymmetric tile sizes, vertical breaks.
-* **BENTO CELL COUNT RULE (mandatory):** A bento grid has EXACTLY as many cells as you have content for. 3 items → 3 cells (1+2 split, or 2+1, or asymmetric trio). 5 items → 5 cells (2+3, 3+2, hero+4, etc.). If your grid has an empty cell in the middle or at the end, you planned wrong. Re-shape the grid; do not paste a blank tile.
-* **Section-Layout-Repetition Ban.** Once you use a layout family for a section (e.g., 3-column-image-cards, full-width-quote, split-text-image), that family can appear at most ONCE on the page. "Selected commissions" must not look like "What we do." A landing page with 8 sections must use at least 4 different layout families.
-* **ZIGZAG ALTERNATION CAP (mandatory).** Alternating "left-image + right-text" then "left-text + right-image" zigzag layout = banal. Max 2 sections in a row with this image+text-split pattern. The 3rd consecutive image+text split is a Pre-Flight Fail. Break the pattern with a full-width section, a vertical-stack section, a bento grid, a marquee, or a different layout family.
-* **EYEBROW RESTRAINT (mandatory, the #1 violated rule in production tests).** An "eyebrow" is the small uppercase wide-tracking label sitting above a section headline (e.g. `FOUR COLORWAYS`, `SELECTED WORK`, `THE HARDWARE`, `Git-native task management`). Typical CSS signature: `text-[11px] uppercase tracking-[0.18em]`, `font-mono text-[10.5px] uppercase tracking-[0.22em]`. Every AI-built site puts an eyebrow above EVERY section header, producing the same templated rhythm. Hard rule:
-  - **Maximum 1 eyebrow per 3 sections.** Hero counts as 1. So a page with 9 sections may use at most 3 eyebrows total.
-  - If section A has an eyebrow, the next 2 sections cannot have one.
-  - **Pre-Flight Check is mechanical:** count instances of `uppercase tracking` (or similar small-caps mono labels above headlines) across all section components. If count > ceil(sectionCount / 3), the output fails.
-  - **What to do instead of an eyebrow:** drop it entirely. The headline alone is enough. If you need to categorize a section, the section's location on the page already categorizes it; no label needed.
 * **SPLIT-HEADER BAN (mandatory).** The pattern "left big headline + right small explainer paragraph" as a section header (left col-span-7/8, right col-span-4/5 with a small body paragraph floating in the right column) is **banned as default**. Sections should have ONE focused message. If you genuinely need both a headline and an explainer paragraph, stack them vertically (headline on top, body below, max-width 65ch). Reach for the split-header pattern only when there is a real compositional reason (e.g., the right column carries a visual or interactive element, not just filler text).
 * **Bento Background Diversity (mandatory).** Bento and feature-grid sections cannot be 6 white-on-white cards with text inside. At least 2-3 cells in any multi-cell grid need real visual variation: a real image, a brand-appropriate gradient (not AI-purple), a pattern, a tinted background. A cream-on-cream bento with only typography inside reads as boring AI default, even when the rest of the page is good.
-* **Mobile collapse must be explicit per section.** For every multi-column layout, declare the `< 768px` fallback in the same component. No "it'll work, Tailwind handles it" assumptions.
 
 ### 4.8 Image & Visual Asset Strategy
 
 Landing pages and portfolios are **visual products**. Text-only pages with fake-screenshot divs are slop.
 
-**Priority order for visual assets:**
-1. **Image-generation tool first.** If ANY image-gen tool is available in the environment (`generate_image`, MCP image tool, IDE-integrated gen, OpenAI image tools, etc.) you MUST use it to create section-specific assets: hero photography, product shots, texture backgrounds, mood images. Generate at the right aspect ratio for the section. Do not skip this step because hand-rolled CSS feels faster.
-2. **Real web images second.** When no gen tool is available, use real photography sources. Acceptable defaults:
-   * `https://picsum.photos/seed/{descriptive-seed}/{w}/{h}` for placeholder photography (seed should describe the section, e.g. `marrow-cookware-kitchen`)
-   * Actual stock or brand URLs when the brief provides them
-   * Open-license sources (Unsplash via direct URL, Pexels) if explicitly allowed
-3. **Last resort: tell the user.** If neither is possible, do NOT fill the page with hand-rolled SVG illustrations or div-based "fake screenshots." Instead, leave clearly-labeled placeholder slots (`<!-- TODO: hero product photo, 1600x1200 -->`) and at the end of the response say: *"This page needs real images at: \[list of placements\]. Please generate or provide them."*
-
-**Choose imagery for the brief.** Use real assets where they support the content and approved direction. A typography-only brief does not require photography or an arbitrary minimum image count.
+**Imagery follows the owner's medium choice.** explore-design asks whether to use AI image generation, Claude-made visuals (code, SVG, CSS, canvas), or the owner's own or licensed photos ([medium and providers](../../medium-and-providers.md)). Never generate images the owner did not choose. When the chosen source cannot supply an asset:
+* Use actual stock or brand URLs the brief provides, or open-license sources only when allowed; `https://picsum.photos/seed/{descriptive-seed}/{w}/{h}` is acceptable for clearly temporary placeholder photography.
+* Otherwise leave clearly labelled placeholder slots (`<!-- TODO: hero product photo, 1600x1200 -->`) and list the needed images for the owner. Do not fill the gap with hand-rolled SVG illustration or div-built fake screenshots.
 
 **Real company logos for social proof.** When the brief calls for a "Trusted by / Used by / Customers" logo wall, do NOT default to plain text wordmarks (`<span>Acme Co</span>` styled in a row). Use real SVG logos:
 * **Source: Simple Icons** (`https://cdn.simpleicons.org/{slug}/ffffff` for any color, or `simple-icons` npm package). Covers most known brands.
 * **Alternative: devicon** for tech-stack logos (`@svgr/cli` or CDN).
-* **Make-up the brand name? Then make-up an SVG mark too.** Generate a simple monogram (one letter in a circle, two-letter ligature, abstract glyph) rendered as an inline `<svg>` matching the page style. Plain text wordmarks for invented brand names look generic.
+* **Customer names not confirmed yet?** Never invent client logos (floor: content honesty). Show a neutral placeholder mark (a monogram in a circle, matching the page style) tagged "Confirm with <owner>", and list the logos to collect.
 * Ensure logos render in every supported theme (white-on-dark, black-on-light, or a theme variable as appropriate).
 * **LOGO-ONLY rule (mandatory):** logo wall = logos and nothing else. Do NOT print industry / category labels below each logo (no `Vercel` + `hosting` underneath, no `Stripe` + `payments`, no `Cloudflare` + `infra`). The logo is the credibility, the label adds nothing the user does not already know. Optional: brand name as alt-text for screen readers, optional link to the brand's site. That is it.
 
@@ -172,11 +136,7 @@ Landing pages and portfolios are **visual products**. Text-only pages with fake-
   - It's a single, simple geometric mark (a square, a circle, a wordmark in display type)
   - You're confident in the output quality
 
-**Div-based fake screenshots are banned.** A "hand-built product preview" rendered with `<div>` rectangles, fake task lists, fake dashboards, fake terminal windows is a Tell. If you need to show a product:
-* Use a real screenshot URL if one exists
-* Generate one via image tool
-* Use a real component preview (an actual mini-version of the UI inside the page)
-* Or skip the preview entirely and use editorial photography
+Fake product UI built from styled boxes is banned in every direction: [page-craft.md → Content honesty](../../../../implement/references/ui-build/page-craft.md#content-honesty).
 
 **Hero needs a real visual.** Text + gradient blob is not a hero - it's a placeholder.
 
@@ -185,10 +145,6 @@ Landing pages and portfolios are **visual products**. Text-only pages with fake-
 Landing pages live on the **first impression**, not the full read. Cut ruthlessly.
 
 * **Default content shape per section:** short headline (≤ 8 words) + short sub-paragraph (≤ 25 words) + one visual asset OR one CTA. Anything more must be justified by the section's job.
-* **No data-dump sections.** A 20-row publication table, a 30-row award list, a giant pricing matrix on a marketing page = wrong layout. Use:
-  - Top 3-5 highlights + "View full list" link
-  - Marquee / carousel for breadth
-  - Different page entirely if the data is the product
 * **Long lists need a different UI component, not a longer list.** Default `<ul>` with bullets / `divide-y` rows is the lazy choice. If you have > 5 items, reach for one of these instead:
   - 2-column split with grouped items
   - Card grid with image + label per item
@@ -203,34 +159,19 @@ Landing pages live on the **first impression**, not the full read. Cut ruthlessl
   - **Grouped chunks:** group 10 specs into 3 logical clusters (e.g. "Materials", "Cooking", "Warranty"), each cluster gets ONE soft divider and a cluster heading.
   - **Featured-vs-rest:** 3-4 hero specs visualised as large display tiles, the rest collapsed under a "View full specifications" disclosure.
 
-* **COPY SELF-AUDIT (mandatory before ship):** Before declaring any task done, re-read every visible string on the page (headlines, subheads, eyebrows, button labels, body copy, captions, alt text, footer text, error messages). Flag any string that is:
-  - **Grammatically broken** ("free on its past", "two plans but one is honest", "to put it on the table" out of context)
-  - **Has unclear referents** ("we plan to stay that way" without prior context)
-  - **Sounds like AI hallucination** (cute-but-wrong wordplay, forced metaphors that don't track, "elegant nothing" phrases)
-  - **Reads like an LLM trying to sound thoughtful** (passive-aggressive humility, fake-craftsman labels, mock-poetic micro-meta)
-  Rewrite every flagged string. If unsure whether a string makes sense, replace it with a plain functional sentence. AI-generated cute copy is worse than boring copy.
-* **Fake-precise numbers are flagged.** Numbers like `92%`, `4.1×`, `48k`, `5.8 mm`, `13.4 lb` either:
-  - Come from real data (brief, brand guidelines, public metrics) - fine
-  - Are explicitly labeled as mock (`<!-- mock -->`, "example", "sample data") - fine
-  - Are AI-invented spec aesthetics - banned. Don't fake engineering precision the brand doesn't claim.
+* Copy self-audit, honest numbers and data-dump limits live in the floor: [page-craft.md → Content honesty](../../../../implement/references/ui-build/page-craft.md#content-honesty).
 * **One copy register per page.** Don't mix technical mono ("47 tasks · 0.6 ctx-switches/day"), editorial prose, and marketing punch in the same composition unless the brand voice explicitly calls for it.
 
 ### 4.10 Quotes & Testimonials
 
 * **Max 3 lines** of quote body. Never 6. If the original quote is longer → cut it. A landing-page quote is a snippet, not the full review.
 * For very small font sizes (e.g. footer-style testimonials), the line cap can stretch slightly. Spirit: "fits in a glance."
-* **No em-dashes inside the quote text** as design flourish (long pauses, kinetic em-dashes, em-dash-bullets). See Section 9.G - em-dash is completely banned.
-* Attribution: name + role + (optionally) company. Never name only ("- Sarah").
+* Attribution and the dash rule live in the floor: [page-craft.md → Content honesty](../../../../implement/references/ui-build/page-craft.md#content-honesty).
 * Quote marks: use real typographic quotes ( " " ) or none at all. Not straight ASCII ( " ).
 
 ### 4.11 Page Theme Lock (Light / Dark Mode Consistency)
 
-The page has ONE theme. Sections do not invert.
-
-* If the page is dark mode, ALL sections are dark mode. No light-mode-warm-paper section sandwiched between dark sections (or vice versa). The user must not feel they walked into a different website mid-scroll.
-* The exception: if the brief explicitly calls for a "Color Block Story" or "Theme Switch on Scroll" device AND that is a deliberate composition (one full theme switch with a strong transition, not random alternation), it is allowed once per page.
-* Default behaviour: pick light, dark, or auto (`prefers-color-scheme`) at the page level and lock it. Section-level background tints within the same theme family are fine (`bg-zinc-950` next to `bg-zinc-900`); flipping to `bg-amber-50` in the middle of a `bg-zinc-950` page is broken.
-* When using a design system with built-in theming (Radix Themes, shadcn/ui with `<Theme>`), set the theme ONCE in `layout.tsx` or the page root. Do not let individual sections override.
+Moved to the floor: [page-craft.md → Theme and dark mode](../../../../implement/references/ui-build/page-craft.md#theme-and-dark-mode).
 
 ---
 
@@ -393,9 +334,7 @@ Use this for: feature lists, testimonial grids, logo walls, anything that just n
 
 ### 5.D Forbidden Animation Patterns
 
-* **`window.addEventListener("scroll", ...)`** is banned. It runs on every scroll frame, jank-prone, no batching. Use Motion's `useScroll()`, GSAP's `ScrollTrigger`, IntersectionObserver, or CSS `scroll-driven animations` (`animation-timeline: view()`).
-* **Custom scroll progress calculations using `window.scrollY`** in React state. Same reason. Re-renders on every frame.
-* **`requestAnimationFrame` loops that touch React state.** Use motion values (`useMotionValue` + `useTransform`) instead.
+* Scroll-listener and per-frame state bans live in the floor: [page-craft.md → Motion safety](../../../../implement/references/ui-build/page-craft.md#motion-safety).
 * **Layout Transitions:** Use Motion's `layout` and `layoutId` props for visible state changes (re-ordering lists, expanding modals, shared elements between routes). Do not wrap static content in `layout` props "for safety" - it costs measurement work.
 * **Staggered Orchestration:** Use `staggerChildren` (Motion) or CSS cascade (`animation-delay: calc(var(--index) * 100ms)`) for reveal moments where sequence matters. For `staggerChildren`, parent (`variants`) and children MUST share the same Client Component tree.
 
@@ -403,56 +342,6 @@ Use this for: feature lists, testimonial grids, logo walls, anything that just n
 
 ## 6. PERFORMANCE & ACCESSIBILITY GUARDRAILS
 
-### 6.A Hardware Acceleration
-* Animate ONLY `transform` and `opacity`. Never animate `top`, `left`, `width`, `height`.
-* Use `will-change: transform` sparingly - only on elements that will actually animate.
-
-### 6.B Reduced Motion (mandatory)
-* **Any motion above `MOTION_INTENSITY > 3` MUST honor `prefers-reduced-motion`.** This is non-negotiable.
-* In Motion: wrap with `useReducedMotion()` and degrade to static.
-* In CSS: gate animations behind `@media (prefers-reduced-motion: no-preference)` or provide an override block under `@media (prefers-reduced-motion: reduce)` that disables.
-* Infinite loops, parallax, scroll-hijack, and magnetic physics MUST collapse to static / instant under reduced motion.
-
-### 6.C Dark Mode (when included in the agreed design)
-* Preserve the approved supported themes. Design both modes only when both are in scope.
-* Use Tailwind `dark:` variant OR CSS variables for tokens. Pick one strategy per project.
-* **Do not prescribe specific dark-mode colors here.** The brief decides. Maintain visual hierarchy, brand identity, and WCAG AA contrast (AAA for body) across both modes.
-* Respect `prefers-color-scheme: dark`. Default to system preference unless the brand insists on one mode.
-
-### 6.D Core Web Vitals Targets
-* **LCP** < 2.5s. Hero image must be `next/image priority` or preloaded.
-* **INP** < 200ms. Heavy work off main thread.
-* **CLS** < 0.1. Reserve space for images, fonts, embeds.
-* Use Lighthouse for performance-sensitive page changes; do not require it for unrelated copy edits.
-
-### 6.E DOM Cost
-* Apply grain / noise filters EXCLUSIVELY to fixed, `pointer-events-none` pseudo-elements (e.g., `fixed inset-0 z-[60] pointer-events-none`). NEVER on scrolling containers - continuous GPU repaints destroy mobile FPS.
-* Be aware of bundle size. Motion is not tiny. Three.js is large. Lazy-load anything that's not above-the-fold.
-
-### 6.F Z-Index Restraint
-NEVER spam arbitrary `z-50` or `z-10`. Use z-index strictly for systemic layer contexts (sticky navbars, modals, overlays, grain). Document the z-index scale in a project constants file.
-
----
-
-## 8. DARK MODE PROTOCOL
-
-Apply this protocol only when theme work is in scope. Preserve existing supported modes; do not add a second theme to complete an unrelated task.
-
-### 8.A Token Strategy (pick one, stick to it)
-* **Tailwind `dark:` variant** (default for utility-first projects): every color utility paired with its dark variant (`bg-white dark:bg-zinc-950`, `text-gray-900 dark:text-gray-100`).
-* **CSS variables** (for shadcn/ui, Radix Themes, or component libraries with theming): define semantic tokens (`--surface`, `--surface-elevated`, `--text-primary`, `--accent`) and swap values under `[data-theme="dark"]` or `@media (prefers-color-scheme: dark)`.
-
-### 8.B Do Not Prescribe Specific Colors Here
-The brief and brand decide. This skill enforces only:
-* **Contrast** - WCAG AA minimum for body text, AAA target for hero copy.
-* **Hierarchy parity** - visual hierarchy that works in light must work in dark. If a CTA pops in light, it pops in dark.
-* **Brand fidelity** - primary brand color stays recognisable. Don't desaturate the brand into a dark mode.
-* **No pure `#000000` and no pure `#ffffff`** - use off-black (zinc-950, near-black warm gray) and off-white. Pure values kill depth.
-
-### 8.C Default Mode
-Respect `prefers-color-scheme` unless the brand insists. Add a manual toggle if either mode would lose key brand expression.
-
-### 8.D Test Each Supported Mode Before Finishing
-Inspect every supported mode affected by the change; do not add an unsupported mode solely for this check.
+Moved to the floor: [ui-build.md Pillar 3](../../../../implement/references/ui-build.md), [performance.md](../../../../implement/references/ui-build/performance.md) and [page-craft.md → Motion safety, Visual craft (layers), Theme and dark mode](../../../../implement/references/ui-build/page-craft.md#motion-safety). Taste adds no extra guardrails here.
 
 ---

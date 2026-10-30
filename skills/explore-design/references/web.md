@@ -3,7 +3,10 @@
 Aesthetic guidance for website mocks in any medium (coded, image model) and for
 [mock to code](../../implement/references/mock-to-code.md).
 The brief and the project's brand always override these defaults. Scope, count and
-approval belong to [medium and providers](medium-and-providers.md).
+approval belong to [medium and providers](medium-and-providers.md). These are direction
+defaults; the quality floor every direction keeps lives in implement's
+[ui-build](../../implement/references/ui-build.md) and
+[page craft](../../implement/references/ui-build/page-craft.md).
 
 ## 1. Read the brief into a direction
 
@@ -88,8 +91,10 @@ awkward wraps, lazy all-caps, too many font moods.
 - **Micro-clutter:** filler pills, chips, badges, pseudo-system labels ("00 orchestration
   layer"), meaningless metadata rows.
 - **Visual:** glow edges, blobs, stacked glassmorphism, noise that hides layout.
-- **Copy:** unleash, elevate, revolutionize, seamless, next-gen, transformative; fake brands
-  (Acme, Nexus, NovaCore). Write short, believable copy, or use the client's own.
+- **Copy:** unleash, elevate, revolutionize, seamless, next-gen, transformative, supercharge,
+  cutting edge, effortless, world class, "transform your workflow", "take it to the next
+  level", "harness the power"; fake brands (Acme, Nexus, NovaCore). This is the single
+  banned-word list. Write short, plain copy, or use the client's own.
 - **Data:** identical KPI triplets, fake charts, unreadable logo marquees, unless asked.
 
 ## 9. Image-model frames (web images mode)

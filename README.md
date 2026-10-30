@@ -160,6 +160,8 @@ Secrets, runtime state (`~/.agents/state/`), the optional Netlify site map (`~/.
 
 - The `lavish` skill is adapted from Kun Chen's [lavish-axi](https://github.com/kunchenguid/lavish-axi) skill (MIT; notice in `skills/lavish/NOTICE`). Lavish Editor itself is Kun Chen's npm package `lavish-axi`, run with `npx` and not redistributed here.
 - The Lavish workflow here (the `lavish` skill plus explore-design's `lavish-review.md` and `decision-page.md`) also adapts four rules from Thariq Shihipar's [html-plan](https://github.com/anthropics/claude-plugins-community/tree/main/html-plan) skill (Claude Code team, Anthropic; [announcement](https://x.com/trq212/status/2107192901537329354)).
+- explore-design's taste, minimalist-editorial and industrial-brutalist directions are adapted from Leon Lin's [taste-skill](https://github.com/Leonxlnx/taste-skill) (MIT; notice in `skills/explore-design/NOTICE`).
+- implement's page-craft floor (`skills/implement/references/ui-build/page-craft.md`) adapts rules from taste-skill, from Elaya's [landing-page-design](https://github.com/elayadesign/ai-design-skills) (MIT) and from Paul Bakaus's [impeccable](https://github.com/pbakaus/impeccable) (Apache 2.0); notices in `skills/implement/NOTICE` and `skills/implement/LICENSE-APACHE-2.0.txt`.
 
 ## License
 

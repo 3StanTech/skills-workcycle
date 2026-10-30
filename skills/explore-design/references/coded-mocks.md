@@ -26,6 +26,9 @@ Add a preview server entry (e.g. `.claude/launch.json`, port not in use) for the
 
 ## Build rules
 
+- **Build on the floor.** Every mock follows [ui-build](../../implement/references/ui-build.md)
+  Pillars 1–4 and [page craft](../../implement/references/ui-build/page-craft.md). A
+  direction changes the look, never the floor.
 - **Same content, different language.** All directions use `content.md` word for word,
   so the user compares visual language, not copy. Directions may differ in headline
   only when the explore doc says so.
@@ -52,7 +55,9 @@ Directions may use different pairings; the user maps them at the gate.
 ## Review
 
 1. Render each mock at 390px and 1440px; check horizontal overflow, page height (in
-   phone screens), and that the primary action stays reachable.
+   phone screens), and that the primary action stays reachable. Run the
+   [page craft](../../implement/references/ui-build/page-craft.md) checks, launch
+   checklist included.
 2. Show screenshots in chat (phone + desktop per direction).
 3. Open Lavish per [Lavish review](lavish-review.md) on the mock files for element-level annotation; for the pick, a
    review page using the Lavish `input` playbook (radio per question) returns an exact

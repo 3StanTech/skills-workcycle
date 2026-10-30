@@ -44,6 +44,9 @@ all on the main thread that also handles the user's taps.
   (`structuredClone`), debounce (5 lines), class toggling, simple fetches —
   the platform already does these. A utility library for one function is a
   bad trade.
+- **Check before importing.** Confirm a package is in `package.json` (or
+  otherwise installed) before writing an import; if it is missing, say so and
+  give the install command instead of assuming it exists.
 - **Import narrowly** when a dependency earns its place — named imports /
   submodule paths so tree-shaking can drop the rest.
 - **Code-split on route/view boundaries** in app-scale builds (dynamic
