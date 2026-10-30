@@ -37,6 +37,8 @@ The deep version of Pillar 2. Skim what's relevant; skip what isn't.
 
 ## Forms
 
+- **Field layout:** label above the field, optional helper text below the label or
+  field, error text directly below the field. Keep the order the same for every field.
 - **Every input has a `<label>`** (or `aria-label` when a visual label is
   truly impossible). Placeholder-as-label disappears on first keystroke and
   fails contrast; it is not a label.

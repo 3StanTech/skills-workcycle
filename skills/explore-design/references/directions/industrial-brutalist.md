@@ -74,16 +74,22 @@ Standard web UI conventions are replaced with utilitarian, industrial graphic el
     *   *Framing:* `[ DELIVERY SYSTEMS ]`, `< RE-IND >`
     *   *Directional:* `>>>`, `///`, `\\\\`
 *   **Industrial Markers:** Prominent integration of registration (`®`), copyright (`©`), and trademark (`™`) symbols functioning as structural geometric elements rather than legal text.
-*   **Technical Assets:** Integration of crosshairs (`+`) at grid intersections, repeating vertical lines (barcodes), thick horizontal warning stripes, and randomized string data (e.g., `REV 2.6`, `UNIT / D-01`) to simulate active mechanical processes.
+*   **Technical Assets:** Integration of crosshairs (`+`) at grid intersections, repeating vertical lines (barcodes), thick horizontal warning stripes, and technical string data (e.g., `REV 2.6`, `UNIT / D-01`) that labels real content or is visibly marked as sample data (floor: content honesty).
 
 ## 7. Textural and Post-Processing Effects
 To prevent the design from appearing purely digital, simulated analog degradation is engineered into the frontend via CSS and SVG filters.
 
 *   **Halftone and 1-Bit Dithering:** Transforming continuous-tone images or large serif typography into dot-matrix patterns. Achieved via pre-processing or CSS `mix-blend-mode: multiply` overlays combined with SVG radial dot patterns.
 *   **CRT Scanlines:** For terminal interfaces, applying a `repeating-linear-gradient` to the background to simulate horizontal electron beam sweeps (e.g., `repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.1) 2px, rgba(0,0,0,0.1) 4px)`).
-*   **Mechanical Noise:** A global, low-opacity SVG static/noise filter applied to the DOM root to introduce a unified physical grain across both dark and light modes.
+*   **Mechanical Noise:** A low-opacity SVG static/noise filter on one fixed, `pointer-events: none` overlay layer above the page (never on the DOM root or a scrolling container; see the floor's [motion safety](../../../implement/references/ui-build/page-craft.md#motion-safety)) for a unified physical grain in dark and light modes.
 
 ## 8. Web Engineering Directives
 1.  **Grid Determinism:** Utilize `display: grid; gap: 1px;` with contrasting parent/child background colors to generate mathematically perfect, razor-thin dividing lines without complex border declarations.
 2.  **Semantic Rigidity:** Construct the DOM using precise semantic tags (`<data>`, `<samp>`, `<kbd>`, `<output>`, `<dl>`) to accurately reflect the technical nature of the telemetry.
 3.  **Typography Clamping:** Implement CSS `clamp()` functions exclusively for macro-typography to ensure massive text scales aggressively while maintaining structural integrity across viewports.
+
+## Overrides of web.md
+
+- §6 "neon glows" and §8 "glow edges": a subtle phosphor glow (low-blur `text-shadow` in the foreground hue) on terminal-style text only, never on containers, with text contrast intact.
+- §8 "pseudo-system labels" and "meaningless metadata rows": technical micro-labels and telemetry readouts are the look, but they must label real content (sections, data, units), never decoration; the floor's [content honesty](../../../implement/references/ui-build/page-craft.md#content-honesty) still applies.
+- §8 "noise that hides layout": halftone, dithering, CRT scanlines and grain are allowed as texture, kept at low opacity so layout and text contrast stay intact.

@@ -2,8 +2,8 @@ explore-design direction library: the taste, minimalist-editorial and
 industrial-brutalist directions are adapted from taste-skill by Leon Lin.
 
 Upstream-Repo: https://github.com/Leonxlnx/taste-skill
-Upstream-Paths: skills/taste-skill (taste, commits 3c7017d to 9b7d575);
-  minimalist-ui (added bd7e147); brutalist-skill (added c826a41)
+Upstream-Paths: skills/taste-skill/SKILL.md (taste, commits 3c7017d to 9b7d575);
+  minimalist-skill/SKILL.md (added bd7e147); brutalist-skill/SKILL.md (added c826a41)
 
 Local changes: split into explore-design direction references; scope and
 approval moved to explore-design's medium-and-providers reference; universal

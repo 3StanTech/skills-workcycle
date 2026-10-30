@@ -92,7 +92,7 @@ awkward wraps, lazy all-caps, too many font moods.
   layer"), meaningless metadata rows.
 - **Visual:** glow edges, blobs, stacked glassmorphism, noise that hides layout.
 - **Copy:** unleash, elevate, revolutionize, seamless, next-gen, transformative, supercharge,
-  cutting edge, effortless, world class, "transform your workflow", "take it to the next
+  cutting edge, effortless, world class, game-changer, delve, "transform your workflow", "take it to the next
   level", "harness the power"; fake brands (Acme, Nexus, NovaCore). This is the single
   banned-word list. Write short, plain copy, or use the client's own.
 - **Data:** identical KPI triplets, fake charts, unreadable logo marquees, unless asked.

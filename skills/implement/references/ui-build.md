@@ -131,7 +131,7 @@ For a final look-and-feel pass on a UI that already works. Make it look intentio
 
 - No new runtime dependencies, UI/animation libraries, icon packs, or CSS frameworks for a visual fix.
 - No new blocking resources: no extra CDN font families, large images, or external stylesheets. A new font needs `font-display: swap`, subsetting, and the owner's sign-off.
-- CSS over JS; no scroll/resize listeners or layout-reading JS for cosmetic effects. Animate only `transform` and `opacity`; respect `prefers-reduced-motion`.
+- CSS over JS; no scroll/resize listeners or layout-reading JS for cosmetic effects. Animate only `transform` and `opacity` in a polish pass (stricter than the build floor in `ui-build/page-craft.md`, on purpose: a polish pass adds no new effect types); respect `prefers-reduced-motion`.
 - Keep fluid units and existing breakpoints. Re-check every change at ~360px, ~768px, and ~1280px: no horizontal scroll, touch targets ≥44×44px.
 - No layout thrash: images keep dimensions or aspect-ratio; placeholders keep the loaded footprint.
 - Don't break behavior: never rename classes/IDs that JS or tests hook into, change DOM that handlers depend on, or alter form semantics. Flag any markup restructure and its risk first.

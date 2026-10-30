@@ -15,8 +15,8 @@ The AI must strictly avoid the following generic web development defaults:
 - DO NOT use gradients, neon colors, or 3D glassmorphism (beyond subtle navbar blurs).
 - DO NOT use `rounded-full` (pill shapes) for large containers, cards, or primary buttons.
 - DO NOT use emojis anywhere in code, markup, text content, headings, or alt text. Replace with proper icons or clean SVG primitives.
-- DO NOT use generic placeholder names like "John Doe", "Acme Corp", or "Lorem Ipsum". Use realistic, contextual content.
-- DO NOT use AI copywriting clichés: "Elevate", "Seamless", "Unleash", "Next-Gen", "Game-changer", "Delve". Write plain, specific language.
+- Content: never invent names, brands or figures; follow the floor's [content honesty](../../../implement/references/ui-build/page-craft.md#content-honesty) rules (tagged placeholders).
+- Copy: banned filler words live in one list, [web.md §8](../web.md); write plain, specific language.
 
 ## 3. Typographic Architecture
 The interface must rely on extreme typographic contrast and premium font selection to establish an editorial feel.
@@ -66,7 +66,7 @@ Color is a scarce resource, utilized only for semantic meaning or subtle accents
 ## 7. Subtle Motion & Micro-Animations
 Motion should feel invisible — present but never distracting. The goal is quiet sophistication, not spectacle.
 - Scroll Entry: Elements fade in gently as they enter the viewport. Use `translateY(12px)` + `opacity: 0` resolving over `600ms` with `cubic-bezier(0.16, 1, 0.3, 1)`.
-- Hover States: Cards lift with an ultra-subtle shadow shift (`box-shadow` transitioning from `0 0 0` to `0 2px 8px rgba(0,0,0,0.04)` over `200ms`). Buttons respond with `scale(0.98)` on `:active`.
+- Hover States: Cards respond with a subtle border-color shift (`#EAEAEA` to `#D6D6D3` over `200ms`), keeping the border as their only elevation (floor: one elevation treatment). Buttons respond with `scale(0.98)` on `:active`.
 - Staggered Reveals: Lists and grid items enter with a cascade delay (`animation-delay: calc(var(--index) * 80ms)`). Never mount everything at once.
 - Background Ambient Motion: Optional. A single, very slow-moving radial gradient blob (`animation-duration: 20s+`, `opacity: 0.02-0.04`) drifting behind hero sections.
 - Performance and scroll safety follow the floor: [page-craft.md → Motion safety](../../../implement/references/ui-build/page-craft.md#motion-safety).
@@ -80,3 +80,7 @@ When tasked with writing frontend code (HTML, React, Tailwind, Vue) or designing
 5. Add scroll-entry animations to all major content blocks.
 6. Ensure sections have visual depth through imagery, ambient gradients, or subtle textures — no empty flat backgrounds.
 7. Provide code that reflects this high-end, uncluttered, editorial aesthetic natively without requiring manual adjustments.
+
+## Overrides of web.md
+
+- §8 "blobs": allows one very slow, near-invisible ambient radial gradient (opacity 0.02–0.04) behind the hero, on a fixed `pointer-events: none` layer.

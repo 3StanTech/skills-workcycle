@@ -20,7 +20,7 @@ to an approved React/Next.js stack; they do not authorize migration or installat
 ### 3.B State
 * Local `useState` / `useReducer` for isolated UI.
 * Global state ONLY for deep prop-drilling avoidance - Zustand, Jotai, or React context.
-* **NEVER** use `useState` to track continuous values driven by user input (mouse position, scroll progress, pointer physics, magnetic hover). Use Motion's `useMotionValue` / `useTransform` / `useScroll`. `useState` re-renders the React tree on every change and collapses on mobile.
+* Continuous values (pointer, scroll progress, physics) never live in component state: floor rule, [page-craft.md → Motion safety](../../../../implement/references/ui-build/page-craft.md#motion-safety). In Motion, use `useMotionValue` / `useTransform` / `useScroll`.
 
 ### 3.C Icons
 * **Allowed libraries (priority order):** `@phosphor-icons/react`, `hugeicons-react`, `@radix-ui/react-icons`, `@tabler/icons-react`.

@@ -83,8 +83,10 @@ all on the main thread that also handles the user's taps.
 
 ## Runtime & rendering performance
 
-- **Animate only `transform` and `opacity`** — they skip layout and paint.
-  Animating `width`/`height`/`top`/`margin` forces layout every frame.
+- **Animate `transform` and `opacity` by default** — they skip layout and paint.
+  `filter`, `clip-path`, `mask` and `backdrop-filter` are acceptable when they
+  stay smooth on a mid-range phone (see `page-craft.md` → Motion safety).
+  Never animate `width`/`height`/`top`/`margin`: they force layout every frame.
 - **Batch DOM reads and writes.** Interleaving (read, write, read, write)
   forces synchronous reflows ("layout thrashing"). Read everything, then
   write everything, or use `requestAnimationFrame`.

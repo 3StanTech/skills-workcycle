@@ -22,6 +22,10 @@ brand can waive one, and only explicitly.
   copy stays near 20 words, and the hero holds at most four text elements (one small label
   or brand strip, headline, support, actions). Trust strips, pricing teasers and feature
   bullets go in the section below.
+- **Full-height sections use `min-height: 100dvh`**, never `100vh`, so mobile browser bars
+  don't make them jump.
+- **Every multi-column section declares its phone layout** in the same component or
+  stylesheet block; never rely on a framework to guess how it stacks.
 - **Hero spacing is deliberate.** Top padding stays modest (about 6rem at desktop at most);
   more room comes from type or visual scale, not empty space above the content.
 - **Navigation fits one line at desktop** and stays about 64–80px tall. When items don't
@@ -46,7 +50,9 @@ brand can waive one, and only explicitly.
   rule, such as pill buttons with 16px cards) and follow it everywhere.
 - **Nested radius.** When a rounded shape sits inside another with less than 32px between
   them, inner radius = outer radius − gap. Apply it only when the result is over 2px.
-- **Elevation is declared once.** A surface uses a border or a shadow, not both. Shadows
+- **Elevation is declared once.** A surface is lifted by a border or a drop shadow, not
+  both, and its hover state keeps the same treatment. An inset highlight on a glass effect
+  is not elevation. Shadows
   are tinted toward the background hue; no pure-black drop shadows on light surfaces.
 - **Contrast is checked, not assumed.** Body text ≥ 4.5:1, large text ≥ 3:1, including
   button labels on their fill, ghost buttons over photos (add a scrim or stroke), and form
@@ -68,8 +74,9 @@ brand can waive one, and only explicitly.
   `backdrop-filter` are fine when they stay smooth on a mid-range phone. Never animate
   layout properties (`top`, `left`, `width`, `height`). Use `will-change` only on elements
   that actually animate.
-- **No per-frame scroll work.** No unthrottled `scroll` listeners and no scroll position
-  kept in component state. Use `IntersectionObserver`, CSS scroll-driven animation, or a
+- **No per-frame scroll work.** No unthrottled `scroll` listeners, no scroll position, pointer
+  position or animation progress kept in component state, and no animation loop that updates
+  that state every frame; use motion values, CSS, or a library's animation primitives. Use `IntersectionObserver`, CSS scroll-driven animation, or a
   motion library's scroll primitives.
 - **Reduced motion is honoured.** Under `prefers-reduced-motion: reduce`, loops, parallax,
   scroll-linked effects and physics collapse to static or a plain fade.
@@ -96,7 +103,14 @@ brand can waive one, and only explicitly.
 - **Common generated-page tells** stay out unless the brief asks for them: version labels
   in the hero (V0.6, BETA), numbered section labels (001 · Capabilities), scroll cues,
   decorative status dots, pills or credits laid over photos, version strings in marketing
-  footers, decorative locale/time/weather strips.
+  footers, decorative locale/time/weather strips, generic step labels ("Step 1", "Stage 2";
+  the step's own verb is the label), decorative word strips along the hero's bottom edge,
+  explanatory micro-sentences under section headings, rotated decorative text, comparison
+  bars drawn on filled background tracks, "01 / 4" pagination on images or tiles, chains of
+  middle dots as separators (one per line at most), headlines split with `<br>` and italics
+  as a default move, crosshair or hairline grid lines that organize no content, poetic
+  section labels ("Field notes", "On the bench"; use plain labels), and mock-humble
+  industry references in body copy.
 
 ## Theme and dark mode
 
