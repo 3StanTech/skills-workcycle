@@ -208,6 +208,8 @@ If the working directory is a git repository, write outputs to the project folde
 the plan status update, and again at each stop that leaves the phase unfinished (owner go
 pending, quota exhausted, session ending). It records the phase status, commits,
 evidence, carried follow-ups, next-phase readiness, Resume here and a session-log line.
+At a phase close the Update follows the gate's "When create-plan is next" section, so the
+next phase's paste line starts cleanly in a new session.
 Keep wave-by-wave run state in `roadmap-<slug>/runs/`, not in the roadmap.
 
 **Cold-start gate:** rerun the gate (`~/.agents/skills/handoff/references/cold-start-gate.md`) on the plan at each wave

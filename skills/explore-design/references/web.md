@@ -61,6 +61,7 @@ Choose one of each and execute it consistently; do not mash options together.
 
 ## 5. Imagery
 
+- Imagery follows the owner's imagery answer ([medium and providers](medium-and-providers.md#imagery-question)).
 - Images are design material: hero media, framed panels, editorial crops, full-bleed
   backgrounds with overlays where the brief allows.
 - Use fixed, repeatable aspect ratios and one image treatment (grade, framing) across

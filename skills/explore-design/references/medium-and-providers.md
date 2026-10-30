@@ -31,6 +31,19 @@ aesthetic and implementation detail.
    delivered artifacts require rendered inspection. Do not add unrelated tests, new
    themes, or redesign passes to a small edit. Report missing evidence or deviations.
 
+## Imagery question
+
+The single owner of the imagery choice. explore-design asks it at Stage 2 and landing-page asks it before a standalone build; both cite this section.
+
+Ask once, as a decision-point question: where do the pictures come from?
+
+- **AI image generation** (an image worker; costs a delegated run per batch)
+- **Claude-made visuals:** code, SVG, CSS or canvas (illustration, patterns, diagrams, product framing)
+- **The owner's or licensed photos** (supplied files or open-license sources)
+- **A mix**, chosen per asset
+
+The three sources are equal choices. Recommend one only from the brief (for example the owner's photos when they exist, or AI when photoreal scenes are needed and none exist); otherwise mark none as recommended. Ask the image-worker model and effort only when AI is in the answer. Record the answer in the mocks README gate log (or the page plan's Start here), and generate nothing the answer does not cover. A source that cannot supply an asset gets a labelled placeholder slot and a line in `owner-questions.md`, never a substitute from another source.
+
 ## Medium: code or image model
 
 | Asset | Medium | Why |
@@ -39,7 +52,7 @@ aesthetic and implementation detail.
 | Logos, icons, line art, patterns, badges, simple illustration | **SVG** (Claude-drawn) | Exact, scalable, editable. Complex illustrative marks may start from an image model, then get redrawn as SVG |
 | Generative textures, backgrounds, motion studies | **Canvas / p5.js / CSS** | Code-native; see `algorithmic-art` |
 | Photography (food, places, products, scenes), painterly illustration | **Image model** | Code cannot produce photoreal or painterly raster |
-| Loose moodboards when the direction is wide open (new brand, no references) | **Image model**, few frames | Fastest way to explore feel; recode after approval |
+| Loose moodboards when the direction is wide open (new brand, no references) and AI imagery was chosen | **Image model**, few frames (G2, optional) | Fastest way to explore feel; recode after approval. Otherwise the coded sample mocks compare the directions |
 
 Image models garble text and cannot reproduce a real logo: keep readable text, prices,
 and logos out of generated images and layer them in code.

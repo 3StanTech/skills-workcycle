@@ -19,7 +19,10 @@ One mocks folder per round, outside every git tree:
   assets/{brand,img,masters}/
   shared/                tokens.css, components.css, sprites/SVG shared by all directions
   type-test.html         specimen page for the type gate
-  mock-a.html mock-b.html mock-c.html
+  mock-a.html mock-b.html mock-c.html   one sample per direction
+  mock-b2.html …         extra samples of a direction, on request
+  compare.html           every sample side by side
+  approved/              the exported winner
 ```
 
 Add a preview server entry (e.g. `.claude/launch.json`, port not in use) for the folder.
@@ -44,6 +47,18 @@ Add a preview server entry (e.g. `.claude/launch.json`, port not in use) for the
 - **Respect project hard rules** (e.g. text on panels, demo banner, noindex) in mocks
   too; a redesign may reinterpret how a rule looks, not drop it.
 
+## Sample round
+
+- **One coded sample per chosen direction** (`mock-a/b/c.html`), all built from `content.md`
+  word for word, on the shared base and the floor.
+- **More on request:** extra samples of a direction are numbered (`mock-b2.html`,
+  `mock-b3.html`) and differ in layout or treatment, not copy.
+- **Count and cost first:** state the number of pages before building. Past **6 mocks per
+  round**, re-confirm the count and cost with the owner.
+- **Compare:** `compare.html` shows every sample at phone and desktop width side by side
+  (Lavish `comparison` playbook), or a screenshot contact sheet in chat. The owner picks a
+  winner or a named mix; only the winner goes to G4.
+
 ## Type gate
 
 Build `type-test.html` with each candidate on the real brand colours, set in a hero
@@ -58,11 +73,12 @@ Directions may use different pairings; the user maps them at the gate.
    phone screens), and that the primary action stays reachable. Run the
    [page craft](../../implement/references/ui-build/page-craft.md) checks, launch
    checklist included.
-2. Show screenshots in chat (phone + desktop per direction).
-3. Open Lavish per [Lavish review](lavish-review.md) on the mock files for element-level annotation; for the pick, a
-   review page using the Lavish `input` playbook (radio per question) returns an exact
-   choice.
-4. Apply annotations as targeted edits to the named element; re-screenshot only what
+2. Show screenshots in chat (phone + desktop per sample).
+3. Compare the samples (`compare.html`, above) and record the owner's pick.
+4. Open Lavish per [Lavish review](lavish-review.md) on the winner for element-level
+   annotation; for a choice, a review page using the Lavish `input` playbook (radio per
+   question) returns an exact answer.
+5. Apply annotations as targeted edits to the named element; re-screenshot only what
    changed.
-5. Record the pick in README. The approved mock is the spec for `/implement`
+6. Record the pick in README. The approved mock is the spec for `/implement`
    ([mock to code](../../implement/references/mock-to-code.md)).

@@ -46,7 +46,7 @@ Before writing the plan, investigate:
 
 Ask **at least one round** of clarifying questions before writing the plan, even for a small or apparently obvious change. Use the host's question mechanism (decision-point questions where options exist; free text when open-ended). Ask what changes the plan: scope boundaries, acceptance criteria, trade-offs you would otherwise pick silently, constraints research could not settle, and — when a roster was named — any missing model/effort/speed or which tasks go to which named model.
 
-**Verification scenarios:** propose 2–5 user-level scenarios (what runs, the medium-to-hard case, the artifact it leaves) and have the owner approve them in this round (`~/AGENTS.md` → Testing). They become the plan's Verification scenarios section.
+**Verification scenarios:** propose 2–5 user-level scenarios (what runs, the medium-to-hard case, the artifact it leaves) and have the owner approve them in this round (`~/AGENTS.md` → Testing). They become the plan's Verification scenarios section. When the explore doc's Done looks like has an Outside check, propose at least one scenario that runs it, with its Pass and Fail as the acceptance.
 
 Skip this step only when the request explicitly opts out ("no questions", "just plan it"). If more questions surface while writing, ask another round rather than inventing answers.
 

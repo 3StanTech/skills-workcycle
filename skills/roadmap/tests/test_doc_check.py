@@ -298,6 +298,64 @@ class DocCheck(unittest.TestCase):
         self.assertEqual(code, 1)
         self.assertTrue(out["errors"][0].startswith("secret:"))
 
+    # handoff: a create-plan hand-off carries the current HEAD -------------
+
+    def git_repo(self):
+        repo = os.path.join(self.dir, "repo")
+        os.makedirs(repo)
+        git = ["git", "-C", repo, "-c", "user.name=t", "-c", "user.email=t@t"]
+        subprocess.run(git + ["init", "-q"], check=True)
+        subprocess.run(git + ["commit", "-q", "--allow-empty", "-m", "x"], check=True)
+        head = subprocess.run(
+            ["git", "-C", repo, "rev-parse", "--short", "HEAD"],
+            capture_output=True, text=True, check=True,
+        ).stdout.strip()
+        return repo, head
+
+    def explore_verified(self, verified, next_cmd="/create-plan plans/explore-x.md Phase 2 only"):
+        return EXPLORE.format(start=start(next_cmd)).replace(
+            "- **Verified 2026-10-28 15:40:** not a git repo",
+            f"- **Verified 2026-10-28 15:40:** repo `main`, HEAD {verified}",
+        )
+
+    def test_create_plan_next_with_current_head_passes(self):
+        repo, head = self.git_repo()
+        doc = self.explore_verified(f"`{head}`")
+        _, out = self.run_check(self.write(doc, "explore-x.md"), "--repo", repo)
+        self.assertEqual(self.warns(out, "handoff:"), [])
+
+    def test_create_plan_next_with_stale_head_warns(self):
+        repo, head = self.git_repo()
+        doc = self.explore_verified("abc1234")
+        _, out = self.run_check(self.write(doc, "explore-x.md"), "--repo", repo)
+        self.assertEqual(
+            self.warns(out, "handoff:"),
+            [f"handoff: next stage is create-plan but repo HEAD {head} is not on the Verified line"],
+        )
+
+    def test_roadmap_resume_create_plan_without_head_warns(self):
+        repo, head = self.git_repo()
+        doc = ROADMAP.replace(
+            "run `/implement plans/p.md`", "paste `/create-plan plans/explore-x.md Phase 2 only`"
+        )
+        _, out = self.run_check(self.write(doc, "ROADMAP.md"), "--repo", repo)
+        self.assertEqual(len(self.warns(out, "handoff:")), 1)
+        _, out = self.run_check(
+            self.write(doc.replace("## Environments\n", f"## Environments\n\n- HEAD `{head}`\n"), "ROADMAP.md"),
+            "--repo", repo,
+        )
+        self.assertEqual(self.warns(out, "handoff:"), [])
+
+    def test_implement_next_with_stale_head_is_only_info(self):
+        repo, _ = self.git_repo()
+        doc = PLAN.format(start=start()).replace(
+            "- **Verified 2026-10-28 15:40:** not a git repo",
+            "- **Verified 2026-10-28 15:40:** HEAD `abc1234`",
+        )
+        _, out = self.run_check(self.write(doc), "--repo", repo)
+        self.assertEqual(self.warns(out, "handoff:"), [])
+        self.assertTrue(any("is not mentioned in the doc" in i for i in out["info"]))
+
     def test_missing_file_exits_2(self):
         code, _ = self.run_check(os.path.join(self.dir, "nope.md"))
         self.assertEqual(code, 2)

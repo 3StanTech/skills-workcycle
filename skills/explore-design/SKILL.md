@@ -2,7 +2,8 @@
 name: explore-design
 description: >-
   Explore a UI, brand or image idea and turn it into an approved mock:
-  discovery, 2–3 directions, image moods, a coded mock refined in Lavish, then a
+  discovery, 2–3 directions, an imagery choice, a page plan, coded sample mocks
+  per direction compared side by side, the winner refined in Lavish, then a
   cold-start explore doc for create-plan. Trigger: /explore-design,
   $explore-design, "design exploration", "mock this up", "mock round", "design
   concepts", "website/landing page mocks", "app screen concepts", "brand board",
@@ -46,36 +47,45 @@ The same four aims as [explore](../explore/SKILL.md) (the goal, the problem, the
 
 ## 2. Directions and medium
 
-**Goal:** 2–3 named directions, the medium for each asset, and the cost, agreed before anything is generated.
+**Goal:** 2–3 named directions, the imagery source, the medium for each asset, and the cost, agreed before anything is built or generated.
 
 1. Propose 2–3 directions with a one-line idea each. One is always **"re-align and fix"** (the current brand, corrected). Seed the others from the [direction library](references/directions/README.md) when a feel matches; it is a starting point, never a requirement to enlarge the brief.
-2. Choose the **medium per asset** with [medium and providers](references/medium-and-providers.md): image-model moods to pick a direction, coded HTML for the chosen page, SVG for marks and icons, an image model for photography.
-3. State the cost: number of images, likely sessions. Ask the **image-worker model and effort** now (two questions, no "(Recommended)" label on a tier).
-4. Create the mocks folder (layout in [coded mocks](references/coded-mocks.md)) with `README.md` (a Start here block plus the gate log), `content.md`, `owner-questions.md`, `generation-prompts.md`, `ASSET-LICENSES.md`.
+2. **Expert lens:** answer [be-ambitious](../be-ambitious/SKILL.md) questions 1–3 for the design field at hand (e.g. conversion design, editorial identity) and let them sharpen the directions, not enlarge them.
+3. Ask the **imagery question** ([medium and providers → Imagery question](references/medium-and-providers.md#imagery-question)): AI image generation, Claude-made visuals, the owner's or licensed photos, or a mix. Ask the **image-worker model and effort** only when AI is in the answer (two questions, no "(Recommended)" label on a tier).
+4. Choose the **medium per asset** with [medium and providers](references/medium-and-providers.md): coded HTML for the sample mocks, SVG for marks and icons, the imagery answer for pictures.
+5. State the count and cost: one coded sample mock per chosen direction (more of any direction on request; past **6 mocks per round**, re-confirm count and cost first), images if any, likely sessions.
+6. Create the mocks folder (layout in [coded mocks](references/coded-mocks.md)) with `README.md` (a Start here block plus the gate log), `content.md`, `owner-questions.md`, `generation-prompts.md`, `ASSET-LICENSES.md`.
 
-**STOP** for the pick of directions and medium.
+**STOP** for the pick of directions, imagery and medium.
+
+## 2b. Page plan
+
+For landing, marketing and other conversion pages in the web mode, run [landing-page](../landing-page/SKILL.md) §1–2 (intake and page plan) inside the round. Its output fills `content.md`, the only copy source for every mock, and its open facts go to `owner-questions.md`. Skip with a one-line reason for app screens, brand work or a brief that already supplies final copy.
+
+**STOP** for approval of the page plan.
 
 ## 3. Mock round
 
-Run the gates in order. Skip any gate the brief already settles and say so. Preview every gate inline in chat (a contact sheet is fine for sets). Record each decision in the README gate log the moment it is made, with the date.
+Run the steps in order. Skip any step the brief already settles and say so. Preview every step inline in chat (a contact sheet is fine for sets). Record each decision in the README gate log the moment it is made, with the date.
 
-| Gate | What happens | Reference |
+| Step | What happens | Reference |
 |---|---|---|
-| **G1 Type** | A specimen page with complete pairings along feeling axes, set on the real brand colours. Only when type is still open | [coded mocks → Type gate](references/coded-mocks.md) |
-| **G2 Moods** | One probe image first, then one mood frame per direction as a contact sheet. The owner picks a direction (or a named mix) | [medium and providers](references/medium-and-providers.md), [web](references/web.md) |
-| **G3 Mocks** | Coded HTML of the picked direction on the production stack's conventions; phone and desktop screenshots in chat | [coded mocks](references/coded-mocks.md), [web](references/web.md), [floor](../implement/references/ui-build/page-craft.md) |
-| **G4 Refine** | Lavish opens on the mock; the owner annotates; each note becomes a targeted edit; the final pick comes back through an in-page form; the approved mock is exported | [Lavish review](references/lavish-review.md) |
+| **G1 Type** | A specimen page with complete pairings (or single faces, for a single-typeface direction) along feeling axes, on the real brand colours. Only when type is still open | [coded mocks → Type gate](references/coded-mocks.md) |
+| **G2 Moods** (optional) | Only when the imagery answer includes AI and a direction is still wide open: one probe image, then one mood frame per direction as a contact sheet | [medium and providers](references/medium-and-providers.md), [web](references/web.md) |
+| **G3 Sample mocks** | One coded mock per chosen direction, all on the same `content.md`, on the production stack's conventions and the floor; more of any direction on request (count and cost stated first). Phone and desktop screenshots in chat as a contact sheet | [coded mocks → Sample round](references/coded-mocks.md), [web](references/web.md), [floor](../implement/references/ui-build/page-craft.md) |
+| **Compare** | `compare.html` shows every sample side by side (Lavish `comparison` playbook) or as a screenshot sheet; the owner picks a winner or a named mix | [Lavish review](references/lavish-review.md) |
+| **G4 Refine** | Lavish opens on the winner; the owner annotates; each note becomes a targeted edit; the final pick comes back through an in-page form; the approved mock is exported | [Lavish review](references/lavish-review.md) |
 
 **Modes** (from the deliverable the owner asked for):
 
-| Mode | Gates | Reference |
+| Mode | Steps | Reference |
 |---|---|---|
-| Web and app UI | G1–G4 | [web](references/web.md), [coded mocks](references/coded-mocks.md) |
-| Mobile screens | G1, G2 (screen concepts as images), G4 only if HTML is built | [mobile](references/mobile.md) |
-| Brand and logos | G1, G2 boards, marks redrawn as SVG, G4 on an HTML board | [brand](references/brand.md) |
+| Web and app UI | 2b (conversion pages), G1–G3, Compare, G4 | [web](references/web.md), [coded mocks](references/coded-mocks.md) |
+| Mobile screens | G1; screen concepts as images (G2) only when AI imagery was chosen, otherwise coded screens; G4 only if HTML is built | [mobile](references/mobile.md) |
+| Brand and logos | G1, G2 boards (when AI was chosen), marks redrawn as SVG, G4 on an HTML board | [brand](references/brand.md) |
 | Image-only | G2, then stop and deliver; no doc unless asked | [medium and providers](references/medium-and-providers.md) |
 
-A technical fix never triggers a new image set. Regenerate unreadable details without silently expanding the deliverable.
+A technical fix never triggers a new image set or a new sample. Regenerate unreadable details without silently expanding the deliverable.
 
 ## 4. Scope
 
@@ -87,7 +97,7 @@ Follow explore's Stage 4: components with effort and dependencies, minimum versi
 
 1. Write `plans/explore-YYYY-MM-DD-<slug>.md` in **explore's §5 format** (outside git), including its Start here block and Decisions made in chat. Fill **Design decisions** with the approved mock file, its export, the mocks folder and every gate decision. The approved mock is the spec for `/implement` (`~/.agents/skills/implement/references/mock-to-code.md`).
 2. When decisions remain open, build a [decision page](references/decision-page.md) beside the doc and open it in Lavish.
-3. **Run the cold-start gate** (`~/.agents/skills/handoff/references/cold-start-gate.md`) on the mocks README and then on the explore doc.
+3. **Run the cold-start gate** (`~/.agents/skills/handoff/references/cold-start-gate.md`) on the mocks README and then on the explore doc, including its "When create-plan is next" section.
 4. End with the ready-to-paste prompt, trimmed to what the doc does not already say:
 
 ```
@@ -104,7 +114,8 @@ The mocks folder must survive a session limit with nothing lost (`~/AGENTS.md` �
 ## Guardrails
 
 - Never touch product source; never write mocks into a git tree.
-- Never generate images without an owner-approved model, effort and count; probe first.
+- Never generate images unless the imagery answer includes AI and the owner approved model, effort and count; probe first.
+- Never build more sample mocks than the stated count; past 6 per round, re-confirm first.
 - Never ask the owner to approve a filename; show the image or screenshot.
 - Never run `lavish-axi share` or publish mocks.
 - Never invent scope, facts, testimonials or prices; tag placeholders.

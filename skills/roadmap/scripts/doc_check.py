@@ -29,6 +29,9 @@ Finds the drift that makes a doc lie to the next session:
   phase     readiness notes kept for a phase that already shipped
   log       session log not newest-first
   sha       a backticked commit SHA the repo does not know (needs --repo)
+  handoff   the next stage is /create-plan (Start here Next, or a roadmap's
+            Resume here) but the repo's HEAD is not on the Verified line
+            (roadmap: anywhere in the doc) (needs --repo)
   decision  a Locked-decision ID (D<n>) used twice
   interrupt an urgent-stop "Interrupted" block (any heading level) with no
             next action or no `resume from` paste line; the block and its
@@ -103,6 +106,7 @@ UNSHIPPED = re.compile(r"\b(not started|planned|in progress|blocked)\b", re.I)
 DATE = re.compile(r"\b(20\d\d-\d\d-\d\d)\b")
 BACKTICK = re.compile(r"`([^`\n]+)`")
 SHA = re.compile(r"^[0-9a-f]{7,12}$")
+SHA_WORD = re.compile(r"\b[0-9a-f]{7,40}\b")
 
 
 def parse_args():
@@ -434,12 +438,31 @@ def main():
             for s in sorted(shas):
                 if git(repo, "cat-file", "-e", f"{s}^{{commit}}") is None:
                     warnings.append(f"sha: `{s}` is not a commit in {a.repo}")
-            if shas and not any(h.startswith(s) or s.startswith(h) for s in shas):
+            def has_head(s):
+                return any(h.startswith(x) or x.startswith(h) for x in SHA_WORD.findall(s))
+
+            # the next stage is create-plan: its Verified HEAD must be current
+            plan_next = None
+            if kind in STAGE:
+                nxt = re.search(r"(?im)^\s*[-*]\s+\**\s*next\b[^\n]*", start)
+                if nxt and "/create-plan" in nxt.group(0):
+                    ver = re.search(r"(?im)^\s*[-*]\s+\**\s*verified\b[^\n]*", start)
+                    plan_next = has_head(ver.group(0) if ver else "")
+            elif kind == "roadmap":
+                rt, rspan = find_section(secs, "Resume here")
+                if rspan and "/create-plan" in "\n".join(lines[rspan[0] + 1 : rspan[1]]):
+                    plan_next = has_head(text)
+            if plan_next is False:
+                where = "on the Verified line" if kind in STAGE else "in the doc"
+                warnings.append(
+                    f"handoff: next stage is create-plan but repo HEAD {h} is not {where}"
+                )
+            elif shas and not any(h.startswith(s) or s.startswith(h) for s in shas):
                 info.append(f"repo HEAD {h} is not mentioned in the doc")
 
     # a closed doc is history: gate and compaction warnings no longer apply
     if closed:
-        moot = ("starthere:", "prime:", "stamp:")
+        moot = ("starthere:", "prime:", "stamp:", "handoff:")
         if kind == "roadmap":
             moot += ("size:", "phase:", "log:", "resume:")
         info.extend(f"(closed, not enforced) {w}" for w in warnings if w.startswith(moot))

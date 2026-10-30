@@ -18,7 +18,7 @@ or `/prime`: a new session on any host starts the next stage from its paste line
 4. **Paths** are absolute (or anchored to the doc's folder) and either exist or are marked
    "(created by Step N)".
 5. **Next-stage probes only**, read-only, each result dated in the doc:
-   - before create-plan: none;
+   - before create-plan: HEAD and `git status --short` of each repo the Verified line names;
    - before implement: `git status --short` and HEAD of the plan's repos, `gh auth status` when the
      plan pushes, and the expiry of any test infrastructure it reuses;
    - before work-audit fix: the findings file's `Recorded at` SHAs still match;
@@ -32,5 +32,20 @@ or `/prime`: a new session on any host starts the next stage from its paste line
 7. **Next-stage start.** The skill that reads the doc first re-checks its Verified line cheaply
    (HEAD, `git status --short`, the paths it will act on). A mismatch is reported in one line and
    folded into the doc before work starts.
+
+## When create-plan is next
+
+At the end of explore or explore-design, and at every phase close (implement's roadmap Update),
+refresh in the same step **every doc that names that create-plan**: the explore doc's Start here,
+the roadmap's Resume here and Environments, and the closing plan's Start here.
+
+- **Next:** the exact paste line; for a roadmap phase,
+  `/create-plan <explore doc absolute path> Phase N only`.
+- **Verified:** the current time and the HEAD of each repo, read from git now, not copied.
+- **Read first:** the current decision range (e.g. D1–D26) and the next phase's readiness section.
+- **Line references** (`file:NN`): re-check each against the file; fix or remove it.
+
+Then run step 6 with `--repo` on each refreshed doc: `doc_check.py` warns when the next stage is
+create-plan and the repo's HEAD is missing.
 
 Mid-task pauses and urgent stops stay with the `handoff` skill (pause mode reuses steps 1–6).

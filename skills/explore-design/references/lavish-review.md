@@ -11,7 +11,7 @@ The single owner of how mocks and decision pages are reviewed in Lavish. explore
 ## Picks and decisions
 
 - For a choice (direction, type pairing, mix), build it into the page with the `input` playbook (`npx -y lavish-axi@0.1.90 playbook input`): native radios or checkboxes, the recommended option pre-selected, and one "Queue answer" per question that sends exactly one prompt.
-- For a side-by-side, use the `comparison` playbook.
+- For a side-by-side, use the `comparison` playbook. The sample-mock compare step builds `compare.html` with it: every sample at phone and desktop width, one pick (winner or named mix) queued back.
 
 ## Polling (per host)
 

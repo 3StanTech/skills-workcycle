@@ -29,7 +29,7 @@ Avoid these signatures unless the brief explicitly asks for them.
 
 ### 9.E External Resources & Components
 * **NO hand-rolled SVG icons.** Use Phosphor / HugeIcons / Radix / Tabler. Lucide on explicit request only.
-* **Hand-rolled decorative SVGs strongly discouraged** as default (see Section 4.8).
+* **Hand-rolled decorative SVGs strongly discouraged** as default, unless the owner chose Claude-made visuals (see Section 4.8).
 * **NO broken Unsplash links.** Use `https://picsum.photos/seed/{descriptive-string}/{w}/{h}`, or generated photo placeholders, or actual assets.
 * **shadcn/ui customization:** Allowed, but NEVER in default state. Customize radii, colors, shadows, typography to the project aesthetic.
 * **Production-Ready Cleanliness:** Code visually clean, memorable, meticulously refined.
@@ -196,7 +196,7 @@ Run this matrix before outputting code. This is the last filter.
 - [ ] **Marquee max-one-per-page**: no two horizontal marquees on the same page?
 - [ ] **Bento has rhythm** (exact cell count is a floor check)?
 - [ ] **Long lists use the right UI component** (not default `<ul>` with `divide-y` for > 5 items - see Section 4.9 alternatives)?
-- [ ] **Imagery from the owner's chosen medium** (Section 4.8), explicit placeholder slots where assets are missing - NO hand-rolled decorative SVGs, NO pure-text minimalism unless the brief is typographic?
+- [ ] **Imagery from the owner's chosen medium** (Section 4.8), explicit placeholder slots where assets are missing - NO hand-rolled decorative SVGs unless Claude-made visuals were chosen, NO pure-text minimalism unless the brief is typographic?
 - [ ] **Content density** sane: ≤ 25-word sub-paragraphs by default, long lists in the right component (Section 4.9)?
 - [ ] **Quotes ≤ 3 lines** of body?
 - [ ] **Motion claimed = motion shown**: if `MOTION_INTENSITY > 4`, page actually animates, not just claimed?

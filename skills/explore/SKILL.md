@@ -85,6 +85,7 @@ Then make the first question **"Which of these is closest to what you're after?"
 
 ## Done looks like
 - <observable outcome>
+- Outside check: <what, other than you or me, shows it is right> · Pass: <…> · Fail: <…>
 
 ## Not doing
 - <explicit exclusions>
@@ -95,6 +96,8 @@ Then make the first question **"Which of these is closest to what you're after?"
 ## Inputs I still need
 - <links, numbers, assets, or owner answers only the user can supply>
 ```
+
+The Outside check is [be-ambitious](../be-ambitious/SKILL.md) question 4 for this idea: one line, not a test plan. create-plan turns it into a verification scenario.
 
 Keep it short enough to check at a glance. Mark every claim as **evidence** or **guess**. The guesses are where corrections come from.
 
@@ -112,7 +115,8 @@ Keep it short enough to check at a glance. Mark every claim as **evidence** or *
    - Research candidate services. Search the web via WebSearch or the harness's equivalent; if none is available, say so rather than guessing.
    - Note what is free and what is paid.
 3. If the idea touches data, inspect the workspace database (if one exists) for the data available.
-4. Present findings:
+4. **Expert lens:** name the field, then answer [be-ambitious](../be-ambitious/SKILL.md) questions 1–3 for it (what a top professional would do, the rawest material, the methods and tools) and fold what they change into the findings. Same goal and scope: drop anything that makes the job bigger rather than better.
+5. Present findings:
    - **What already exists** that is relevant (do not rebuild what is there).
    - **What options are available**, with pros and cons for each.
    - **Constraints or dependencies** found.
@@ -262,7 +266,7 @@ Keep it short enough to check at a glance. Mark every claim as **evidence** or *
 
    With 4+ open decisions or a doc over ~15 KB, also build a decision page (`~/.agents/skills/explore-design/references/decision-page.md`).
 
-3. **Run the cold-start gate** (`~/.agents/skills/handoff/references/cold-start-gate.md`) on the doc as the last write, so a new session can start create-plan from the paste line alone.
+3. **Run the cold-start gate** (`~/.agents/skills/handoff/references/cold-start-gate.md`) on the doc as the last write, including its "When create-plan is next" section, so a new session can start create-plan from the paste line alone.
 
 4. Report the file path and recommend `/create-plan`, feeding this explore doc as context. That is the only next step: explore never recommends `/implement`, however well-defined the idea, because an explore doc is not a plan and implementing from it skips the plan the owner approves.
 

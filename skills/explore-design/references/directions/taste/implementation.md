@@ -120,7 +120,7 @@ Landing pages and portfolios are **visual products**. Text-only pages with fake-
 
 **Imagery follows the owner's medium choice.** explore-design asks whether to use AI image generation, Claude-made visuals (code, SVG, CSS, canvas), or the owner's own or licensed photos ([medium and providers](../../medium-and-providers.md)). Never generate images the owner did not choose. When the chosen source cannot supply an asset:
 * Use actual stock or brand URLs the brief provides, or open-license sources only when allowed; `https://picsum.photos/seed/{descriptive-seed}/{w}/{h}` is acceptable for clearly temporary placeholder photography.
-* Otherwise leave clearly labelled placeholder slots (`<!-- TODO: hero product photo, 1600x1200 -->`) and list the needed images for the owner. Do not fill the gap with hand-rolled SVG illustration or div-built fake screenshots.
+* Otherwise leave clearly labelled placeholder slots (`<!-- TODO: hero product photo, 1600x1200 -->`) and list the needed images for the owner. Do not fill the gap with hand-rolled SVG illustration (unless Claude-made visuals were chosen) or div-built fake screenshots.
 
 **Real company logos for social proof.** When the brief calls for a "Trusted by / Used by / Customers" logo wall, do NOT default to plain text wordmarks (`<span>Acme Co</span>` styled in a row). Use real SVG logos:
 * **Source: Simple Icons** (`https://cdn.simpleicons.org/{slug}/ffffff` for any color, or `simple-icons` npm package). Covers most known brands.
@@ -131,7 +131,7 @@ Landing pages and portfolios are **visual products**. Text-only pages with fake-
 
 **Hand-rolled illustrations:**
 * SVG icons from libraries: fine (see Section 3.C).
-* Hand-rolled decorative SVGs (custom illustrations, logos, marks): **strongly discouraged**, never as default. Acceptable only when:
+* Hand-rolled decorative SVGs (custom illustrations, logos, marks): **fine when the owner chose Claude-made visuals** in the imagery question; otherwise **strongly discouraged**, never as default. Acceptable only when:
   - The brief explicitly calls for it ("draw me an SVG logo")
   - It's a single, simple geometric mark (a square, a circle, a wordmark in display type)
   - You're confident in the output quality
