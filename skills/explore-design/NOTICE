@@ -9,7 +9,9 @@ Local changes: split into explore-design direction references; scope and
 approval moved to explore-design's medium-and-providers reference; universal
 quality rules moved out to implement's ui-build floor (page-craft.md);
 image-generation priority replaced by the owner's imagery choice; invented
-client logos replaced by tagged placeholders.
+client logos replaced by tagged placeholders; the block-library contract
+removed and the motion code skeletons split into an on-demand
+motion-skeletons.md.
 
 
 clean-geist direction (references/directions/clean-geist.md): adapted from the

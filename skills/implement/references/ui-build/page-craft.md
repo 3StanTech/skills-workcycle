@@ -67,6 +67,11 @@ brand can waive one, and only explicitly.
   grain), from one documented scale.
 - **Real illustration or none.** No sketch-style SVG scenes or doodle grain imitating
   pictures. SVG for geometry, diagrams, icons and linework stays welcome.
+- **One icon family, one stroke width** per page; never mix libraries in one view.
+- **Italic display type keeps its descenders.** A display italic with `y g j p q` gets a
+  line height of at least 1.1 and a little bottom reserve, so nothing clips.
+- **Glass has a solid fallback.** Translucent, blurred surfaces switch to a solid fill
+  under `prefers-reduced-transparency` and keep text contrast either way.
 
 ## Motion safety
 
@@ -82,6 +87,14 @@ brand can waive one, and only explicitly.
   scroll-linked effects and physics collapse to static or a plain fade.
 - **Grain and noise** sit on a fixed, `pointer-events: none` layer, never on a scrolling
   container.
+- **Content is visible without scroll or JS.** Reveal and entrance effects start from
+  visible content and hide it only once script has run (for example a `js` class set in
+  the head), and are off under `prefers-reduced-motion`. A static capture, a no-JS reader
+  or a crawler sees every section.
+- **Motion is motivated.** Every animation serves hierarchy, sequence, feedback or a state
+  change, and its reason fits in one sentence; otherwise drop it.
+- **One animation engine per component tree.** Never drive the same elements from GSAP or
+  Three.js and from Motion; isolate each engine in its own leaf component with cleanup.
 
 ## Content honesty
 
@@ -138,6 +151,7 @@ Every page that will go live, and every mock meant to become one, shows or reser
 - [ ] Privacy and terms links in the footer
 - [ ] A cookie-consent notice where the audience's jurisdiction requires one
 - [ ] A way back from every page
+- [ ] No broken images or dead links (hotlinked image URLs checked)
 
 ## Sources
 

@@ -5,7 +5,9 @@ All text is paraphrased, merged and reorganised; none is copied verbatim.
    Upstream-Repo: https://github.com/Leonxlnx/taste-skill
    Upstream-Path: skills/taste-skill (commits 3c7017d to 9b7d575)
    Used: page composition, contrast, motion safety, content honesty, theme
-   lock and dark-mode rules.
+   lock and dark-mode rules; later also icon-family, italic-descender,
+   glass-fallback, motivated-motion and animation-engine rules, and the
+   redesign preservation list in ui-build.md ("Redesigns").
 
 2. landing-page-design by Elaya (MIT)
    Upstream-Repo: https://github.com/elayadesign/ai-design-skills

@@ -15,4 +15,5 @@ the current phase; do not read the full library for every task.
 - [Brief, design dials, and system selection](direction.md)
 - [Layout, stack and interaction](implementation.md)
 - [Redesign preservation and quality checks](review.md)
+- [Motion skeletons (on demand)](motion-skeletons.md)
 - [Optional design-system installation and source reference](platform-reference.md)

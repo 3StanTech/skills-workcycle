@@ -118,7 +118,7 @@ For these directions, there is **no single official package**. Build with native
 * **1-3 (Predictable):** Symmetrical CSS Grid (12-col, equal fr-units), equal paddings, centered alignment.
 * **4-7 (Offset):** `margin-top: -2rem` overlaps, varied image aspect ratios (4:3 next to 16:9), left-aligned headers over center-aligned data.
 * **8-10 (Asymmetric):** Masonry layouts, CSS Grid with fractional units (`grid-template-columns: 2fr 1fr 1fr`), massive empty zones (`padding-left: 20vw`).
-* **MOBILE OVERRIDE:** For levels 4-10, asymmetric layouts above `md:` MUST collapse to strict single-column (`w-full`, `px-4`, `py-8`) on viewports `< 768px`.
+* For levels 4-10, the single-column collapse on phones is a floor rule ([page craft → Page composition](../../../../implement/references/ui-build/page-craft.md#page-composition)); use `w-full`, `px-4`, `py-8`.
 
 ### MOTION_INTENSITY (Level 1-10)
 * **1-3 (Static):** No automatic animations. CSS `:hover` and `:active` states only. `prefers-reduced-motion` is the default mode anyway.
@@ -134,7 +134,7 @@ For these directions, there is **no single official package**. Build with native
 
 ## 10. REFERENCE VOCABULARY (Pattern Names the Agent Should Know)
 
-This is a vocabulary, not a library. The agent should KNOW these pattern names to communicate about them, design with them in mind, and reach for them when the design read calls for them. **Implementations and code sketches live in the Block Library (Section 12), which is populated iteratively.**
+This is a vocabulary, not a library. The agent should KNOW these pattern names to communicate about them, design with them in mind, and reach for them when the design read calls for them. Implementation patterns live in [motion skeletons](motion-skeletons.md) and the floor.
 
 ### Hero Paradigms
 * **Asymmetric Split Hero** - Text on one side, asset on the other, generous white space.
@@ -206,6 +206,6 @@ This is a vocabulary, not a library. The agent should KNOW these pattern names t
 * **Motion (`motion/react`)** - default for UI / Bento / state-change motion.
 * **GSAP + ScrollTrigger** - for full-page scrolltelling and scroll hijacks. Isolate in dedicated leaf components with `useEffect` cleanup.
 * **Three.js / WebGL** - for canvas backgrounds and 3D scenes. Same isolation rule.
-* **NEVER mix GSAP / Three.js with Motion in the same component tree.** They fight over the same frames.
+* One animation engine per component tree (never GSAP / Three.js with Motion) is a floor rule ([page craft → Motion safety](../../../../implement/references/ui-build/page-craft.md#motion-safety)).
 
 ---

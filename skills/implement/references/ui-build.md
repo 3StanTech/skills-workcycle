@@ -105,11 +105,22 @@ Working defaults:
 - **The first viewport sells**: headline, support line and primary action visible on a small laptop and a phone; one label per action intent; navigation on one line.
 - **One shape system**: one radius scale; nested radius = outer − gap; elevation from a border or a shadow, not both.
 - **Contrast everywhere it hides**: button labels on fills, ghost buttons over photos, form placeholders and helper text; themed selection, caret, scrollbars and focus rings.
-- **Motion safety**: `transform`/`opacity` by default, no per-frame scroll work, reduced motion honoured.
+- **Motion safety**: `transform`/`opacity` by default, no per-frame scroll work, reduced motion honoured, content visible without scroll or JS.
 - **Honest content**: nothing invented shown as real; placeholders tagged "Confirm with <owner>"; every visible string re-read.
 - **One theme per page**, and a launch checklist (title, meta, social tags, favicon, alt text, skip link, 404, legal links) before anything goes live.
 
 Full treatment: `ui-build/page-craft.md`.
+
+### Redesigns
+
+When a build changes an existing site, these never change silently (only with the owner's approval):
+
+- URL structure and route slugs, anchor IDs, primary navigation labels.
+- Form field names and order, and the button, form and section IDs analytics depend on.
+- The logo or wordmark, and legal, consent and cookie copy.
+- Existing accessibility wins: focus states, alt text, keyboard operation and contrast never regress.
+
+Record the SEO baseline (ranking pages, titles, structured data, social cards) before touching anything; SEO migration is the biggest redesign risk.
 
 ## Right-sizing
 
