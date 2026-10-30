@@ -99,7 +99,7 @@ Too many CTAs above the fold; a vague promise ("streamline", "optimize"); a feat
 
 ### Where the plan goes
 
-- **Standalone:** save it to `plans/page-plan-YYYY-MM-DD-<slug>.md` in the project folder, outside the git tree (a git project uses its handoffs folder, as explore does). Give it a Start here block and run the cold-start gate (`~/.agents/skills/handoff/references/cold-start-gate.md`), so the build can resume in a new session with `/landing-page <plan path>`.
+- **Standalone:** save it to `plans/page-plan-YYYY-MM-DD-<slug>.md` in the project folder, outside the git tree (a git project uses its handoffs folder, as explore does). Give it a Start here block and run the cold-start gate (`~/.agents/skills/handoff/references/cold-start-gate.md`; its checker detects a `# Page plan:` title as `--kind pageplan`), so the build can resume in a new session with `/landing-page <plan path>`.
 - **Inside explore-design:** write the same content to the mocks folder's `content.md`, the only copy source for every mock, and the open facts to `owner-questions.md`. Then return to explore-design.
 
 **STOP** for approval of the plan. Apply corrections and show what changed.

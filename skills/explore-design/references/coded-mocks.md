@@ -65,7 +65,8 @@ Build `type-test.html` with each candidate on the real brand colours, set in a h
 headline, a price, and the signature component. Offer candidates along feeling axes
 (premium/sophisticated · comfort/warmth · modern) as complete pairings (display + text +
 accent), plus closest matches to the brand source only if the user wants fidelity.
-Directions may use different pairings; the user maps them at the gate.
+A single-typeface direction (e.g. clean-geist) is offered single faces instead of
+pairings. Directions may use different pairings; the user maps them at the gate.
 
 ## Review
 

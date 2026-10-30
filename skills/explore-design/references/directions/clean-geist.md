@@ -52,11 +52,11 @@ Tailwind radius values only. Nested shapes follow the floor's nested-radius rule
 
 - A card border goes all the way round or not at all; never one side only.
 - Backgrounds are flat: no background gradients.
-- Dark theme surfaces only from: `#000000`, `#181818`, `#1F1F1F`, `#272727`, `#313131`, `#131209`.
+- Dark theme surfaces only from: `#181818`, `#1F1F1F`, `#272727`, `#313131`, `#131209`.
 
 ## 7. Hero
 
-- **Heading colour:** a left-to-right gradient on the heading text only: dark theme `#FFFFFF` → `#9B9B9B`, light theme `#000000` → `#666666`. The one place a gradient appears; contrast of the lightest end stays within the floor's text-contrast rule at the heading's size.
+- **Heading colour:** a left-to-right gradient on the heading text only: dark theme `#FAFAFA` → `#9B9B9B`, light theme `#111111` → `#666666` (no pure `#000`/`#fff`, per the floor). The one place a gradient appears; contrast of the lightest end stays within the floor's text-contrast rule at the heading's size.
 - Heading and subheading both capped at a **680px** max width, so lines break where the thought breaks.
 
 ## 8. Icons
@@ -65,7 +65,7 @@ Phosphor, Solar or Iconamoon. Never Material Icons or Material Symbols.
 
 ## 9. Motion
 
-- **Base curve:** `cubic-bezier(0.22, 1, 0.36, 1)`, 500ms for layout and position changes; colour and opacity hovers 300ms, never under 200ms. No browser default curves (`ease`, `linear`, `ease-in-out`).
+- **Base curve:** `cubic-bezier(0.22, 1, 0.36, 1)`, 500ms for layout and position changes; opacity hovers 300ms, never under 200ms; a colour change on hover is instant or expressed through opacity. No browser default curves (`ease`, `linear`, `ease-in-out`).
 - Animate **only** `transform` and `opacity` (stricter than the floor).
 - **Navigation:** a compact bar floating off the top edge, centred and sized to its content, on a translucent surface with background blur. The menu icon morphs between open and closed on the base curve. On phones the menu opens as a full-height panel (base surface at high opacity, strong blur); its links enter one after another in reading order, each rising 24px while fading in, 60ms apart, the whole sequence capped at 400ms.
 - **Scroll reveals:** a section entering the viewport rises 32px and fades in over 600–800ms on the base curve, once only, triggered by `IntersectionObserver` or a motion library's in-view primitive.
@@ -77,7 +77,7 @@ One large-type section stating the core benefit or tagline, separate from the he
 
 - **Copy:** at least two lines; a benefit statement from the page plan (`content.md`), not a generic heading.
 - **Type:** `text-4xl` to `text-6xl` by line count, capped at the hero's max width.
-- **Animation:** words start at roughly 25–35% of the base text colour's opacity and, as the section scrolls into view, each word turns full colour in reading order as it crosses a trigger line, on the base curve. Use `IntersectionObserver` per word or one `requestAnimationFrame`-throttled scroll handler. Under reduced motion the text shows at full colour.
+- **Animation:** words start in a muted tone (about 45% of the base text colour's opacity, never below the floor's 3:1 large-text contrast on the surface) and, as the section scrolls into view, each word turns full colour in reading order as it crosses a trigger line, on the base curve. Use `IntersectionObserver` per word or one `requestAnimationFrame`-throttled scroll handler. Under reduced motion the text shows at full colour.
 
 ## Overrides of web.md
 

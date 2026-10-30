@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Read-only checker for stage and continuity documents.
 
-Kinds: explore (explore and explore-design docs), plan, mocks (a mocks folder
+Kinds: explore (explore and explore-design docs), plan, pageplan (a landing-page
+plan), mocks (a mocks folder
 README), findings (a work-audit findings file), roadmap, handoff. --kind picks
 one; omitted, the kind is detected from the title line, filename and headings.
 
@@ -14,24 +15,26 @@ Finds the drift that makes a doc lie to the next session:
   resume    Resume here / Next actions empty or longer than 5 items (roadmap,
             handoff)
   size      doc over its byte budget (roadmap 16 KB, handoff 8 KB, explore 20 KB,
-            plan 40 KB, findings 16 KB, mocks 16 KB)
+            plan 40 KB, page plan 20 KB, findings 16 KB, mocks 16 KB)
   secret    something that looks like a credential (always an error)
   path      a backticked ~/, /Users/ or doc-relative path that does not exist;
             a line marked "(created by Step N)" is skipped
   starthere Start here lacks the goal, a dated Verified line, Read first, or a
-            Next line with a backticked command (explore, plan, mocks, findings)
+            Next line with a backticked command (explore, plan, pageplan, mocks,
+            findings)
   scratch   a session-scratchpad, /tmp or /private/tmp path (all kinds)
   stamp     no "cold-start pass YYYY-MM-DD" (all kinds but handoffs with an
             Interrupted block)
-  prime     Start here does not say no /prime is needed (explore, plan, mocks,
+  prime     Start here does not say no /prime is needed (explore, plan, pageplan, mocks,
             findings)
   plan      a phase row whose status disagrees with its plan's **Status:**
   phase     readiness notes kept for a phase that already shipped
   log       session log not newest-first
   sha       a backticked commit SHA the repo does not know (needs --repo)
-  handoff   the next stage is /create-plan (Start here Next, or a roadmap's
-            Resume here) but the repo's HEAD is not on the Verified line
-            (roadmap: anywhere in the doc) (needs --repo)
+  handoff   the next stage is /create-plan (Start here Next, or the first
+            command in a roadmap's Resume here) but the repo's HEAD is not a
+            backticked SHA on a Verified line (roadmap: in Environments)
+            (needs --repo)
   decision  a Locked-decision ID (D<n>) used twice
   interrupt an urgent-stop "Interrupted" block (any heading level) with no
             next action or no `resume from` paste line; the block and its
@@ -52,14 +55,15 @@ import re
 import subprocess
 import sys
 
-KINDS = ["explore", "plan", "mocks", "findings", "roadmap", "handoff"]
-STAGE = {"explore", "plan", "mocks", "findings"}  # docs with a Start here block
+KINDS = ["explore", "plan", "pageplan", "mocks", "findings", "roadmap", "handoff"]
+STAGE = {"explore", "plan", "pageplan", "mocks", "findings"}  # docs with a Start here block
 
 BUDGET = {
     "roadmap": 16 * 1024,
     "handoff": 8 * 1024,
     "explore": 20 * 1024,
     "plan": 40 * 1024,
+    "pageplan": 20 * 1024,
     "findings": 16 * 1024,
     "mocks": 16 * 1024,
 }
@@ -78,6 +82,7 @@ REQUIRED = {
     "explore": ["Confirmed restatement", "Discovery Notes"],
     "plan": ["Design Decisions", "Step-by-Step Tasks", "Success Criteria"],
     "findings": ["Findings", "Open items"],
+    "pageplan": [],
     "mocks": [],
 }
 
@@ -106,7 +111,6 @@ UNSHIPPED = re.compile(r"\b(not started|planned|in progress|blocked)\b", re.I)
 DATE = re.compile(r"\b(20\d\d-\d\d-\d\d)\b")
 BACKTICK = re.compile(r"`([^`\n]+)`")
 SHA = re.compile(r"^[0-9a-f]{7,12}$")
-SHA_WORD = re.compile(r"\b[0-9a-f]{7,40}\b")
 
 
 def parse_args():
@@ -162,6 +166,8 @@ def detect_kind(path, text, secs):
     title = next((l for l in text.splitlines() if l.startswith("# ")), "").lower()
     if title.startswith("# explore"):
         return "explore"
+    if title.startswith("# page plan"):
+        return "pageplan"
     if title.startswith("# plan"):
         return "plan"
     if title.startswith("# handoff"):
@@ -439,21 +445,31 @@ def main():
                 if git(repo, "cat-file", "-e", f"{s}^{{commit}}") is None:
                     warnings.append(f"sha: `{s}` is not a commit in {a.repo}")
             def has_head(s):
-                return any(h.startswith(x) or x.startswith(h) for x in SHA_WORD.findall(s))
+                # only backticked SHAs count as commit evidence, never hex-looking prose
+                return any(
+                    re.fullmatch(r"[0-9a-f]{7,40}", x) and (h.startswith(x) or x.startswith(h))
+                    for x in BACKTICK.findall(s)
+                )
 
             # the next stage is create-plan: its Verified HEAD must be current
             plan_next = None
             if kind in STAGE:
                 nxt = re.search(r"(?im)^\s*[-*]\s+\**\s*next\b[^\n]*", start)
                 if nxt and "/create-plan" in nxt.group(0):
-                    ver = re.search(r"(?im)^\s*[-*]\s+\**\s*verified\b[^\n]*", start)
-                    plan_next = has_head(ver.group(0) if ver else "")
+                    ver = re.findall(r"(?im)^\s*[-*]\s+\**\s*verified\b[^\n]*", start)
+                    plan_next = has_head("\n".join(ver))
             elif kind == "roadmap":
-                rt, rspan = find_section(secs, "Resume here")
-                if rspan and "/create-plan" in "\n".join(lines[rspan[0] + 1 : rspan[1]]):
-                    plan_next = has_head(text)
+                _, rspan = find_section(secs, "Resume here")
+                acts = [l for l in lines[rspan[0] + 1 : rspan[1]] if re.match(r"^\d+\.\s", l)] if rspan else []
+                # the first slash command in the first action that has one
+                cmds = [c for l in acts for c in BACKTICK.findall(l) if c.startswith("/")]
+                cmd = cmds[0] if cmds else ""
+                if cmd.startswith("/create-plan"):
+                    _, espan = find_section(secs, "Environments")
+                    env = "\n".join(lines[espan[0] + 1 : espan[1]]) if espan else ""
+                    plan_next = has_head(env)
             if plan_next is False:
-                where = "on the Verified line" if kind in STAGE else "in the doc"
+                where = "on the Verified line" if kind in STAGE else "in Environments"
                 warnings.append(
                     f"handoff: next stage is create-plan but repo HEAD {h} is not {where}"
                 )

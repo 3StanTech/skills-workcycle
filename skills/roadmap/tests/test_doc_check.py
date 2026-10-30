@@ -346,6 +346,60 @@ class DocCheck(unittest.TestCase):
         )
         self.assertEqual(self.warns(out, "handoff:"), [])
 
+    def test_hex_word_in_prose_is_not_head_evidence(self):
+        repo, head = self.git_repo()
+        doc = self.explore_verified(f"abc1234 (word {head} in prose)")
+        _, out = self.run_check(self.write(doc, "explore-x.md"), "--repo", repo)
+        self.assertEqual(len(self.warns(out, "handoff:")), 1)
+
+    def test_head_on_second_verified_bullet_passes(self):
+        repo, head = self.git_repo()
+        doc = self.explore_verified("`abc1234` (repo A)").replace(
+            "- **Read first:**", f"- **Verified 2026-10-28 15:40 (repo B):** HEAD `{head}`\n- **Read first:**"
+        )
+        _, out = self.run_check(self.write(doc, "explore-x.md"), "--repo", repo)
+        self.assertEqual(self.warns(out, "handoff:"), [])
+
+    def test_roadmap_head_only_in_session_log_still_warns(self):
+        repo, head = self.git_repo()
+        doc = ROADMAP.replace(
+            "run `/implement plans/p.md`", "paste `/create-plan plans/explore-x.md Phase 2 only`"
+        ).replace("- 2026-10-28 created", f"- 2026-10-28 created at `{head}`")
+        _, out = self.run_check(self.write(doc, "ROADMAP.md"), "--repo", repo)
+        self.assertEqual(len(self.warns(out, "handoff:")), 1)
+
+    def test_roadmap_create_plan_after_first_action_is_not_next(self):
+        repo, _ = self.git_repo()
+        doc = ROADMAP.replace(
+            "1. **Owner:** run `/implement plans/p.md`.",
+            "1. **Owner:** run `/implement plans/p.md`.\n2. After that, `/create-plan plans/explore-x.md Phase 2 only`.",
+        )
+        _, out = self.run_check(self.write(doc, "ROADMAP.md"), "--repo", repo)
+        self.assertEqual(self.warns(out, "handoff:"), [])
+
+    def test_full_length_head_passes(self):
+        repo, _ = self.git_repo()
+        full = subprocess.run(["git", "-C", repo, "rev-parse", "HEAD"],
+                              capture_output=True, text=True, check=True).stdout.strip()
+        doc = self.explore_verified(f"`{full}`")
+        _, out = self.run_check(self.write(doc, "explore-x.md"), "--repo", repo)
+        self.assertEqual(self.warns(out, "handoff:"), [])
+
+    def test_roadmap_model_token_before_create_plan_still_checked(self):
+        repo, _ = self.git_repo()
+        doc = ROADMAP.replace(
+            "run `/implement plans/p.md`",
+            "in a session running `claude-opus-5-5`, paste `/create-plan plans/explore-x.md Phase 2 only`",
+        )
+        _, out = self.run_check(self.write(doc, "ROADMAP.md"), "--repo", repo)
+        self.assertEqual(len(self.warns(out, "handoff:")), 1)
+
+    def test_page_plan_detected_and_gate_checked(self):
+        doc = "# Page plan: widget page\n\n**Status:** Approved\n\n" + start("/landing-page plans/page-plan-x.md")
+        _, out = self.run_check(self.write(doc, "page-plan-x.md"))
+        self.assertEqual(out["kind"], "pageplan")
+        self.assertEqual(self.warns(out, "starthere:") + self.warns(out, "sections:"), [])
+
     def test_implement_next_with_stale_head_is_only_info(self):
         repo, _ = self.git_repo()
         doc = PLAN.format(start=start()).replace(

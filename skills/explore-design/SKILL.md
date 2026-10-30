@@ -60,7 +60,7 @@ The same four aims as [explore](../explore/SKILL.md) (the goal, the problem, the
 
 ## 2b. Page plan
 
-For landing, marketing and other conversion pages in the web mode, run [landing-page](../landing-page/SKILL.md) §1–2 (intake and page plan) inside the round. Its output fills `content.md`, the only copy source for every mock, and its open facts go to `owner-questions.md`. Skip with a one-line reason for app screens, brand work or a brief that already supplies final copy.
+For landing, marketing and other conversion pages in the web mode, run [landing-page](../landing-page/SKILL.md) §1–2 (intake and page plan) inside the round. Its output fills `content.md`, the only copy source for every mock, and its open facts go to `owner-questions.md`. Skip with a one-line reason for app screens or brand work. When the brief already supplies final copy, reuse it as `content.md` but still settle and approve the plan's other decisions (structure, layout, index or noindex).
 
 **STOP** for approval of the page plan.
 
