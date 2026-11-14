@@ -7,7 +7,7 @@ The build cycle as agent skills: explore an idea, plan it, implement it, audit t
 | Skill | Role |
 | ----- | ---- |
 | `explore` | Five-stage interactive discovery for a new feature, system or capability |
-| `explore-design` | Turn a UI, brand or image idea into an approved mock and a cold-start explore doc |
+| `explore-design` | Turn a UI, brand or image idea into an approved mock and a cold-start explore doc; an optional background step with a worked galaxy recipe |
 | `landing-page` | Plan and build one conversion-focused page: intake, page plan, approval, one direction, build on the shared floor, launch checklist; also explore-design's page-plan step |
 | `be-ambitious` | Rewrite a task into a deeper, not bigger, version; feeds explore's expert lens and outside check |
 | `create-plan` | Write a detailed, plan-only implementation plan before coding |
@@ -168,6 +168,7 @@ Secrets, runtime state (`~/.agents/state/`), the optional Netlify site map (`~/.
 - The `be-ambitious` skill is adapted from Dan McAteer's [be-ambitious](https://github.com/DannyMac180/skills/tree/main/be-ambitious) (MIT; prompt by Felix Rieseberg; notice in `skills/be-ambitious/NOTICE`).
 - explore-design's liquid glass direction, implement's motion floor (`ui-build/motion.md`) and the usability additions rewrite rules from Kubai087's "999 tips" series on X, with glass code left to his [Glasswork](https://github.com/kubai087/glasswork) (MIT, fetched per project, not redistributed); every source and its read date is in `skills/explore-design/references/sources.md`.
 - The motion skill map routes to Emil Kowalski's [skills](https://github.com/emilkowalski/skills) (MIT), installed separately and not redistributed; the polish-pass testing line comes from his polish prompt. The micro-transition shortlist was studied from Subhan's [amicro](https://github.com/Subhan-code/Amicro--Micro-transitions-) (MIT); nothing is copied.
+- explore-design's background step and galaxy recipe are the owner's own work; their effects were inspired by [amicro](https://github.com/Subhan-code/Amicro--Micro-transitions-) (MIT, nothing copied), the shockwave and dither/ASCII entries rewrite Kubai087's tips 013 and 003, and the WebGL wallpaper entry points to his [pro-threads](https://github.com/kubai087/pro-threads) (MIT, fetched per project, not redistributed).
 - implement's page-craft floor (`skills/implement/references/ui-build/page-craft.md`) adapts rules from taste-skill, from Elaya's [landing-page-design](https://github.com/elayadesign/ai-design-skills) (MIT) and from Paul Bakaus's [impeccable](https://github.com/pbakaus/impeccable) (Apache 2.0); notices in `skills/implement/NOTICE` and `skills/implement/LICENSE-APACHE-2.0.txt`.
 
 ## License

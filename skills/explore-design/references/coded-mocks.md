@@ -22,6 +22,7 @@ One mocks folder per round, outside every git tree:
   mock-a.html mock-b.html mock-c.html   one sample per direction
   mock-b2.html …         extra samples of a direction, on request
   compare.html           every sample side by side
+  background/            optional: copied background recipe files and the switch sheet
   approved/              the exported winner
 ```
 

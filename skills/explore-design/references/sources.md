@@ -10,7 +10,7 @@ Where the design and motion rules in these skills came from. Three lists stay ap
 |---|---|---|---|
 | Kubai087, tip 001 tactile buttons: https://x.com/Kubai087/status/2115247182853120484 | Post; rules rewritten | 2026-11-14 | [motion.md](../../implement/references/ui-build/motion.md) press feedback |
 | Kubai087, tip 002 menu safe triangle: https://x.com/Kubai087/status/2114729985143677258 | Post; rules rewritten | 2026-11-14 | [usability.md](../../implement/references/ui-build/usability.md) Navigation |
-| Kubai087, tip 003 dither and ASCII: https://x.com/Kubai087/status/2115091203465290087 | Post | 2026-11-14 | Background menu (planned) |
+| Kubai087, tip 003 dither and ASCII: https://x.com/Kubai087/status/2115091203465290087 | Post; rules rewritten | 2026-11-14 | [backgrounds](backgrounds.md) type menu |
 | Kubai087, tip 004 concentric and continuous corners: https://x.com/Kubai087/status/2115469767650021796 | Post; rules rewritten | 2026-11-14 | [liquid glass](directions/liquid-glass.md) §4 |
 | Kubai087, tip 005 drag-to-reorder ripple: https://x.com/Kubai087/status/2115823717024735708 | Post; rules rewritten | 2026-11-14 | motion.md stagger |
 | Kubai087, tip 006 book-opening cards: https://x.com/Kubai087/status/2116198373040759107 | Post; rules rewritten | 2026-11-14 | motion.md stagger and shadows |
@@ -19,7 +19,8 @@ Where the design and motion rules in these skills came from. Three lists stay ap
 | Kubai087, tip 010 liquid glass: https://x.com/Kubai087/status/2117782193108082923 | Post; numbers restated | 2026-11-14 (first read 2026-11-08) | liquid glass §1–3 |
 | Kubai087, tip 011 easing by role: https://x.com/Kubai087/status/2118143759984803898 | Post; rules rewritten | 2026-11-14 | motion.md Easing |
 | Kubai087, continuity: https://x.com/Kubai087/status/2118570408953987093 and tip 015: https://x.com/Kubai087/status/2120320609255043510 | Posts; rules rewritten | 2026-11-14 | motion.md Continuity |
-| Kubai087, tip 013 shockwave: https://x.com/Kubai087/status/2119359092334743735 | Post | 2026-11-08 | Background effects (planned) |
+| Kubai087, tip 013 shockwave: https://x.com/Kubai087/status/2119359092334743735 | Post; rules rewritten, its prompt not used | 2026-11-15 (first read 2026-11-08) | [galaxy recipe](backgrounds/galaxy/README.md) `shockwave()` |
+| pro-threads, Kubai087: https://github.com/kubai087/pro-threads | MIT; fetched per project, never copied here | 2026-11-15 | [backgrounds](backgrounds.md) WebGL wallpaper |
 | Kubai087, tip 014 exits, with its prompt reply: https://x.com/Kubai087/status/2119831380276523207 | Post; rules rewritten | 2026-11-14 | motion.md Exits |
 | Kubai087, tip 016 toast or notification: https://x.com/Kubai087/status/2120682993563922586 | Post; rules rewritten | 2026-11-14 | usability.md Feedback |
 | Kubai087, tip 017 waiting states: https://x.com/Kubai087/status/2121449185014845794 | Post; rules rewritten | 2026-11-14 | usability.md Feedback |
@@ -27,9 +28,9 @@ Where the design and motion rules in these skills came from. Three lists stay ap
 | Glasswork, Kubai087: https://github.com/kubai087/glasswork | MIT; fetched per project, never copied here; its bundled wallpapers are Apple's and are not reused | 2026-11-14 | liquid glass §3 |
 | Emil Kowalski, polish prompt: https://x.com/emilkowalski/status/2120508498236596597 | Post; rule rewritten | 2026-11-14 | [ui-build.md](../../implement/references/ui-build.md) Polish guardrails |
 | Emil Kowalski, skills: https://github.com/emilkowalski/skills (catalogue https://aiforui.dev/skills) | MIT; installed separately, not redistributed | 2026-11-14 | motion.md skill map |
-| amicro, Subhan: https://amicro.dev/ and https://github.com/Subhan-code/Amicro--Micro-transitions- | MIT; studied, nothing copied | 2026-11-08 | motion.md shortlist |
+| amicro, Subhan: https://amicro.dev/ and https://github.com/Subhan-code/Amicro--Micro-transitions- | MIT; studied, nothing copied | 2026-11-08 | motion.md shortlist; galaxy recipe effects (focus in, depth tilt, cursor gravity, crossing, chromatic rim) |
 | Apple Human Interface Guidelines, Materials: https://developer.apple.com/design/human-interface-guidelines/materials | Guidance; rules rewritten | 2026-11-08 | liquid glass §2 |
-| The owner's portfolio glass overhaul (private notes and measurements) | Own work | 2026-11-08 to 11-09 | liquid glass, motion.md |
+| The owner's portfolio glass overhaul (private notes, measurements and its galaxy code) | Own work | 2026-11-08 to 11-15 | liquid glass, motion.md, [backgrounds](backgrounds.md) (live-switch review, tuning by measurement), galaxy recipe |
 
 ## Installed outside skills
 
@@ -42,6 +43,6 @@ https://recent.design/ · https://www.kenjilambert.com/about · https://scrollsh
 ## Not yet read
 
 - From https://www.threads.com/@mengto/post/Dfr9Ow7BJud: dream-loop (achimala), mengto's own skills, REA, fil.design.
-- Kubai087's agent-readable tutorial site, announced https://x.com/Kubai087/status/2120362989849366844; not live on 2026-11-14. Once live it replaces reading posts one by one.
+- Kubai087's agent-readable tutorial site, announced https://x.com/Kubai087/status/2120362989849366844; not live on 2026-11-15 (checked again). Once live it replaces reading posts one by one.
 - Third-party digests of the series, for comparison only: https://github.com/libinyam/vibe-craft-skill, https://github.com/XartLab/design-pipeline/issues/367 and /368.
 - Out of scope: Kubai087 tips 007 (Chinese typography) and 012 (AI chat bubbles).

@@ -40,6 +40,18 @@ Glass code is not included. The direction points to Glasswork by Kubai087
 its INSTALL.md; projects that ship it keep its MIT notice. Its bundled
 wallpapers are Apple's and are not reused.
 
+
+Background step (references/backgrounds.md) and the galaxy recipe
+(references/backgrounds/galaxy/): the owner's own work under this repository's
+MIT licence, generalised from the owner's glass-overhaul design round. The
+recipe's effects were inspired by amicro by Subhan
+(https://github.com/Subhan-code/Amicro--Micro-transitions-, MIT): studied,
+nothing copied. The shockwave and the dither/ASCII entry rewrite ideas from
+Kubai087's "999 tips" posts on X (tips 013 and 003) in our own words; no post
+text or attached prompt is copied. The WebGL wallpaper entry points to
+pro-threads by Kubai087 (https://github.com/kubai087/pro-threads, MIT),
+fetched into each project, not redistributed.
+
 ---
 
 taste-skill:
