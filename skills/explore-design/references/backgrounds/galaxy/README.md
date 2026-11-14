@@ -7,7 +7,7 @@ The first worked type in the [background menu](../../backgrounds.md): a dark sky
 | File | What it is |
 |---|---|
 | `starfield.js` | The sky (ES module, `starfield(canvas, options)`) |
-| `sky-measure.mjs` | Measuring tool for any canvas background (Node 22+, headless Chrome) |
+| `sky-measure.mjs` | Measuring tool for any viewport-sized 2D canvas background (Node 22+, headless Chrome) |
 
 Copy both into the mocks folder's `background/` folder. Never edit them in place in the skills; a project's tuning lives in its mock and later its build.
 
@@ -98,7 +98,7 @@ It prints lit-pixel counts (a 320 px square, bright pixels only):
 | `scroll down top/bottom` | While scrolling down | bottom above top |
 | `scroll up top/bottom` | While scrolling up | top above bottom |
 
-Measure with `horizons` off (a rim passing the sample squares swamps the star counts), at the same density and seed each time, and record before and after numbers in the gate log for every tuning change. The tool works on any canvas background; for other types, change what "lit" means only if the readings stop matching what the eye sees.
+Measure with `horizons` off (a rim passing the sample squares swamps the star counts), at the same density and seed each time, and record before and after numbers in the gate log for every tuning change. The tool reads any viewport-sized 2D canvas (it exits with an error on a WebGL canvas); for other 2D types, change what "lit" means only if the readings stop matching what the eye sees.
 
 ## At /implement
 

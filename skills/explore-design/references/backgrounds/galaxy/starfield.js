@@ -39,7 +39,8 @@ export function starfield(canvas, opts = {}) {
   const saveData = navigator.connection?.saveData === true || matchMedia('(prefers-reduced-data: reduce)').matches;
   const still = () => o.still || reduce.matches || saveData;
   const ac = new AbortController(), on = { passive: true, signal: ac.signal };
-  let w = 0, h = 0, stars = [], figs = [], raf = 0, t0 = performance.now(), rand = mulberry(7);
+  let w = 0, h = 0, stars = [], figs = [], raf = 0, t0 = performance.now(), rand = mulberry(7), focusAnim = null;
+  const stopFocus = () => { focusAnim?.cancel(); focusAnim = null; };
 
   let pal = {};
   function readPalette() {
@@ -102,7 +103,7 @@ export function starfield(canvas, opts = {}) {
   addEventListener('scroll', () => {
     const d = scrollY - lastSY; lastSY = scrollY;
     if (Math.abs(d) > 1) { flowT = Math.sign(d); lastMove = performance.now(); }
-    if (still()) schedule();                      // still mode redraws so rims follow their sections
+    if (still() && o.horizons) schedule();        // still mode redraws only so rims follow their sections
   }, on);
   const smooth = (a) => (a <= 0 ? 0 : a >= 1 ? 1 : a * a * (3 - 2 * a));
   function richAt(x, y) {
@@ -144,7 +145,7 @@ export function starfield(canvas, opts = {}) {
   function draw(now) {
     raf = 0;
     const frozen = still(), t = frozen ? 0 : (now - t0) / 1000;
-    if (frozen) { tl.x = tl.y = 0; ptr.on = 0; flow = 0; waves = []; }
+    if (frozen) { tl.x = tl.y = 0; ptr.on = 0; flow = 0; waves = []; stopFocus(); }
     else {
       if (o.interactive) { if (performance.now() - lastMove > 900) flowT = 0; flow += (flowT - flow) * (flowT ? 0.08 : 0.03); }
       if (o.interactive || o.pull || o.tilt) { ptr.x += (ptr.tx - ptr.x) * 0.12; ptr.y += (ptr.ty - ptr.y) * 0.12; ptr.on += (ptr.ton - ptr.on) * 0.06; }
@@ -250,6 +251,7 @@ export function starfield(canvas, opts = {}) {
     const dy = scrollY - lastHY; lastHY = scrollY;
     speed += (Math.min(1, Math.abs(dy) / 28) - speed) * 0.12;
     const hin = list.find((x) => x.dir === 'in'), hout = list.find((x) => x.dir === 'out');
+    if (!hin && !hout) { embers = []; return; }
     const top = hin ? arcPts(hin.apex, 'in') : null, bot = hout ? arcPts(hout.apex, 'out') : null;
     const yTop = top ? Math.min(...top.map((p) => p[1])) : -1e5, yBot = bot ? Math.max(...bot.map((p) => p[1])) : 1e5;
     if (yTop < h + 40 && yBot > -40) {
@@ -343,13 +345,13 @@ export function starfield(canvas, opts = {}) {
   function schedule() { if (!raf && !document.hidden) raf = requestAnimationFrame(draw); }
   build(); schedule();
   addEventListener('resize', () => { build(); schedule(); }, on);
-  reduce.addEventListener('change', schedule, on);
+  reduce.addEventListener('change', () => { if (still()) stopFocus(); schedule(); }, on);
   document.addEventListener('visibilitychange', () => { if (document.hidden) { cancelAnimationFrame(raf); raf = 0; } else schedule(); }, on);
 
   return {
     redraw: schedule,
-    update(next) { o = { ...o, ...next }; build(); schedule(); },
-    set(next) { o = { ...o, ...next }; schedule(); },
+    update(next) { o = { ...o, ...next }; if (still()) stopFocus(); build(); schedule(); },
+    set(next) { o = { ...o, ...next }; if (still()) stopFocus(); schedule(); },
     shockwave(x, y) {
       if (still()) return false;
       waves = waves.slice(-2);                      // at most three rings at once
@@ -357,10 +359,11 @@ export function starfield(canvas, opts = {}) {
       schedule(); return true;
     },
     focusIn() {
+      stopFocus();
       if (still() || !canvas.animate) return null;
-      return canvas.animate([{ opacity: 0, transform: 'scale(1.04)' }, { opacity: 1, transform: 'none' }], { duration: 1400, easing: 'cubic-bezier(.16,1,.3,1)' });
+      return focusAnim = canvas.animate([{ opacity: 0, transform: 'scale(1.04)' }, { opacity: 1, transform: 'none' }], { duration: 1400, easing: 'cubic-bezier(.16,1,.3,1)' });
     },
-    destroy() { ac.abort(); cancelAnimationFrame(raf); raf = 0; },
+    destroy() { ac.abort(); cancelAnimationFrame(raf); raf = 0; stopFocus(); },
   };
 }
 

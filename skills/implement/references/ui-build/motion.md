@@ -107,4 +107,5 @@ Use at most a few per page, each with a one-sentence reason (page-craft: motion 
 
 - **Reduced motion:** follow page-craft; where a movement carries meaning (an item moved, a panel opened), replace it with a short opacity cross-fade so the state change stays visible. Drag-to-reorder keeps only its insertion line.
 - **Save-Data and low power:** when `navigator.connection?.saveData` is true or `prefers-reduced-data: reduce` matches, decorative loops and canvases render one still frame.
+- **Decorative canvases and shaders:** one animation loop, paused while the tab is hidden; devicePixelRatio capped at 2; pointer and scroll only set targets that the frame eases toward. Without JS or when the context fails (no WebGL), the page shows a flat colour from the direction's tokens and reads the same.
 - **No outside skills installed:** everything above still applies; say that the house rules were used instead of the skill.

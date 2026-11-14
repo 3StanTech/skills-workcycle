@@ -50,14 +50,13 @@ Effects are chosen in context, not described.
 
 - Measure what the eye judges. For a canvas, count lit pixels in fixed sample areas (near and far from the cursor, top and bottom of the screen while scrolling); for anything heavy, also frame time.
 - Take a reading before and after every tuning change, at the same seed and viewport, and record both in the gate log with the change.
-- The galaxy's `sky-measure.mjs` is the worked tool; it reads any canvas background.
+- The galaxy's `sky-measure.mjs` is the worked tool; it reads any viewport-sized 2D canvas. A WebGL or shader background needs its own read-back (or frame-time numbers only).
 - When a reading and the owner's eye disagree, the eye wins and the measure is fixed to match it.
 
 ## Fallbacks and budget
 
-- Reduced motion, Save-Data and `prefers-reduced-data`: one still frame ([motion fallbacks](../../implement/references/ui-build/motion.md#fallbacks)). The page reads the same without the background (no JS, failed WebGL): a flat colour from the direction's tokens.
-- One animation loop, paused when the tab is hidden; devicePixelRatio capped at 2; pointer and scroll set targets that the frame eases toward. Budget per [performance](../../implement/references/ui-build/performance.md#runtime--rendering-performance).
-- Body text never sits on moving detail without a scrim or a calm zone; check contrast at the background's brightest frame ([page craft](../../implement/references/ui-build/page-craft.md#visual-craft)).
+- Still frame, loop and context-failure rules: [motion fallbacks](../../implement/references/ui-build/motion.md#fallbacks). Budget: [performance](../../implement/references/ui-build/performance.md#runtime--rendering-performance). Text over the background: [page craft contrast](../../implement/references/ui-build/page-craft.md#visual-craft).
+- In the review, the still-frame switch is how the owner sees what reduced-motion and Save-Data visitors get.
 - When the background moves, the motion skills audit it at `/implement` like any other motion ([skill map](../../implement/references/ui-build/motion.md#skill-map)).
 
 ## Hand-off

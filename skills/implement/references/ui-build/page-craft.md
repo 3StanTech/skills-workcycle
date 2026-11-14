@@ -56,8 +56,9 @@ brand can waive one, and only explicitly.
   are tinted toward the background hue; no pure-black drop shadows on light surfaces.
 - **Contrast is checked, not assumed.** Body text ≥ 4.5:1, large text ≥ 3:1, including
   button labels on their fill, ghost buttons over photos (add a scrim or stroke), and form
-  inputs, placeholders, focus rings, helper and error text against their section. On a
-  coloured surface, tint secondary text from that hue instead of grey.
+  inputs, placeholders, focus rings, helper and error text against their section. Over a
+  moving or animated background, check at its brightest frame and keep body text on a scrim
+  or a calm zone. On a coloured surface, tint secondary text from that hue instead of grey.
 - **Theme the browser surfaces.** Text selection, the caret, scrollbars, focus rings,
   link underline offset and tabular numerals in data all take the palette; browser
   defaults belong to no design.

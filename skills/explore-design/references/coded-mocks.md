@@ -76,7 +76,9 @@ pairings. Directions may use different pairings; the user maps them at the gate.
    [page craft](../../implement/references/ui-build/page-craft.md) checks, launch
    checklist included.
 2. Show screenshots in chat (phone + desktop per sample).
-3. Compare the samples (`compare.html`, above) and record the owner's pick.
+3. Compare the samples (`compare.html`, above) and record the owner's pick. When Stage 2 put
+   the background in scope, run the Background step on the winner next
+   ([backgrounds](backgrounds.md)).
 4. Open Lavish per [Lavish review](lavish-review.md) on the winner for element-level
    annotation; for a choice, a review page using the Lavish `input` playbook (radio per
    question) returns an exact answer.

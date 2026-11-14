@@ -1,6 +1,6 @@
 # Lavish review
 
-The single owner of how mocks and decision pages are reviewed in Lavish. explore-design opens Lavish itself at G4 and for decision pages; the owner does not need to type `/lavish`. Current CLI guidance always wins over this file for commands and flags: `npx -y lavish-axi@0.1.97 --help`.
+The single owner of how mocks and decision pages are reviewed in Lavish. explore-design opens Lavish itself at G4, in the optional Background step's live-switch review ([backgrounds](backgrounds.md#live-switch-review)) and for decision pages; the owner does not need to type `/lavish`. Current CLI guidance always wins over this file for commands and flags: `npx -y lavish-axi@0.1.97 --help`.
 
 ## Open
 
