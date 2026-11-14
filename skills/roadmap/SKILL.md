@@ -58,7 +58,7 @@ If several active roadmaps match and the user did not name one, ask a decision-p
 
 Only the chained Update then Status runs two modes in one invocation. Create and Close always ask first.
 
-**Suggest, never impose.** When an explore doc or plan proposes 2 or more phases and no roadmap exists, ask: create a roadmap (Recommended) / keep using handoffs. The owner confirms.
+**Suggest, never impose.** When an explore doc or plan proposes 2 or more phases and no roadmap exists, ask: create a roadmap (Recommended) / keep using handoffs. The owner confirms. A yes given during explore or explore-design is that confirmation: those skills run Create themselves in the same turn, without asking again.
 
 ## 3. Create
 

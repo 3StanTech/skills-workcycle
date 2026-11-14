@@ -157,6 +157,7 @@ Keep it short enough to check at a glance. Mark every claim as **evidence** or *
    - **Then add:** the nice-to-haves.
    - **Later:** the full vision.
 4. Separate core (must have) from extras (can wait).
+5. **Roadmap.** Whenever the build needs 2 or more phases that each need their own plan, ask in this same review: create a roadmap with the `roadmap` skill (Recommended) / keep one plan. Raise it yourself every time it applies; never wait for the owner to mention it.
 
 **STOP** and present the breakdown for review.
 
@@ -268,9 +269,11 @@ Keep it short enough to check at a glance. Mark every claim as **evidence** or *
 
 3. **Run the cold-start gate** (`~/.agents/skills/handoff/references/cold-start-gate.md`) on the doc as the last write, including its "When create-plan is next" section, so a new session can start create-plan from the paste line alone.
 
-4. Report the file path and recommend `/create-plan`, feeding this explore doc as context. That is the only next step: explore never recommends `/implement`, however well-defined the idea, because an explore doc is not a plan and implementing from it skips the plan the owner approves.
+4. **Roadmap chosen in Stage 4?** Create it now, in this same turn: save the explore doc in `<handoffs-root>/roadmap-<slug>/plans/` and run the `roadmap` skill's Create from it. The owner's Stage 4 answer is the approval Create asks for, so do not ask again, and never hand the owner a `/roadmap` command to paste. Take the recommended `/end` milestones and the slug unless the owner said otherwise, and say which you took. The explore doc's Next line then names only `/create-plan <doc> Phase 1 only`.
 
-5. **Ready-to-paste prompt.** End with the exact next prompt in a code block, **trimmed to what the doc does not already say**:
+5. Report the file path and recommend `/create-plan`, feeding this explore doc as context. That is the only next step: explore never recommends `/implement`, however well-defined the idea, because an explore doc is not a plan and implementing from it skips the plan the owner approves.
+
+6. **Ready-to-paste prompt.** End with the exact next prompt in a code block, **trimmed to what the doc does not already say**:
    - Always: the command and the explore doc path, plus the output plan path if it matters.
    - Only if needed: which components or phases are in this round (when the doc lists more), decisions made after the doc was written, and any gate the user wants that the doc doesn't define.
    - A last line `implement using <model-id> <effort> <chillin|vibin|supersoldiers>` for the user to fill in, or the roster they already named, verbatim. Never pre-fill a tier: a filled value counts as the user naming it. It is the roster create-plan records in Orchestration, not a go to implement.

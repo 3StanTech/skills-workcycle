@@ -89,7 +89,7 @@ A technical fix never triggers a new image set or a new sample. Regenerate unrea
 
 ## 4. Scope
 
-Follow explore's Stage 4: components with effort and dependencies, minimum version first. If the build needs 2 or more phases that each need their own plan, ask: create a roadmap with the `roadmap` skill (Recommended) / keep one plan.
+Follow explore's Stage 4: components with effort and dependencies, minimum version first. Whenever the build needs 2 or more phases that each need their own plan, ask: create a roadmap with the `roadmap` skill (Recommended) / keep one plan. Raise it yourself every time it applies. On a yes, create the roadmap in Stage 5 in the same turn as the doc ([explore](../explore/SKILL.md) §5 item 4); never hand the owner a `/roadmap` command to paste.
 
 **STOP** for review.
 
@@ -105,7 +105,7 @@ Follow explore's Stage 4: components with effort and dependencies, minimum versi
 implement using <model-id> <effort> <chillin|vibin|supersoldiers>
 ```
 
-Then print the roster guide (installed model IDs and efforts, the stance lines, the fallback note) per [explore](../explore/SKILL.md) §5 item 5. Carry a roster the user already named verbatim; never pre-fill a tier.
+Then print the roster guide (installed model IDs and efforts, the stance lines, the fallback note) per [explore](../explore/SKILL.md) §5 item 6. Carry a roster the user already named verbatim; never pre-fill a tier.
 
 ## Resumability
 
