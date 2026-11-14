@@ -37,8 +37,11 @@ const timeout = (p, ms, what) => Promise.race([p, sleep(ms).then(() => { throw n
 // attach to another Chrome that happens to listen on a guessed port.
 const profile = mkdtempSync(join(tmpdir(), 'sky-measure-'));
 const proc = spawn(chrome, ['--headless=new', '--remote-debugging-port=0', `--user-data-dir=${profile}`, '--window-size=1440,900', 'about:blank'], { stdio: 'ignore' });
-let spawnError = null;
-const exited = new Promise((r) => { proc.once('exit', r); proc.once('error', (e) => { spawnError = e; r(); }); });
+// 'error' fires both when the launch fails and when a later kill() fails; only a launch
+// failure (no 'spawn' event yet) means there is no process to wait for.
+let spawned = false, spawnError = null;
+proc.once('spawn', () => { spawned = true; });
+const exited = new Promise((r) => { proc.once('exit', r); proc.on('error', (e) => { if (!spawned) { spawnError = e; r(); } }); });
 
 let cleaning = null;
 function cleanup() {
