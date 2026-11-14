@@ -26,6 +26,7 @@ The four pillar sections in this file are the working defaults — apply them au
 - `ui-build/usability.md` — feedback, forms, navigation, accessibility, content. Read when building forms, multi-step flows, or anything with non-trivial interaction states.
 - `ui-build/performance.md` — assets, JavaScript, rendering, Core Web Vitals, measurement. Read when payload, load time, or runtime jank is in scope.
 - `ui-build/page-craft.md` — page composition, visual craft, motion safety, content honesty, theme, launch checklist. Read for any page or mock (landing, marketing, portfolio, app shell).
+- `ui-build/motion.md` — the motion [skill map](ui-build/motion.md#skill-map) and house rules (easing by role, continuity, exits, stagger). Read whenever the build adds or changes motion: one animation goes to `animate`, several elements moving together to `choreograph`, drag, swipe or sheet to `gestures`. If the skill is installed, use it; otherwise apply the house rules in `ui-build/motion.md` and say so.
 
 ### 3. Audit before delivering
 
@@ -36,13 +37,15 @@ Never hand over a build you haven't actually resized and abused. Minimum pass, e
 3. **Abuse sweep.** Long text in every text slot, empty data, a failed request, a double-click on submit.
 4. **Weight sweep.** Anything obviously heavy — uncompressed images, an imported library used for one function, render-blocking work before first paint?
 
-5. **Visual bug fixes.** Measure before theorising (computed styles, every matched CSS rule, `scrollHeight` vs `clientHeight`), then apply the fix in the browser first (inject the CSS or DOM change) and screenshot before committing. A fix that was not reproduced in the browser is not done.
+5. **Motion sweep** (when the build touches motion). Run `animation-performance`, then `review-animations` per the [skill map](ui-build/motion.md#skill-map). If the skill is installed, use it; otherwise apply the house rules in `ui-build/motion.md` and say so.
+
+6. **Visual bug fixes.** Measure before theorising (computed styles, every matched CSS rule, `scrollHeight` vs `clientHeight`), then apply the fix in the browser first (inject the CSS or DOM change) and screenshot before committing. A fix that was not reproduced in the browser is not done.
 
 Fix what you find. If a fix is genuinely out of scope, say so explicitly in the handoff rather than leaving it as a silent landmine.
 
 ### 4. Report (when the task is a review, not a build)
 
-If asked to audit or improve an existing build, run the four pillars as an inspection in this order: **usability breakage first** (things that stop or confuse users), **responsive breakage second** (things broken at real viewports), **performance third** (things that are slow), **page craft fourth** (composition, honesty and launch gaps). Report findings by severity with concrete fixes — file/line or selector-level specificity, not "consider improving performance." Quick wins (a missing viewport tag, an unoptimized hero image, a missing pending state) go at the top.
+If asked to audit or improve an existing build, run the four pillars as an inspection in this order: **usability breakage first** (things that stop or confuse users), **responsive breakage second** (things broken at real viewports), **performance third** (things that are slow), **page craft fourth** (composition, honesty and launch gaps). Report findings by severity with concrete fixes — file/line or selector-level specificity, not "consider improving performance." Quick wins (a missing viewport tag, an unoptimized hero image, a missing pending state) go at the top. When the UI has motion, review it with `remove-animations` → `improve-animations` → `animation-performance` per the [skill map](ui-build/motion.md#skill-map). If the skill is installed, use it; otherwise apply the house rules in `ui-build/motion.md` and say so.
 
 If you write a report file, and the working directory is a git repository, write outputs to the project folder outside the git tree, or to the session scratchpad — never commit process artifacts.
 
@@ -144,6 +147,7 @@ For a final look-and-feel pass on a UI that already works. Make it look intentio
 - No new blocking resources: no extra CDN font families, large images, or external stylesheets. A new font needs `font-display: swap`, subsetting, and the owner's sign-off.
 - CSS over JS; no scroll/resize listeners or layout-reading JS for cosmetic effects. Animate only `transform` and `opacity` in a polish pass (stricter than the build floor in `ui-build/page-craft.md`, on purpose: a polish pass adds no new effect types); respect `prefers-reduced-motion`.
 - Keep fluid units and existing breakpoints. Re-check every change at ~360px, ~768px, and ~1280px: no horizontal scroll, touch targets ≥44×44px.
+- Test the pass the way people meet it: several widths, touch emulation and a throttled 3G connection, with a before-and-after screenshot for every fix ([Emil Kowalski's polish prompt](https://x.com/emilkowalski/status/2120508498236596597)).
 - No layout thrash: images keep dimensions or aspect-ratio; placeholders keep the loaded footprint.
 - Don't break behavior: never rename classes/IDs that JS or tests hook into, change DOM that handlers depend on, or alter form semantics. Flag any markup restructure and its risk first.
 - Accessibility floor: visible focus, contrast ≥4.5:1 body / ≥3:1 large text, headings in order.

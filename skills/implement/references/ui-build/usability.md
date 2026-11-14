@@ -6,6 +6,7 @@ The deep version of Pillar 2. Skim what's relevant; skip what isn't.
 - [Feedback & system status](#feedback--system-status)
 - [Forms](#forms)
 - [Navigation & wayfinding](#navigation--wayfinding)
+- [Overlays](#overlays)
 - [Accessibility](#accessibility)
 - [Content & microcopy](#content--microcopy)
 - [Cognitive load](#cognitive-load)
@@ -23,14 +24,28 @@ The deep version of Pillar 2. Skim what's relevant; skip what isn't.
   full-screen takeover for a small action). Success: visible confirmation —
   toast, inline check, state change. Failure: message near the point of
   action.
-- **Perceived speed**: under ~100ms feels instant — no indicator needed;
-  100ms–1s — subtle indicator; over ~1s — explicit progress; over ~10s —
-  progress + the option to leave and come back. Skeleton screens beat
-  spinners for content loads (they set shape expectations and reduce
-  perceived wait).
+- **Perceived speed**: under ~300ms shows no loading state (one that
+  appears and vanishes reads as a flash); up to a few seconds — a subtle
+  indicator in place; over a few seconds — explicit progress; over ~10s —
+  progress + the option to leave and come back.
+- **Pick the waiting pattern by the wait** ([tip 017](https://x.com/Kubai087/status/2121449185014845794)):
+  a quick action (refresh, sync) spins the icon on its own button and a
+  toast reports the result; a load whose layout is known shows a skeleton
+  that the content replaces in place, so nothing jumps; a long task
+  (upload, import) shows progress and its outcome, in a toast, a
+  notification card or the page itself.
+- **Toast or notification** ([tip 016](https://x.com/Kubai087/status/2120682993563922586)):
+  a toast reports the result of the user's own action, may carry Undo and a
+  countdown, then leaves on its own; a slow action can show progress and be
+  replaced in place by its result. Anything the user must deal with is not
+  a toast: confirm irreversible actions before they run, and keep failures
+  that need attention on screen until resolved. A notification comes from
+  the system or other people, can be unrelated to the current task,
+  persists until handled or dismissed, and stacks.
 - **Optimistic UI** (update immediately, reconcile with server) is great for
   low-stakes, high-frequency actions (likes, toggles, reorders) — but it
-  requires a rollback path and an error surface when the server disagrees.
+  requires a rollback path and an error surface when the server disagrees:
+  revert the change, say why, and offer a retry.
   For high-stakes actions (payments, deletes, sends), wait for confirmation.
 - **Never fail silently.** A caught error that only reaches `console.error`
   is invisible to the user; something in the UI must change.
@@ -76,6 +91,33 @@ The deep version of Pillar 2. Skim what's relevant; skip what isn't.
   onward (search, home, retry, suggestions).
 - **Search behavior**: forgiving of case/whitespace, shows "no results"
   helpfully, preserves the query in the box.
+- **Long section lists** ([tip 008](https://x.com/Kubai087/status/2116911391437443471)):
+  on phones, a persistent bottom bar opens the full section list, one
+  tappable entry per line; a side list taller than the screen scrolls on its
+  own, with faded edges and an arrow showing more above or below. Safari
+  tints its toolbar from the header colour, so keep that colour on brand.
+- **Nested menus keep their submenu** ([tip 002](https://x.com/Kubai087/status/2114729985143677258)):
+  while the pointer travels diagonally toward an open submenu (inside the
+  triangle from its previous position to the submenu's near corners), rows
+  it crosses neither highlight nor switch; switch once it leaves that
+  triangle or rests there over ~1s. Open a submenu after ~200ms of hover,
+  close the menu ~350ms after the pointer leaves it, act at once on touch,
+  and drive row highlight from state rather than `:hover`.
+
+## Overlays
+
+Choose the kind before styling it ([tip 009](https://x.com/Kubai087/status/2117314098165862612)):
+
+- **Tooltip** adds text to what is under the pointer (a truncated label);
+  once it holds actions it becomes a clickable **popover**. A bubble that
+  follows the pointer suits continuous readouts (charts). On touch, all of
+  these open on tap.
+- **Confirmation:** reversible actions run at once and offer Undo;
+  irreversible ones confirm inline next to the control, and only
+  high-impact or bulk actions stop the user with a dialog.
+- **Forms:** a short form that needs nothing else on screen goes in a
+  dialog; a long form, or one that refers to the page behind it, goes in a
+  drawer; a form that is the main task gets its own page.
 
 ## Accessibility
 

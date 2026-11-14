@@ -29,6 +29,7 @@ Hooks (`hooks/`) and `scripts/wait-ci-deploy.sh` (bounded wait for CI and deploy
 - Python 3 and git.
 - Node.js, for `lavish`, `explore-design` and create-plan decision pages (they run the pinned `npx -y lavish-axi@0.1.97`, which downloads on first use).
 - Optional: `gh` (and `jq` for the Netlify check) for `scripts/wait-ci-deploy.sh`.
+- Optional: eleven of [Emil Kowalski's skills](https://github.com/emilkowalski/skills), listed in `skills/implement/references/ui-build/motion.md`; the stage skills call them at their moments. Without them the house rules in that file apply. Install line in `skills/explore-design/references/sources.md`.
 - Optional: [`skills-orchestration`](https://github.com/3StanTech/skills-orchestration) for helpers, model routing and headless Claude/Codex/Grok workers. Without it, `implement` runs single-agent in your session.
 
 ### 2. Install
@@ -165,6 +166,8 @@ Secrets, runtime state (`~/.agents/state/`), the optional Netlify site map (`~/.
 - explore-design's taste, minimalist-editorial and industrial-brutalist directions are adapted from Leon Lin's [taste-skill](https://github.com/Leonxlnx/taste-skill) (MIT; notice in `skills/explore-design/NOTICE`).
 - The `landing-page` skill is adapted from Part A of Elaya's [landing-page-design](https://github.com/elayadesign/ai-design-skills) (MIT; notice in `skills/landing-page/NOTICE`); explore-design's clean-geist direction adapts its visual system (notice in `skills/explore-design/NOTICE`).
 - The `be-ambitious` skill is adapted from Dan McAteer's [be-ambitious](https://github.com/DannyMac180/skills/tree/main/be-ambitious) (MIT; prompt by Felix Rieseberg; notice in `skills/be-ambitious/NOTICE`).
+- explore-design's liquid glass direction, implement's motion floor (`ui-build/motion.md`) and the usability additions rewrite rules from Kubai087's "999 tips" series on X, with glass code left to his [Glasswork](https://github.com/kubai087/glasswork) (MIT, fetched per project, not redistributed); every source and its read date is in `skills/explore-design/references/sources.md`.
+- The motion skill map routes to Emil Kowalski's [skills](https://github.com/emilkowalski/skills) (MIT), installed separately and not redistributed; the polish-pass testing line comes from his polish prompt. The micro-transition shortlist was studied from Subhan's [amicro](https://github.com/Subhan-code/Amicro--Micro-transitions-) (MIT); nothing is copied.
 - implement's page-craft floor (`skills/implement/references/ui-build/page-craft.md`) adapts rules from taste-skill, from Elaya's [landing-page-design](https://github.com/elayadesign/ai-design-skills) (MIT) and from Paul Bakaus's [impeccable](https://github.com/pbakaus/impeccable) (Apache 2.0); notices in `skills/implement/NOTICE` and `skills/implement/LICENSE-APACHE-2.0.txt`.
 
 ## License

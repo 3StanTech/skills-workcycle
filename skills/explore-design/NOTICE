@@ -27,6 +27,19 @@ page-craft floor; the advice to invent believable names and figures was
 dropped; headline breaks come from max width and text wrapping instead of
 manual breaks; the gradient heading is listed as an override of web.md.
 
+
+liquid-glass direction (references/directions/liquid-glass.md) and the source
+register (references/sources.md): rules rewritten in our own words from
+Kubai087's "999 tips" posts on X (tips 004 and 010, and the bento card
+post), Apple's Human Interface Guidelines (Materials) and the owner's own
+glass work. No post text or attached prompt is copied; links and read dates
+are in references/sources.md.
+
+Glass code is not included. The direction points to Glasswork by Kubai087
+(https://github.com/kubai087/glasswork, MIT), fetched into each project from
+its INSTALL.md; projects that ship it keep its MIT notice. Its bundled
+wallpapers are Apple's and are not reused.
+
 ---
 
 taste-skill:

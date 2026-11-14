@@ -25,6 +25,24 @@ All text is paraphrased, merged and reorganised; none is copied verbatim.
    reorganised into page-craft.md sections. Licensed under the Apache
    License, Version 2.0; the full text is in LICENSE-APACHE-2.0.txt.
 
+
+implement/references/ui-build/motion.md, the additions to
+ui-build/usability.md (waiting states, toast or notification, long section
+lists, nested menus, overlays) and the polish-pass testing line in
+ui-build.md: rules rewritten in our own words from these sources. No text or
+code is copied; links and read dates are in
+explore-design/references/sources.md.
+
+- Kubai087's "999 tips" posts on X (tips 001, 002, 005, 006, 008, 009, 011,
+  014, 015, 016, 017 and the continuity post). Post text and attached
+  prompts are not reproduced.
+- Emil Kowalski's polish prompt (post on X) and his skills
+  (https://github.com/emilkowalski/skills, MIT). The skills are installed
+  separately and only named in motion.md's skill map; none is
+  redistributed here.
+- amicro by Subhan (https://github.com/Subhan-code/Amicro--Micro-transitions-,
+  MIT): studied for the micro-transition shortlist; nothing copied.
+
 ---
 
 taste-skill:
