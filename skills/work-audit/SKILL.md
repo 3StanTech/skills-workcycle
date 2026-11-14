@@ -141,6 +141,8 @@ Short summary: scope, depth and verdict, what was audited, fixed, and waiting on
 6. **System fit & sustainability** — maintainable, or a fragile one-off hack? (Full)
 7. **Security & production readiness (Full only)** — checklist in `references/security-lens.md`.
 
+When the scope touches UI motion, lens 2 also applies `animation-performance` and `review-animations` per the [motion skill map](../implement/references/ui-build/motion.md#skill-map); if they are not installed, it applies the house rules there and says so.
+
 ## Design guardrails (fixed)
 
 - **Commits only on an explicit go**, by the dispatcher, after a clean re-verify. Audit and release stay separate jobs.

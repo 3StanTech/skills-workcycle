@@ -49,7 +49,7 @@ The same four aims as [explore](../explore/SKILL.md) (the goal, the problem, the
 
 **Goal:** 2–3 named directions, the imagery source, the medium for each asset, and the cost, agreed before anything is built or generated.
 
-1. Propose 2–3 directions with a one-line idea each. One is always **"re-align and fix"** (the current brand, corrected). Seed the others from the [direction library](references/directions/README.md) when a feel matches; it is a starting point, never a requirement to enlarge the brief.
+1. Propose 2–3 directions with a one-line idea each. One is always **"re-align and fix"** (the current brand, corrected). Seed the others from the [direction library](references/directions/README.md) when a feel matches; it is a starting point, never a requirement to enlarge the brief. When liquid glass or an Apple feel is chosen, call `apple-design` per the [motion skill map](../implement/references/ui-build/motion.md#skill-map); if the skill is installed, use it, otherwise apply the house rules there and say so.
 2. **Expert lens:** answer [be-ambitious](../be-ambitious/SKILL.md) questions 1–3 for the design field at hand (e.g. conversion design, editorial identity) and let them sharpen the directions, not enlarge them.
 3. Ask the **imagery question** ([medium and providers → Imagery question](references/medium-and-providers.md#imagery-question)): AI image generation, Claude-made visuals, the owner's or licensed photos, or a mix. Ask the **image-worker model and effort** only when AI is in the answer (two questions, no "(Recommended)" label on a tier).
 4. Choose the **medium per asset** with [medium and providers](references/medium-and-providers.md): coded HTML for the sample mocks, SVG for marks and icons, the imagery answer for pictures.
@@ -75,6 +75,8 @@ Run the steps in order. Skip any step the brief already settles and say so. Prev
 | **G3 Sample mocks** | One coded mock per chosen direction, all on the same `content.md`, on the production stack's conventions and the floor; more of any direction on request (count and cost stated first). Phone and desktop screenshots in chat as a contact sheet | [coded mocks → Sample round](references/coded-mocks.md), [web](references/web.md), [floor](../implement/references/ui-build/page-craft.md) |
 | **Compare** | `compare.html` shows every sample side by side (Lavish `comparison` playbook) or as a screenshot sheet; the owner picks a winner or a named mix | [Lavish review](references/lavish-review.md) |
 | **G4 Refine** | Lavish opens on the winner; the owner annotates; each note becomes a targeted edit; the final pick comes back through an in-page form; the approved mock is exported | [Lavish review](references/lavish-review.md) |
+
+**Motion skills in the round** ([skill map](../implement/references/ui-build/motion.md#skill-map)): comparing variants of one element (a header, a background, a motion pass) runs `prototype`; G4's motion pass on the winner runs `find-animation-opportunities` and shows its shortlist as live switches; when the round held design corrections, G4's close runs `learn-taste` (it proposes; the owner approves each rule). If the skill is installed, use it; otherwise apply the house rules in `motion.md` and say so.
 
 **Modes** (from the deliverable the owner asked for):
 
