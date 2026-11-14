@@ -17,14 +17,14 @@ The motion skills are Emil Kowalski's (`emilkowalski/skills`, installed separate
 
 | Moment | Skill | How to call |
 |---|---|---|
-| explore-design: comparing variants of one element (a header, a background, a motion pass) | `prototype` | read `~/.agents/skills/prototype/SKILL.md` and follow it |
+| explore-design: comparing variants of one element (a header, a background, a motion pass) | `prototype` | read `~/.agents/skills/prototype/SKILL.md` and follow it, inside explore-design's limits: build the variants in the mocks folder (outside git), carry the pick into the winning mock only, keep the variant files and the picker in the mocks folder as resumable evidence (prototype's keep-on-request case; skip its delete-the-surface step), and leave production integration to `/implement` |
 | explore-design G4: motion pass on the winning mock | `find-animation-opportunities` | invoke; show its shortlist as live switches in the mock |
 | implement: adding one animation | `animate` | invoke |
 | implement: several elements moving together | `choreograph` | invoke |
 | implement: drag, swipe or sheet | `gestures` | invoke |
 | any stage: the direction is liquid glass or an Apple feel | `apple-design` | invoke |
 | implement audit ([ui-build.md](../ui-build.md) §3) and work-audit, when the change touches motion | `animation-performance`, then `review-animations` | invoke the first; read `~/.agents/skills/review-animations/SKILL.md` and follow it |
-| review of an existing UI's motion ([ui-build.md](../ui-build.md) §4) | `remove-animations` → `improve-animations` → `animation-performance` | invoke in that order |
+| review of an existing UI's motion ([ui-build.md](../ui-build.md) §4) | `remove-animations` → `improve-animations` → `animation-performance` | invoke in that order; in a report-only review, record `remove-animations`' cuts as findings and apply none unless the task is a build or the owner approves the edits |
 | explore-design G4 close and `/end`, when the session held design corrections | `learn-taste` | read `~/.agents/skills/learn-taste/SKILL.md` and follow it; it proposes, the owner approves each rule |
 
 - **Fallback, said once and used everywhere:** if the skill is installed, use it; otherwise apply the house rules below and say so.
@@ -78,7 +78,7 @@ The seven common cases:
 
 ## Exits and closing the gap
 
-- The exit is a picture of leaving; it never blocks input or delays the real change. Commit the data at once.
+- The exit is a picture of leaving; it never blocks input or delays a change that is already authorized. When a change counts as authorized (confirmation, server acknowledgement, rollback) stays with [usability](usability.md#destructive--irreversible-actions); the animation never adds a wait of its own.
 - Capture what is leaving (its rectangle and appearance) before the state changes, then hide the real element; virtualised lists drop it on the next update.
 - Draw the effect on one layer above the list that ignores pointer input; the first frame must match the real element exactly.
 - Close the gap with a transform spring, never by animating height or margin, and start it before the exit effect finishes so the list never waits.
@@ -90,7 +90,7 @@ The seven common cases:
 - **Transforms only:** neighbours lean with `transform`; the gap opens and closes without layout animation.
 - **Never animate a blur radius or a box-shadow ring:** pre-blur two shadow states and cross-fade their opacity.
 - **Hit-test on the resting footprint:** hover listeners sit on a static outer element and moving layers take `pointer-events: none`, so a moving card never flickers at its edge.
-- **Press feedback:** about 1px down, the face's light flips and the outer shadow collapses on press; ~120 ms for transform, ~140 ms for shadows, ~160 ms for colour. Keep the same number of shadow layers at rest and pressed so the shadow animates instead of jumping. Micro presses: hover scale ≈1.02, press ≈0.97.
+- **Press feedback:** about 1px down with `transform`, while a pre-rendered pressed layer (lighting flipped, outer shadow collapsed) cross-fades in over the rest layer; ~120 ms for the transform, ~140 ms for the cross-fade, ~160 ms for colour. Micro presses: hover scale ≈1.02, press ≈0.97.
 
 ## Micro-transition shortlist
 

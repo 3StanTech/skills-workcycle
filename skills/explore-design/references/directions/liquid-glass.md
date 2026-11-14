@@ -49,13 +49,13 @@ Everything else (blur, tint, rim light, ink) renders in every current browser.
 
 ## 4. Corners
 
-- **Concentric:** nested radii follow page craft's nested-radius rule (inner = outer − gap, sharing one centre); boxes on the same level share one radius, never below 4px; pills and circles stay round; keep radii and padding on a 4px grid.
+- **Concentric:** nested radii follow page craft's [nested-radius rule](../../../implement/references/ui-build/page-craft.md#visual-craft); on top of it, boxes on the same level share one radius, never below 4px, pills and circles stay round, and radii and padding sit on a 4px grid.
 - **Continuous corners** as a progressive enhancement: `@supports (corner-shape: superellipse(1.25)) { .glass { corner-shape: superellipse(1.25); } }`, with `corner-shape: round` on pills and circles.
 - **Safari and iOS:** give every surface that has `backdrop-filter` `corner-shape: round` there; iOS 27 leaves an element with both a backdrop filter and a superellipse corner undrawn on real devices (the simulator hides the bug).
 
 ## 5. Solid surfaces beside the glass
 
-Opaque cards that sit next to glass (bento grids, panels on a plain section) take the same light model: a faint inner glow along the top edge, a 1px stroke, and two or three stacked soft shadows. On hover either the shadow spreads and drops lower (the card lifts) or the stroke deepens slightly while the face brightens; pick one per page.
+Opaque cards that sit next to glass (bento grids, panels on a plain section) take the same light model: a faint inner glow along the top edge (a highlight, not elevation) and one elevation treatment, as page craft requires: either two or three stacked soft shadows, or a 1px stroke with no shadow. Hover keeps that treatment: stacked shadows spread and drop lower as the card lifts; a stroked card deepens its stroke slightly while the face brightens.
 
 ## 6. Scroll edge fade
 
