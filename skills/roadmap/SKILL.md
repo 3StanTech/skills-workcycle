@@ -120,6 +120,7 @@ Run this after the final phase is Closed and its `/end` fold has run.
 1. Replace the header's `Status:` line with `Status: Closed <date> · Final SHA <sha>` (never add a second Status line), and replace Resume here with `Initiative closed. Nothing to resume.` plus any Deferred owner reminders still open.
 2. In `master.md`, change the roadmap's line under `## Active roadmaps` to `(Closed <date>)`. Remove it once the owner says it is no longer useful.
 3. Keep the folder as history. Never delete it.
+4. **Cleanup offer:** unless the roadmap header already carries a `Cleanup:` line, run the [cleanup pass](../end/references/cleanup-pass.md) for this initiative and add its marker under `Status:`.
 
 ---
 

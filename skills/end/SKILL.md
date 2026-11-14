@@ -39,7 +39,8 @@ If `~/.agents/local/workcycle.md` lists steps under `/end extra steps`, run them
 2. **In-flight work.** If the session stopped mid-task and no resumable file captures it (a plan's Start here, the roadmap's Resume here, or a handoff), rewrite that plan's Start here, or write a handoff with the `handoff` skill. Follow `~/AGENTS.md` → Resumable outputs.
 3. **Design corrections.** When the session held corrections to a UI's look or motion, run `learn-taste` per the [motion skill map](../implement/references/ui-build/motion.md#skill-map): it proposes rules and writes only what the owner approves. If it is not installed, list the corrections as candidate rules in the report and say so.
 4. **Uncommitted files.** For each repo the session touched, report `N uncommitted files in <repo>` from `git status --short`. Never stage, commit or push.
+5. **Cleanup offer.** Run the [cleanup pass](references/cleanup-pass.md) unless this workcycle already has a `Cleanup:` marker (the governing roadmap's header, or the project's newest CHANGELOG entry) or the session created nothing to clean.
 
 ## 5. Report
 
-Reply with a short summary of exactly what changed since the last version — including anything found-but-not-fixed, listed as open items — then any due **Reminders** and **Archived audits**, the in-flight result (what captures unfinished work, or that none was in flight), and the `N uncommitted files in <repo>` lines.
+Reply with a short summary of exactly what changed since the last version — including anything found-but-not-fixed, listed as open items — then any due **Reminders** and **Archived audits**, the **Cleanup** result (what was removed and kept, declined, or skipped because a marker exists), the in-flight result (what captures unfinished work, or that none was in flight), and the `N uncommitted files in <repo>` lines.
