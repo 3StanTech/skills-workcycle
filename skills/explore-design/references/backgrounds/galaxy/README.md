@@ -50,7 +50,7 @@ Every effect is off by default; the plain call gives stars, nebula, parallax and
 | `chroma` | false | The rim's hot core splits warm above, cool below | Chromatic rim |
 | `still` | false | Force the still frame (review switch for "what reduced-motion visitors see") | Still frame |
 
-Methods: `set(next)` changes options without rebuilding; `update(next)` rebuilds the stars (density, milky, constellations, glints, twinkle); `shockwave(x, y)` sends one ring across the sky from a point, e.g. on a click or on focusing the main input (at most three at once); `focusIn()` fades and settles the sky once on load; `destroy()` removes every listener (use it when a variant picker swaps backgrounds).
+Methods: `set(next)` changes options without rebuilding; `update(next)` rebuilds the stars (density, milky, constellations, glints, twinkle); `shockwave(x, y)` sends one ring across the sky from a point; tie it to one rare, deliberate moment (the first focus of the main input, a sent form), never to every click or a keyboard action (at most three at once); `focusIn()` fades and settles the sky once on load; `destroy()` removes every listener (use it when a variant picker swaps backgrounds).
 
 A horizons helper for markers in the page:
 
