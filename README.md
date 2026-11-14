@@ -27,7 +27,7 @@ Hooks (`hooks/`) and `scripts/wait-ci-deploy.sh` (bounded wait for CI and deploy
 ### 1. Prerequisites
 
 - Python 3 and git.
-- Node.js, for `lavish`, `explore-design` and create-plan decision pages (they run the pinned `npx -y lavish-axi@0.1.90`, which downloads on first use).
+- Node.js, for `lavish`, `explore-design` and create-plan decision pages (they run the pinned `npx -y lavish-axi@0.1.97`, which downloads on first use).
 - Optional: `gh` (and `jq` for the Netlify check) for `scripts/wait-ci-deploy.sh`.
 - Optional: [`skills-orchestration`](https://github.com/3StanTech/skills-orchestration) for helpers, model routing and headless Claude/Codex/Grok workers. Without it, `implement` runs single-agent in your session.
 
@@ -152,7 +152,7 @@ rm -rf ~/.agents/bundles/skills-workcycle
 - Python 3 and git.
 - `skills-orchestration` is optional. Without it, the Orchestration sections of `create-plan` and `implement` do not apply, `implement` runs single-agent in the session (Chillin semantics, no helpers, no tier resolution), and the create-plan hook skips launch detection.
 - `scripts/wait-ci-deploy.sh` needs `gh`, and `jq` for the Netlify check.
-- `explore-design` (refine step and decision pages) and `create-plan` decision pages need Node.js: they run the Lavish review tool with `npx -y lavish-axi@0.1.90` (pinned; bump every call site and `skills/lavish/NOTICE` together). The `/lavish` command is included as `skills/lavish`, adapted from Kun Chen's skill (see Credits and `skills/lavish/NOTICE`).
+- `explore-design` (refine step and decision pages) and `create-plan` decision pages need Node.js: they run the Lavish review tool with `npx -y lavish-axi@0.1.97` (pinned; bump every call site and `skills/lavish/NOTICE` together). The `/lavish` command is included as `skills/lavish`, adapted from Kun Chen's skill (see Credits and `skills/lavish/NOTICE`).
 
 ## Not in this repo
 

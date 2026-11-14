@@ -50,14 +50,14 @@ Do not use Lavish as an editor for project source pages. It is an annotation loo
 
 Workflow, design and playbook details come from the CLI, not this file, because installed copies go stale. The local rules above (invocation, location, local-only, production) still apply.
 
-- `npx -y lavish-axi@0.1.90 --help` for commands and the review-loop workflow.
-- `npx -y lavish-axi@0.1.90 reply --help` to post an agent reply and exit once the server accepts it, when you are not about to long-poll.
-- `npx -y lavish-axi@0.1.90 design` for design-direction priority and current snippets.
-- `npx -y lavish-axi@0.1.90 playbook <id>` for focused artifact guidance (`npx -y lavish-axi@0.1.90 playbook` lists the ids; use `input` and `comparison` for design picks).
+- `npx -y lavish-axi@0.1.97 --help` for commands and the review-loop workflow.
+- `npx -y lavish-axi@0.1.97 reply --help` to post an agent reply and exit once the server accepts it, when you are not about to long-poll.
+- `npx -y lavish-axi@0.1.97 design` for design-direction priority and current snippets.
+- `npx -y lavish-axi@0.1.97 playbook <id>` for focused artifact guidance (`npx -y lavish-axi@0.1.97 playbook` lists the ids; use `input` and `comparison` for design picks).
 
-You do not need lavish-axi installed globally. Invoke it with `npx -y lavish-axi@0.1.90 <html-file>`. If lavish-axi output shows a follow-up command starting with `lavish-axi`, run it as `npx -y lavish-axi@0.1.90 ...` instead.
+You do not need lavish-axi installed globally. Invoke it with `npx -y lavish-axi@0.1.97 <html-file>`. If lavish-axi output shows a follow-up command starting with `lavish-axi`, run it as `npx -y lavish-axi@0.1.97 ...` instead.
 
-**Origin:** adapted from Kun Chen's lavish-axi skill; see `NOTICE`. The Lavish workflow here (this skill plus explore-design's `lavish-review.md` and `decision-page.md`) also adapts four rules from Thariq Shihipar's html-plan skill; the decision page ([decision-page.md](../explore-design/references/decision-page.md)) carries them. Update this skill with `python3 ~/.agents/scripts/skill-upstream-merge.py lavish` (dry run first), never `npx skills update`. The editor version is pinned (`lavish-axi@0.1.90`); bump it in every call site and in `NOTICE` together.
+**Origin:** adapted from Kun Chen's lavish-axi skill; see `NOTICE`. The Lavish workflow here (this skill plus explore-design's `lavish-review.md` and `decision-page.md`) also adapts four rules from Thariq Shihipar's html-plan skill; the decision page ([decision-page.md](../explore-design/references/decision-page.md)) carries them. Update this skill with `python3 ~/.agents/scripts/skill-upstream-merge.py lavish` (dry run first), never `npx skills update`. The editor version is pinned (`lavish-axi@0.1.97`); bump it in every call site and in `NOTICE` together.
 
 ## Request
 

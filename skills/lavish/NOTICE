@@ -4,7 +4,7 @@ Upstream-Repo: https://github.com/kunchenguid/lavish-axi
 Upstream-Path: skills/lavish
 Upstream-Commit: 81fb3832f4eecf35bfaca51048e918d2ef7aed4d
 Upstream-Tree: 680ba3c9c9480ae13b515ccf0ad2837957ba10e8
-Pinned-Package: lavish-axi@0.1.90
+Pinned-Package: lavish-axi@0.1.97
 
 Local changes: manual-only invocation, artifact location rules, local-only
 (no share), not for production pages, pointers to explore-design's
