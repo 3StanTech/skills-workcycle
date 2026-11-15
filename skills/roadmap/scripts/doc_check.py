@@ -39,9 +39,28 @@ Finds the drift that makes a doc lie to the next session:
   interrupt an urgent-stop "Interrupted" block (any heading level) with no
             next action or no `resume from` paste line; the block and its
             "Unverified (urgent stop)" subsection are otherwise optional
+  selfclose a Closed findings file whose fixes ran (any '## Fix…' section but
+            a Fix queue holds more than a bare "None." / "N/A" / "No fixes") or
+            that has a '## Re-check', unless: the re-check sections have a
+            '### Verdicts' list ('<id> · <verdict>', the verdict as the first
+            word, any bullet style); every
+            PARTIAL, NOT FIXED or NEW id has a '### Leftovers' line; and every
+            Leftovers line is FIXED with a Fixed by tier (not a role such as
+            session or dispatcher) and a Verified by that is
+            neither the fixer (same text, a word-prefix of it, or session /
+            dispatcher / fixer / implementer / self), or is accepted open by the
+            owner with a date. Prose is never read. Always an error; files dated
+            before SELFCLOSE_FROM and those in SELFCLOSE_EXEMPT are skipped
+  restatement a mocks README with a line naming the restatement followed, in
+            the same cell or the next, by an affirmative decision (Matches,
+            Confirmed, Approved, Agreed, Yes; the label "Stage 1 restatement
+            confirmed" always counts), but no non-empty restatement.md beside
+            it. "Not confirmed", "pending" and "Mostly, with corrections" do not
+            count
 
 A Closed (or Done) doc is history: starthere, prime and stamp are not enforced,
-nor are a closed roadmap's size, phase, log and resume checks.
+nor are a closed roadmap's size, phase, log and resume checks, nor a closed mocks
+README's restatement check. selfclose applies only to Closed findings files.
 
 Prints one JSON object to stdout ({file, kind, errors, warnings, info}).
 Exit 0 when there are no errors, 1 when there are errors, 2 on bad usage.
@@ -111,6 +130,22 @@ UNSHIPPED = re.compile(r"\b(not started|planned|in progress|blocked)\b", re.I)
 DATE = re.compile(r"\b(20\d\d-\d\d-\d\d)\b")
 BACKTICK = re.compile(r"`([^`\n]+)`")
 SHA = re.compile(r"^[0-9a-f]{7,12}$")
+
+# selfclose: findings files dated before the rule, plus two archived same-day files
+# that predate it and were later verified by their auditor, are history.
+SELFCLOSE_FROM = "2026-11-15"
+SELFCLOSE_EXEMPT = {
+    "2026-11-14-design-motion-phase-1.md",
+    "2026-11-15-design-motion-phase-2.md",
+}
+VERDICT = re.compile(r"^(NOT FIXED|FIXED|PARTIAL|NEW)\b", re.I)  # first word after '·'
+# the whole Fixes section, Markdown emphasis removed, is only a no-fixes marker
+NO_FIXES = re.compile(r"(?i)(?:none|n/a|no fix(?:es)?(?: needed| applied)?)[.!]?")
+SELF_NAMES = {"session", "this session", "dispatcher", "fixer", "implementer", "self"}
+# a line naming the restatement, then (same cell or the next) an affirmative decision
+RESTATED = re.compile(
+    r"(?i)\brestatement\b[\s:*_`|()\u2013\u2014-]*(?:matches|matched|confirmed|approved|agreed|yes)\b"
+)
 
 
 def parse_args():
@@ -407,6 +442,104 @@ def main():
                 f"interrupt: line {i + 1} '{title}' has no paste line (`resume from <path>`)"
             )
 
+    # a Closed audit whose fixes were re-checked must show who else verified each leftover
+    if kind == "findings" and closed:
+        name = os.path.basename(path)
+        fdate = re.match(r"(20\d\d-\d\d-\d\d)", name)
+        # every section that records fixes (a "Fix queue" is only a plan) and every re-check
+        # (scanned directly: a repeated heading must not hide an earlier section)
+        h2 = [i for i, l in enumerate(lines) if l.startswith("## ")] + [len(lines)]
+        parts = [(lines[a][3:].strip().lower(), lines[a + 1 : b]) for a, b in zip(h2, h2[1:])]
+        fix_parts = [p for t, p in parts if t.startswith("fix") and not t.startswith("fix queue")]
+        re_parts = [(t, p) for t, p in parts if re.match(r"re-?check", t)]
+
+        def records_fixes(part):
+            """A fixes section records repairs unless it is empty or a bare no-fixes marker."""
+            text = "\n".join(part)
+            marker = re.sub(r"[*_`]", "", re.sub(r"(?m)^\s*(?:(?:[-*+>]|\d+[.)])\s*)+", "", text))
+            marker = re.sub(r"\s+", " ", marker).strip()
+            return bool(marker) and not NO_FIXES.fullmatch(marker)
+
+        # each section is classified on its own: two clean sections are still clean
+        fixes_ran = any(records_fixes(p) for p in fix_parts)
+        if name in SELFCLOSE_EXEMPT or (fdate and fdate.group(1) < SELFCLOSE_FROM):
+            info.append(f"selfclose: {name} predates the rule ({SELFCLOSE_FROM}); not checked")
+        elif fixes_ran or re_parts:
+            body = [l for t, p in re_parts for l in [f"## {t}", *p]]
+            bullet = re.compile(r"^\s*(?:[-*+]|\d+[.)])\s+(?=\S)")
+
+            def block(heading):
+                """Bullet lines under every '### <heading>' in the re-check sections."""
+                out, inside = [], False
+                for l in body:
+                    if l.startswith("#"):
+                        inside = bool(re.match(rf"(?i)^###\s+{heading}\b", l))
+                    elif inside and bullet.match(l):
+                        out.append([f.strip(" *`") for f in bullet.sub("", l).strip().split("·")])
+                return out
+
+            norm = lambda v: re.sub(r"\s+", " ", v.strip(" *`")).lower()
+            verdicts, left = block("verdicts"), block("leftovers")
+            if not verdicts:
+                errors.append(
+                    "selfclose: fixes or a re-check ran but '## Re-check' has no '### Verdicts' list"
+                    " (one line per re-checked item: '<id> · <verdict>')"
+                )
+            failed = []
+            for f in verdicts:
+                m = VERDICT.match(f[1]) if len(f) > 1 else None
+                if not m:
+                    errors.append(f"selfclose: verdict line '{' · '.join(f)[:60]}' names no verdict")
+                elif m.group(1).upper() != "FIXED":
+                    failed.append(norm(f[0]))
+            have = {norm(f[0]) for f in left}
+            missing = [i for i in failed if i not in have]
+            if missing:
+                errors.append("selfclose: verdicts with no Leftovers line: " + ", ".join(missing))
+            for f in left:
+                line = " · ".join(f)
+                label = line[:60]
+                if re.search(r"(?i)accepted open by owner\s+20\d\d-\d\d-\d\d", line):
+                    continue
+                field = lambda k: next(
+                    (norm(x.split(":", 1)[1]) for x in f if re.match(rf"(?i){k}\s*:", x)), ""
+                )
+                fixer, ver = field("fixed by"), field("verified by")
+                if fixer in ("", "none"):
+                    errors.append(f"selfclose: leftover '{label}' has no Fixed by")
+                elif fixer in SELF_NAMES:
+                    errors.append(
+                        f"selfclose: leftover '{label}' has Fixed by '{fixer}'; name the"
+                        " fixer's tier so it can be compared with the verifier"
+                    )
+                if ver in ("", "none"):
+                    errors.append(f"selfclose: leftover '{label}' has no Verified by")
+                elif ver in SELF_NAMES or (
+                    fixer and (ver == fixer or ver.startswith(fixer + " ") or fixer.startswith(ver + " "))
+                ):
+                    errors.append(
+                        f"selfclose: leftover '{label}' was verified by its fixer; the audit"
+                        " stays Open until the auditor or an owner-named reviewer verifies it"
+                    )
+                if norm(f[-1]) != "fixed":
+                    errors.append(
+                        f"selfclose: leftover '{label}' is not FIXED or accepted open by the"
+                        " owner, so the audit cannot be Closed"
+                    )
+
+    # a confirmed restatement must survive the session that confirmed it
+    if kind == "mocks" and any(RESTATED.search(l) for l in lines):
+        rpath = os.path.join(base, "restatement.md")
+        empty = True
+        if os.path.isfile(rpath):
+            with open(rpath, encoding="utf-8") as rf:
+                empty = not rf.read().strip()
+        if empty:
+            warnings.append(
+                "restatement: the gate log records a confirmed restatement but"
+                " restatement.md is missing or empty beside the README"
+            )
+
     # session log order and freshness
     title, span = find_section(secs, "Session log")
     newest_log = None
@@ -478,7 +611,7 @@ def main():
 
     # a closed doc is history: gate and compaction warnings no longer apply
     if closed:
-        moot = ("starthere:", "prime:", "stamp:", "handoff:")
+        moot = ("starthere:", "prime:", "stamp:", "handoff:", "restatement:")
         if kind == "roadmap":
             moot += ("size:", "phase:", "log:", "resume:")
         info.extend(f"(closed, not enforced) {w}" for w in warnings if w.startswith(moot))

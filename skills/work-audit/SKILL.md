@@ -51,7 +51,7 @@ Depth omitted: run triage and ask one depth question with its verdict as the rec
 | Auditors | 1 | one repo: 3 (A plan fidelity + ripple; B correctness + sequence simulation + security lens; C cleanup + system fit). More repos: one per repo, all 7 lenses |
 | Lenses | 2 Correctness, 3 Ripple, 5 Cleanup | all 7 |
 | Proof | the project's mechanical checks (type-check, lint, tests, build) + one realistic usage path | every realistic path; live walk by the dispatcher |
-| Fixes | unambiguous only; 1 re-check, no loop | up to 2 fix→re-verify loops (Phase 6) |
+| Fixes | unambiguous only; 1 re-check, no loop; leftovers stay Open (Phase 6) | up to 2 fix→re-verify loops (Phase 6) |
 
 ## Modes
 
@@ -60,9 +60,19 @@ Depth omitted: run triage and ask one depth question with its verdict as the rec
 
 ## Findings file
 
-`<handoffs-root>/audits/<YYYY-MM-DD>-<slug>.md` (`<handoffs-root>` as in `~/.agents/skills/handoff/SKILL.md`), outside git, written from Phase 1 onward and updated after each phase: a `## Start here` block (goal and scope, `Verified` with each repo's HEAD, Read first, Next = `/work-audit fix <this path>` or the commit flow, "No `/prime` or `/handoff` needed"), brief (with the triage lines), findings (structured as in Phase 3), triage, fixes, checks, `## Open items` (questions and unfixed findings), and `Status: Open | Closed`. It is the resume point for a cut-off audit; `/handoff now` points at it. Set `Status: Closed` with open items "none" at the end of a clean run; `/end` archives closed files to `audits/archive/`.
+`<handoffs-root>/audits/<YYYY-MM-DD>-<slug>.md` (`<handoffs-root>` as in `~/.agents/skills/handoff/SKILL.md`), outside git, written from Phase 1 onward and updated after each phase: a `## Start here` block (goal and scope, `Verified` with each repo's HEAD, Read first, Next = `/work-audit fix <this path>` or the commit flow, "No `/prime` or `/handoff` needed"), brief (with the triage lines), findings (structured as in Phase 3), triage, fixes, `## Re-check` (whenever fixes ran), checks, `## Open items` (questions and unfixed findings), and `Status: Open | Closed`. It is the resume point for a cut-off audit; `/handoff now` points at it. Set `Status: Closed` with open items "none" at the end of a clean run; `/end` archives closed files to `audits/archive/`. A run with leftovers (Phase 6) closes only when every Leftovers line is FIXED with `Verified by` different from `Fixed by`, or accepted open by the owner; `doc_check.py --kind findings` refuses a Closed file otherwise.
 
-**Light short form:** Start here, Brief (incl. triage lines), Findings, Fixes, Checks, Open items, Status.
+Under `## Re-check`, copy the final re-check's verdict for every item it covered (each re-checked finding and each NEW item) into `### Verdicts`, then give every PARTIAL, NOT FIXED or NEW item a Leftovers line with the same id:
+
+```markdown
+### Verdicts
+- <finding id> · <FIXED | PARTIAL | NOT FIXED | NEW>
+
+### Leftovers
+- <finding id> · <PARTIAL | NOT FIXED | NEW> · Fixed by: <fixer's tier> · Verified by: <the auditor's or an owner-named reviewer's tier, or "none"> · <FIXED | Open | Accepted open by owner YYYY-MM-DD>
+```
+
+**Light short form:** Start here, Brief (incl. triage lines), Findings, Fixes, Re-check (Verdicts, Leftovers), Checks, Open items, Status.
 
 **Last write:** run the cold-start gate (`~/.agents/skills/handoff/references/cold-start-gate.md`) on the findings file at the end of Phase 7, and whenever an audit stops early; a Closed file needs only the doc check.
 
@@ -121,7 +131,15 @@ Fixes go to the named implementer as ordinary repairs (stance §6 ladder), **par
 
 The re-check (auditor tier) confirms fixes hold and nothing new broke, **by execution** where possible (type-check, build, script, the sequence).
 
-**Loop cap (Full): 2 fix→re-verify cycles** for re-breaks; if a fix keeps re-breaking, stop and ask. One extra cycle is allowed only for a confirmed **incomplete fix** found by the re-check, and the report says so. Light: one re-check, no loop; anything still failing goes to Open items.
+**Loop cap (Full): 2 fix→re-verify cycles** for re-breaks; if a fix keeps re-breaking, stop and ask. One extra cycle is allowed only for a confirmed **incomplete fix** found by the re-check, and the report says so. When Full hits the cap with items still failing, they are leftovers under the Light rule below.
+
+**Light: one re-check, no loop.** Anything the re-check marks PARTIAL, NOT FIXED or NEW is a **leftover**: it goes to `## Open items` and the Verdicts and Leftovers blocks, and the file stays `Status: Open`.
+
+- The fixer may prepare, apply and (with a release go) commit a fix for a leftover. That is implementation evidence, **never audit verification**: the fixer's own probes, suite runs or reading of the diff do not close a leftover.
+- A leftover closes only when the auditor, or another reviewer the owner names, verifies it, or when the owner accepts it as open.
+- With leftovers present, stop and ask the owner: one more auditor re-check / escalate to Full / accept as open. A standing go to commit and push covers releasing verified work, not deciding what counts as verified.
+
+**Engine coverage:** when the audited work has owner-approved scenarios, the re-check lists each code path the fixes changed against the scenario engines that cover it, and states which were rerun after the fix. A covered path with an engine not rerun is a NEW finding ("coverage gap"), so it is a leftover.
 
 **Release (explicit go only):** with "commit and push" (or equivalent) in the request, after a clean re-verify the dispatcher stages exactly the reported fix set, commits with no attribution, pushes, and runs `~/.agents/scripts/wait-ci-deploy.sh` in the foreground, reporting its result. Without a go: never commit.
 
@@ -129,7 +147,7 @@ The re-check (auditor tier) confirms fixes hold and nothing new broke, **by exec
 
 Short summary: scope, depth and verdict, what was audited, fixed, and waiting on the human, and the findings file path. The fixed list must be exactly the set the commit step picks up. End with "Clean — run the commit flow when ready", or with the release result when a go was given. In `report` mode, end with the Fix queue count and `/work-audit fix <findings-file>`.
 
-**Coverage (required):** parallel or sequential; depth; lenses skipped; not-ours files left alone; loop cap hit or extra incomplete-fix cycle used. Never imply parallel coverage for a sequential run.
+**Coverage (required):** parallel or sequential; depth; lenses skipped; not-ours files left alone; loop cap hit or extra incomplete-fix cycle used; leftovers and who verified each. Never imply parallel coverage for a sequential run.
 
 ## The 7 audit lenses
 

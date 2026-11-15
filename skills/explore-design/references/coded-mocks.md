@@ -11,6 +11,7 @@ One mocks folder per round, outside every git tree:
 ```
 <mocks>/
   README.md              gate log: each decision, date, and who made it
+  restatement.md         the confirmed restatement, verbatim and dated (Stage 1)
   content.md             the only copy source for every mock
   owner-questions.md     unconfirmed facts to ask the client
   generation-prompts.md  exact prompt per generated image (when images are used)

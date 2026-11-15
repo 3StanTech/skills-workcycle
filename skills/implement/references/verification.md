@@ -18,6 +18,17 @@ Each plan carries 2–5 owner-approved scenarios (create-plan step 2). They stat
 
 Good scenario cases include failure paths: bad input, empty input, a dependency timeout, permission denied, a slow network, a second device or user.
 
+## Reruns after a repair
+
+- When a repair (an audit finding or any later fix) touches code an approved scenario exercises, rerun that scenario on **every engine it names**, and first on the one closest to the changed path (real touch, momentum scrolling, Safari).
+- Choose the rerun from the scenario's engine list and the code path touched, not from what is quickest to automate; emulation does not stand in for a named real engine.
+- An engine that cannot run is a blocker to put to the owner **before release**. It is never an "Unverified" line written after shipping.
+
+## Device engines
+
+- Before calling a device engine unavailable, probe it: `xcrun simctl list devices booted`; if none is booted, `open -a Simulator` or `xcrun simctl boot <device>`, then wait with a bounded check (Script hygiene time limit, no foreground `sleep` polls). Record the probe output with the evidence.
+- When several Playwright versions share a machine, check `~/Library/Caches/ms-playwright` for the browser build the project needs before the run.
+
 ## Running it like a user
 
 | Surface | How | Artifact |

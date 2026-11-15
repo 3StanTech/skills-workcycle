@@ -12,7 +12,9 @@ or `/prime`: a new session on any host starts the next stage from its paste line
      `/work-audit fix <path>`);
    - the line "No `/prime` or `/handoff` needed".
 2. **Decisions made in chat** during or after the stage are copied into the doc (Discovery Notes,
-   Design Decisions or Locked decisions), dated. A decision left only in chat is lost.
+   Design Decisions or Locked decisions), dated. A decision left only in chat is lost. The
+   confirmed restatement is on disk verbatim (`restatement.md` beside a mocks README; the
+   "Confirmed restatement" section of an explore doc), not a paraphrase.
 3. **Scratchpad sweep.** Artifacts the next stage needs move beside the doc (its folder or
    `runs/`). No session-scratchpad, `/tmp` or `/private/tmp` path stays in the doc.
 4. **Paths** are absolute (or anchored to the doc's folder) and either exist or are marked

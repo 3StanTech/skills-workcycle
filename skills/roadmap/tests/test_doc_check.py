@@ -410,6 +410,268 @@ class DocCheck(unittest.TestCase):
         self.assertEqual(self.warns(out, "handoff:"), [])
         self.assertTrue(any("is not mentioned in the doc" in i for i in out["info"]))
 
+    # selfclose (findings) ------------------------------------------------
+
+    AUDITOR = "gpt-6.1-sol high"
+    FIXER = "claude-opus-5-5 medium"
+
+    def closed_findings(self, recheck=None, fixes="1. Repaired finding 2.\n",
+                        name="2026-11-20-widget.md", status="Closed"):
+        doc = FINDINGS.format(start=start()).replace("Status: Open", f"Status: {status}")
+        if fixes is not None:
+            doc += "\n## Fixes\n\n" + fixes
+        if recheck is not None:
+            doc += "\n## Re-check\n\n" + recheck
+        return self.write(doc, name=name, sub="audits")
+
+    def selfclose(self, out):
+        return [e for e in out["errors"] if e.startswith("selfclose:")]
+
+    def recheck(self, verdicts=("1 · FIXED", "2 · PARTIAL"), leftovers=None):
+        if leftovers is None:
+            leftovers = [f"2 · PARTIAL · Fixed by: {self.FIXER} · Verified by: {self.AUDITOR} · FIXED"]
+        text = "Auditor re-check.\n\n### Verdicts\n" + "".join(f"- {v}\n" for v in verdicts)
+        if leftovers:
+            text += "\n### Leftovers\n" + "".join(f"- {l}\n" for l in leftovers)
+        return text
+
+    def leftover(self, fixed=None, verified=None, result="FIXED", fid="2"):
+        return [f"{fid} · PARTIAL · Fixed by: {self.FIXER if fixed is None else fixed}"
+                f" · Verified by: {self.AUDITOR if verified is None else verified} · {result}"]
+
+    def check_selfclose(self, recheck, **kw):
+        code, out = self.run_check(self.closed_findings(recheck, **kw), "--kind", "findings")
+        return code, " | ".join(self.selfclose(out))
+
+    def test_selfclose_clean_audit_without_fixes_passes(self):
+        self.assertEqual(self.check_selfclose(None, fixes="None.\n"), (0, ""))
+        self.assertEqual(self.check_selfclose(None, fixes=None), (0, ""))
+
+    def test_selfclose_no_fixes_marker_is_the_whole_section(self):
+        for marker in ("None.", "_None._", "**None**", "N/A", "No fixes needed."):
+            self.assertEqual(self.check_selfclose(None, fixes=marker + "\n"), (0, ""), marker)
+        prose = ("None of the initial repairs held. Finding 2 remained partial; the"
+                 " dispatcher repaired and self-verified it.\n")
+        code, msg = self.check_selfclose(None, fixes=prose)
+        self.assertEqual(code, 1)
+        self.assertIn("no '### Verdicts' list", msg)
+
+    def test_selfclose_no_fixes_marker_in_any_list_form(self):
+        for marker in ("+ None.", "+ **No fixes applied.**", "1. None", "> - N/A"):
+            self.assertEqual(self.check_selfclose(None, fixes=marker + "\n"), (0, ""), marker)
+
+    def test_selfclose_fix_queue_does_not_hide_fixes(self):
+        repaired = "Finding 2 remained partial; dispatcher repaired and self-verified it.\n"
+        for queue_first in (True, False):
+            doc = FINDINGS.format(start=start()).replace("Status: Open", "Status: Closed")
+            queue, fixes = "\n## Fix queue\n\nNone.\n", "\n## Fixes\n\n" + repaired
+            doc += queue + fixes if queue_first else fixes + queue
+            code, out = self.run_check(self.write(doc, name="2026-11-20-q.md", sub="audits"),
+                                       "--kind", "findings")
+            self.assertEqual(code, 1, queue_first)
+            self.assertIn("no '### Verdicts' list", " ".join(self.selfclose(out)))
+
+    def test_selfclose_repeated_fixes_heading_does_not_hide_fixes(self):
+        doc = FINDINGS.format(start=start()).replace("Status: Open", "Status: Closed")
+        doc += "\n## Fixes\n\n1. Repaired 2.\n\n## Fixes\n\nNone.\n"
+        code, _ = self.run_check(self.write(doc, name="2026-11-20-r.md", sub="audits"),
+                                 "--kind", "findings")
+        self.assertEqual(code, 1)
+
+    def test_selfclose_several_clean_fixes_sections_pass(self):
+        # each section is judged alone: two bare markers are still a clean audit
+        for extra in ("\n## Fixes\n\nNone.\n", "\n## Fix-up notes\n\nNo fixes needed.\n"):
+            doc = FINDINGS.format(start=start()).replace("Status: Open", "Status: Closed")
+            doc += "\n## Fixes\n\nNone.\n" + extra
+            code, out = self.run_check(self.write(doc, name="2026-11-20-c.md", sub="audits"),
+                                       "--kind", "findings")
+            self.assertEqual((code, self.selfclose(out)), (0, []), extra)
+
+    def test_selfclose_any_bullet_style_in_verdicts_and_leftovers(self):
+        # a failed verdict in a '+' or numbered bullet is still read
+        hidden = self.recheck(verdicts=("1 · FIXED",), leftovers=[]) .replace(
+            "- 1 · FIXED\n", "- 1 · FIXED\n+ 2 · PARTIAL\n3) 4 · NEW\n")
+        code, msg = self.check_selfclose(hidden)
+        self.assertEqual(code, 1)
+        self.assertIn("no Leftovers line: 2, 4", msg)
+        ok = (self.recheck(verdicts=("2 · PARTIAL",), leftovers=[])
+              + "\n### Leftovers\n1. " + self.leftover()[0] + "\n")
+        self.assertEqual(self.check_selfclose(ok), (0, ""))
+
+    def test_selfclose_verdicts_across_recheck_sections_are_all_read(self):
+        recheck = (self.recheck(verdicts=("2 · FIXED",), leftovers=[])
+                   + "\n## Re-check 2\n\n### Verdicts\n- 4 · PARTIAL\n")
+        code, msg = self.check_selfclose(recheck)
+        self.assertEqual(code, 1)
+        self.assertIn("no Leftovers line: 4", msg)
+
+    def test_selfclose_fixer_named_by_role_errors(self):
+        for role in ("session", "Dispatcher", "this session", "implementer"):
+            recheck = self.recheck(leftovers=self.leftover(fixed=role, verified=self.FIXER))
+            code, msg = self.check_selfclose(recheck)
+            self.assertEqual(code, 1, role)
+            self.assertIn("name the fixer's tier", msg)
+
+    def test_selfclose_all_fixed_verdicts_pass(self):
+        recheck = self.recheck(verdicts=("1 · FIXED", "2 · fixed"), leftovers=[])
+        self.assertEqual(self.check_selfclose(recheck), (0, ""))
+
+    def test_selfclose_fixes_without_recheck_section_errors(self):
+        # a real self-closed audit's shape: the re-check written inside Fixes, lowercase
+        fixes = "1. Repaired 2.\n\nRe-check: 1 FIXED; 2 partial; the dispatcher verified the rest.\n"
+        code, msg = self.check_selfclose(None, fixes=fixes)
+        self.assertEqual(code, 1)
+        self.assertIn("no '### Verdicts' list", msg)
+
+    def test_selfclose_recheck_prose_without_verdicts_errors(self):
+        for prose in ("2 PARTIAL; one NEW. The dispatcher verified them.\n",
+                      "All 5 FIXED.\n", "nothing new or partial remains\n"):
+            code, msg = self.check_selfclose(prose)
+            self.assertEqual(code, 1, prose)
+            self.assertIn("no '### Verdicts' list", msg)
+
+    def test_selfclose_verdict_line_without_verdict_errors(self):
+        code, msg = self.check_selfclose(self.recheck(verdicts=("2 · looks fine",), leftovers=[]))
+        self.assertEqual(code, 1)
+        self.assertIn("names no verdict", msg)
+
+    def test_selfclose_verdict_is_the_first_word(self):
+        # "FIXED (was PARTIAL)" is fixed; "partial" in any case is a failure
+        ok = self.recheck(verdicts=("2 · FIXED (was PARTIAL)",), leftovers=[])
+        self.assertEqual(self.check_selfclose(ok), (0, ""))
+        bad = self.recheck(verdicts=("2 · partial (fixed later)",), leftovers=[])
+        code, msg = self.check_selfclose(bad)
+        self.assertEqual(code, 1)
+        self.assertIn("no Leftovers line: 2", msg)
+
+    def test_selfclose_failed_verdict_without_leftover_line_errors(self):
+        good = self.leftover()[0]
+        for leftovers in ([good], [good, good]):  # missing, and a duplicated row
+            recheck = self.recheck(verdicts=("2 · PARTIAL", "4 · PARTIAL", "N1 · NEW"),
+                                   leftovers=leftovers)
+            code, msg = self.check_selfclose(recheck)
+            self.assertEqual(code, 1, leftovers)
+            self.assertIn("no Leftovers line: 4, n1", msg)
+
+    def test_selfclose_repeated_verdict_in_prose_passes(self):
+        recheck = ("2 PARTIAL. Finding 2 was PARTIAL before the auditor verified its repair.\n\n"
+                   + self.recheck(verdicts=("2 · PARTIAL",)).split("\n\n", 1)[1])
+        self.assertEqual(self.check_selfclose(recheck), (0, ""))
+
+    def test_selfclose_different_verifier_passes(self):
+        self.assertEqual(self.check_selfclose(self.recheck()), (0, ""))
+
+    def test_selfclose_verifier_is_the_fixer_errors(self):
+        for fixed, verified in (
+            (self.FIXER, self.FIXER),
+            ("Claude-Opus-5-5  Medium", "claude-opus-5-5 medium "),
+            ("claude-opus-5-5 medium", "claude-opus-5-5"),  # word-prefix
+            ("claude-opus-5-5", "claude-opus-5-5 medium"),
+            (self.FIXER, "dispatcher"),  # wording from a real self-closed audit
+            (self.FIXER, "Session"),
+            (self.FIXER, "fixer"),
+        ):
+            code, msg = self.check_selfclose(self.recheck(leftovers=self.leftover(fixed, verified)))
+            self.assertEqual(code, 1, (fixed, verified))
+            self.assertIn("verified by its fixer", msg)
+
+    def test_selfclose_similar_but_different_tier_passes(self):
+        # a word-prefix needs a whole word: claude-opus-5 is not claude-opus-5-5
+        recheck = self.recheck(leftovers=self.leftover("claude-opus-5-5 medium", "claude-opus-5 high"))
+        self.assertEqual(self.check_selfclose(recheck), (0, ""))
+
+    def test_selfclose_missing_fixer_or_verifier_errors(self):
+        for fixed, verified, want in (
+            ("", self.AUDITOR, "no Fixed by"), ("none", self.AUDITOR, "no Fixed by"),
+            (self.FIXER, "", "no Verified by"), (self.FIXER, "none", "no Verified by"),
+        ):
+            code, msg = self.check_selfclose(self.recheck(leftovers=self.leftover(fixed, verified)))
+            self.assertEqual(code, 1, (fixed, verified))
+            self.assertIn(want, msg)
+        line = f"2 · PARTIAL · Verified by: {self.AUDITOR} · FIXED"  # field absent
+        code, msg = self.check_selfclose(self.recheck(leftovers=[line]))
+        self.assertIn("no Fixed by", msg)
+
+    def test_selfclose_open_result_errors(self):
+        code, msg = self.check_selfclose(self.recheck(leftovers=self.leftover(result="Open")))
+        self.assertEqual(code, 1)
+        self.assertIn("not FIXED", msg)
+
+    def test_selfclose_owner_accepted_passes(self):
+        recheck = self.recheck(leftovers=self.leftover(
+            fixed="none", verified="none", result="Accepted open by owner 2026-11-20"))
+        self.assertEqual(self.check_selfclose(recheck), (0, ""))
+
+    def test_selfclose_open_status_is_not_checked(self):
+        self.assertEqual(self.check_selfclose("2 PARTIAL.\n", status="Open"), (0, ""))
+
+    def test_selfclose_file_before_cutoff_is_exempt(self):
+        path = self.closed_findings("2 PARTIAL.\n", name="2026-10-01-widget.md")
+        code, out = self.run_check(path, "--kind", "findings")
+        self.assertEqual((code, self.selfclose(out)), (0, []))
+        self.assertTrue(any(i.startswith("selfclose:") for i in out["info"]))
+
+    def test_selfclose_undated_file_is_checked(self):
+        code, _ = self.check_selfclose("2 PARTIAL.\n", name="widget-audit.md")
+        self.assertEqual(code, 1)
+
+    # restatement (mocks) -------------------------------------------------
+
+    def mocks_readme(self, row="| 2026-11-20 | Stage 1 restatement confirmed | Matches | Owner |"):
+        return self.write(MOCKS.format(start=start()) + row + "\n", name="README.md", sub="w-mocks")
+
+    def restatement_warns(self, row):
+        _, out = self.run_check(self.mocks_readme(row), "--kind", "mocks")
+        return len(self.warns(out, "restatement:"))
+
+    def test_restatement_confirmed_rows_warn_without_file(self):
+        for row in (
+            "| 2026-11-20 | Stage 1 restatement confirmed | Matches | Owner |",
+            "| 2026-11-20 | Stage 1 restatement | Confirmed | Owner |",
+            "| 2026-11-20 | Stage 1 restatement | **Matches, plus a résumé update** | Owner |",
+            "| 2026-11-20 | Stage 1 restatement | Approved | Owner |",
+            "- Stage 1 Restatement CONFIRMED (2026-11-20)",
+            "- Restatement: matches (owner, 2026-11-20)",
+            # another clause pending must not cancel the restatement's own confirmation
+            "| 2026-11-20 | Stage 1 restatement confirmed | Matches; awaiting confirmation of launch date | Owner |",
+        ):
+            self.assertEqual(self.restatement_warns(row), 1, row)
+
+    def test_restatement_unconfirmed_rows_are_quiet(self):
+        for row in (
+            "",
+            "| 2026-11-20 | Stage 1 restatement | Not confirmed | Owner |",
+            "| 2026-11-20 | Stage 1 restatement | Not yet confirmed | Owner |",
+            "| 2026-11-20 | Stage 1 restatement | Confirmation pending | Owner |",
+            "| 2026-11-20 | Stage 1 restatement | Pending confirmation | Owner |",
+            "| 2026-11-20 | Stage 1 restatement | Has not been confirmed | Owner |",
+            "| 2026-11-20 | Stage 1 restatement | Mostly, with corrections | Owner |",
+            "| 2026-11-20 | Stage 1 restatement | Shown, unconfirmed | Agent |",
+            "- Read first: `restatement.md` (the confirmed restatement)",
+        ):
+            self.assertEqual(self.restatement_warns(row), 0, row)
+
+    def test_restatement_present_is_quiet(self):
+        path = self.mocks_readme()
+        self.write("Goals: ship it. Owner: matches.\n", name="restatement.md", sub="w-mocks")
+        _, out = self.run_check(path, "--kind", "mocks")
+        self.assertEqual(self.warns(out, "restatement:"), [])
+
+    def test_restatement_empty_file_warns(self):
+        path = self.mocks_readme()
+        self.write("  \n", name="restatement.md", sub="w-mocks")
+        _, out = self.run_check(path, "--kind", "mocks")
+        self.assertEqual(len(self.warns(out, "restatement:")), 1)
+
+    def test_restatement_closed_readme_is_not_enforced(self):
+        path = self.write(
+            MOCKS.format(start=start()).replace("# Widget mocks\n", "# Widget mocks\n\nStatus: Closed\n")
+            + "| 2026-11-20 | Stage 1 restatement confirmed | Matches | Owner |\n",
+            name="README.md", sub="c-mocks",
+        )
+        _, out = self.run_check(path, "--kind", "mocks")
+        self.assertEqual(self.warns(out, "restatement:"), [])
+
     def test_missing_file_exits_2(self):
         code, _ = self.run_check(os.path.join(self.dir, "nope.md"))
         self.assertEqual(code, 2)

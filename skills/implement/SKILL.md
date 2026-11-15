@@ -202,6 +202,9 @@ After implementation, update the plan file:
 <Evidence for completed checks and an explicit list of unavailable checks>
 ```
 
+An owner-approved scenario, or an engine it names, is never listed as unverified: it runs or
+it blocks (`references/verification.md` → Reruns after a repair).
+
 If the working directory is a git repository, write outputs to the project folder outside the git tree, or to the session scratchpad — never commit AI-process artifacts. Update the plan at its existing path (whether in-tree, outside the tree, or scratchpad).
 
 **Roadmap:** when a roadmap governs the work, run the `roadmap` skill's Update step after

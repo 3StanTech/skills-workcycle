@@ -59,7 +59,7 @@ Do **not** run all stages autonomously. Present findings at each stage, ask deci
    - Who uses this, and when? (The user personally? Their clients' customers? A team? Something automatic?)
    - What does "done" look like?
    - What is explicitly out of scope?
-7. **Restate.** After the answers, write the restatement (format below) and ask whether it matches. Options: "Matches", "Mostly, with corrections", "Off". If it isn't a clean match, revise it and ask again. Do not move to Stage 2 until the user confirms.
+7. **Restate.** After the answers, write the restatement (format below) and ask whether it matches. Options: "Matches", "Mostly, with corrections", "Off". If it isn't a clean match, revise it and ask again. Do not move to Stage 2 until the user confirms. On confirmation, write the draft explore doc at its final path (`plans/explore-YYYY-MM-DD-<slug>.md`, `**Status:** Draft`) holding the title, Origin, a minimal Start here (Next: `resume from <this doc>`, Stage 2) and `## Confirmed restatement` **verbatim**, with the user's corrections in their words, dated; then run the cold-start gate on it. Stage 5 fills the rest and sets `Status: Explored`.
 
 **STOP** and wait at step 6 and at step 7.
 
@@ -101,7 +101,7 @@ The Outside check is [be-ambitious](../be-ambitious/SKILL.md) question 4 for thi
 
 Keep it short enough to check at a glance. Mark every claim as **evidence** or **guess**. The guesses are where corrections come from.
 
-**Drift check.** If a later answer changes a goal, the audience, or the finish line, update the restatement and show what changed. Don't just carry on.
+**Drift check.** If a later answer changes a goal, the audience, or the finish line, update the restatement, rewrite it in the draft doc, and show what changed. Don't just carry on.
 
 ---
 
@@ -167,11 +167,11 @@ Keep it short enough to check at a glance. Mark every claim as **evidence** or *
 
 **Goal:** Capture everything in a structured document ready for `create-plan` or `implement`.
 
-1. Compile and save to:
+1. Complete the draft doc Stage 1 wrote at:
 
    `plans/explore-YYYY-MM-DD-<slug>.md`
 
-   Use today's date and a short kebab-case slug.
+   (today's date and a short kebab-case slug when Stage 1 was skipped). Keep its "Confirmed restatement" as saved; never rewrite it from memory.
 
    If the working directory is a git repository, write outputs to the project folder outside the git tree, or to the session scratchpad. Never commit AI-process artifacts.
 

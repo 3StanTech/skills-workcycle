@@ -41,7 +41,7 @@ The same four aims as [explore](../explore/SKILL.md) (the goal, the problem, the
 2. **Render the current state** at phone (390px) and desktop (1366–1440px). Measure what matters: page height in phone screens, where the primary action sits and whether it stays reachable, text sitting on bare backgrounds, horizontal overflow.
 3. **Check the brand with evidence,** not by eye: embedded fonts (`pdffonts` on a deck), exact palette values, the real logo file.
 4. Ask 2–4 clarifying questions, always including **"Stay faithful to the current brand, evolve it, or explore new feels?"** That answer sets the directions, the type candidates and how far colour may move.
-5. Write the restatement in explore's format and ask: Matches / Mostly, with corrections / Off.
+5. Write the restatement in explore's format and ask: Matches / Mostly, with corrections / Off. On confirmation, create the mocks folder (if absent) with a minimal `README.md` (Start here plus the gate log) and write `restatement.md` beside it: the restatement **verbatim**, with the owner's corrections and additions in their words, dated. The README's Read first lists it; the gate-log row, labelled "Stage 1 restatement confirmed", stays a one-line summary. A later drift update rewrites the file and adds a dated gate-log row.
 
 **STOP** at the questions and at the restatement.
 
@@ -54,7 +54,7 @@ The same four aims as [explore](../explore/SKILL.md) (the goal, the problem, the
 3. Ask the **imagery question** ([medium and providers → Imagery question](references/medium-and-providers.md#imagery-question)): AI image generation, Claude-made visuals, the owner's or licensed photos, or a mix. Ask the **image-worker model and effort** only when AI is in the answer (two questions, no "(Recommended)" label on a tier). Ask whether the **background** is in scope (a canvas, shader or textured backdrop behind the page; see [backgrounds](references/backgrounds.md)).
 4. Choose the **medium per asset** with [medium and providers](references/medium-and-providers.md): coded HTML for the sample mocks, SVG for marks and icons, the imagery answer for pictures.
 5. State the count and cost: one coded sample mock per chosen direction (more of any direction on request; past **6 mocks per round**, re-confirm count and cost first), images if any, likely sessions.
-6. Create the mocks folder (layout in [coded mocks](references/coded-mocks.md)) with `README.md` (a Start here block plus the gate log), `content.md`, `owner-questions.md`, `generation-prompts.md`, `ASSET-LICENSES.md`.
+6. Create or complete the mocks folder (layout in [coded mocks](references/coded-mocks.md)): `README.md` and `restatement.md` are already there from Stage 1; add `content.md`, `owner-questions.md`, `generation-prompts.md`, `ASSET-LICENSES.md`.
 7. **Motion check:** when a chosen direction is liquid glass or has an Apple feel, run `apple-design` now, before the STOP, and carry what it says into that direction's mock (skill map in [motion](../implement/references/ui-build/motion.md#skill-map)). If the skill is installed, use it; otherwise apply the house rules in `motion.md` and say so.
 
 **STOP** for the pick of directions, imagery and medium.
@@ -99,7 +99,7 @@ Follow explore's Stage 4: components with effort and dependencies, minimum versi
 
 ## 5. Write the explore doc
 
-1. Write `plans/explore-YYYY-MM-DD-<slug>.md` in **explore's §5 format** (outside git), including its Start here block and Decisions made in chat. Fill **Design decisions** with the approved mock file, its export, the mocks folder and every gate decision. The approved mock is the spec for `/implement` (`~/.agents/skills/implement/references/mock-to-code.md`).
+1. Write `plans/explore-YYYY-MM-DD-<slug>.md` in **explore's §5 format** (outside git), including its Start here block and Decisions made in chat. Copy "Confirmed restatement" from `restatement.md`, never rewrite it from memory. Fill **Design decisions** with the approved mock file, its export, the mocks folder and every gate decision. The approved mock is the spec for `/implement` (`~/.agents/skills/implement/references/mock-to-code.md`).
 2. When decisions remain open, build a [decision page](references/decision-page.md) beside the doc and open it in Lavish.
 3. **Run the cold-start gate** (`~/.agents/skills/handoff/references/cold-start-gate.md`) on the mocks README and then on the explore doc, including its "When create-plan is next" section.
 4. End with the ready-to-paste prompt, trimmed to what the doc does not already say:
