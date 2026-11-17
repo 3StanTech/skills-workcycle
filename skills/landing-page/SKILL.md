@@ -58,6 +58,7 @@ Decide the structure, the layout and the copy, then present them in this order:
 
 ### Structure
 
+- **Rank before arranging.** List every piece of content the page could hold. Mark what the visitor cannot act without; order the rest by how much it helps that action; delete what earns no place; group like with like. Size and position follow the rank, not the other way round.
 - **Above the fold:** headline (outcome + audience), subheadline (how, and for whom), primary CTA (a verb plus what they get), one proof signal (client strip, a real number, a short attributed quote), a hero visual (real product, work sample, photo or an honest illustration).
 - **The argument:** problem to solution (one section), benefits, how it works, proof (testimonials or a case study, placed beside the claim it supports).
 - **Objection handling:** FAQ, risk reversal (trial, guarantee, revision terms, cancel anytime: only terms the owner confirms), final CTA identical to the top one.

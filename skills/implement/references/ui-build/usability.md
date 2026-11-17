@@ -170,6 +170,10 @@ The floor, in rough priority order:
 - **Numbers, dates, and units formatted for reading**: thousands separators,
   relative dates where recency matters ("2 hours ago") with absolute on
   hover/secondary, explicit units.
+- **Cut copy that does no work.** Keep the title, the key values and the
+  instruction someone needs; write plainly, not as marketing. Move rarely
+  needed help into a tooltip, or an alert when it matters more often; choose
+  by how often it is needed.
 
 ## Cognitive load
 
@@ -183,6 +187,11 @@ The floor, in rough priority order:
   same concept everywhere. Internal consistency beats novelty.
 - **Sensible defaults, remembered preferences.** The best interaction is the
   one the user didn't have to perform.
+- **Choose components by meaning.** A control's type says what it does: a
+  switch applies at once, a checkbox waits for a submit; a menu holds actions,
+  a select holds values. Follow an established component library's
+  vocabulary, and keep one do / don't pair for each component the project
+  uses.
 
 ## Destructive & irreversible actions
 

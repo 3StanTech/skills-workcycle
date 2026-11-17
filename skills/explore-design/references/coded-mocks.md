@@ -66,6 +66,15 @@ Add a preview server entry (e.g. `.claude/launch.json`, port not in use) for the
 - **Respect project hard rules** (e.g. text on panels, demo banner, noindex) in mocks
   too; a redesign may reinterpret how a rule looks, not drop it.
 
+## Structure round
+
+Optional, only when Stage 2 chose it (G2b). It compares layout and order before colour, imagery or type can sway the pick.
+
+- **One greyscale layout per direction** (`structure-a/b/c.html`), built from `content.md` word for word: system font, greys only, no brand colour, no imagery or custom type; placeholders sized like the real media.
+- **Clickable:** buttons, switches, tabs and menus work, so the owner can walk the flow, not just look at it.
+- **Compare in the [live viewer](live-viewer.md):** each layout carries a one-line why, and each key decision (navigation, order, density) a why beside it. The same sandbox test and layout pre-flight as any viewer pass before it opens.
+- **The pick** (a structure or a named mix) goes into the README gate log with the date; keep the picked file as `structure-<x>.html`. G3 styles only the chosen structure(s).
+
 ## Sample round
 
 - **One coded sample per chosen direction** (`mock-a/b/c.html`), all built from `content.md`

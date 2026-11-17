@@ -57,6 +57,7 @@ Never use `nohup`, `&`, `disown` or a detached terminal. If the poll returns `br
 ## Apply feedback
 
 - Each annotation lands on a real element: apply it as a **targeted edit to that element**. Never regenerate the page.
+- **Stuck pick:** when the owner says something feels off but cannot say what, do not guess one fix. Add two to four versions of that one element as an option in the docked sheet, let the owner pick, then confirm the pick in the full page before moving on.
 - Re-screenshot only what changed, at phone and desktop width, and show it in chat.
 - Hand the result back with `npx -y lavish-axi@0.1.97 poll <file> --agent-reply "<what changed>"` when more review follows, or `npx -y lavish-axi@0.1.97 reply <file> --agent-reply "<…>"` when it does not.
 - Layout warnings stay in the owner's Layout issues inbox; fix only the ones the owner queues (the [pre-flight](#before-the-owner-sees-it) is the one exception, before the first ready message). Lavish checks layout at a 1080px-wide desktop window and flags controls outside the viewport, which is why the Options sheet must fit 1080×700.
