@@ -372,7 +372,16 @@ function portable(file) {
     const p = find(u);
     if (!p) { errors.push(`--portable: stylesheet ${u} not found`); return tag; }
     inlined.push(u);
-    return `<style>${processCss(fs.readFileSync(p, 'utf8'), p, p)}</style>`;
+    // Every other local url() (images, cursors) is embedded too: the file must open alone.
+    const css = processCss(fs.readFileSync(p, 'utf8'), p, p).replace(/url\(\s*(['"]?)([^'")]+)\1\s*\)/g, (m, q, u2) => {
+      if (u2.startsWith('data:') || !isLocal(u2)) return m;
+      const f = path.resolve(path.dirname(p), stripQuery(u2));
+      if (!fs.existsSync(f)) { errors.push(`--portable: ${u2} (from ${path.basename(p)}) not found`); return m; }
+      const ext = path.extname(f).slice(1).toLowerCase();
+      const mime = { svg: 'image/svg+xml', png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', webp: 'image/webp', gif: 'image/gif', avif: 'image/avif' }[ext] || 'application/octet-stream';
+      return `url(data:${mime};base64,${fs.readFileSync(f).toString('base64')})`;
+    });
+    return `<style>${css}</style>`;
   });
   if (deferred.length) html = /<\/body>/i.test(html) ? html.replace(/<\/body>(?![\s\S]*<\/body>)/i, deferred.join('\n') + '\n</body>') : html + deferred.join('\n');
   if (errors.length) { for (const e of errors) console.error('ERROR ' + e); process.exit(1); }

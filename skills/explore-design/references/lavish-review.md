@@ -30,10 +30,10 @@ Lavish runs every page at an opaque origin (the sandbox table and the causes: [l
 The pre-flight, in order, before any "ready" message:
 
 1. `node tools/sandbox-prep.mjs --check` and `node tools/sandbox-e2e.mjs` exit 0.
-2. Open the page in Lavish and start the poll.
-3. Run `node tools/lavish-warnings.mjs <file>`: Lavish's own layout findings for that page (it checks five rules at a 1080px desktop window).
+2. Open the page in Lavish and start the poll. Lavish opens the owner's browser itself, and that window runs its layout check a few seconds after the load.
+3. Run `node tools/lavish-warnings.mjs <file>`: Lavish's own layout findings for that page (it checks five rules at a 1080px desktop window). Lavish records a pass only when the findings change, so a clean page shows as "no pass recorded" once the load is seen and the wait runs out; that counts as clean.
 4. Fix every open finding it prints and repeat 3 until it exits 0, at most three passes; then tell the owner what remains.
-5. Only then send the one-line "open and ready" message. Exit 2 (no completed pass) is reported in that message as "layout not pre-checked", never skipped silently.
+5. Only then send the one-line "open and ready" message. Exit 2 (the page never loaded in a browser) is reported in that message as "layout not pre-checked", never skipped silently.
 
 After the ready message the inbox rule returns: fix only what the owner queues.
 
@@ -65,7 +65,7 @@ Never use `nohup`, `&`, `disown` or a detached terminal. If the poll returns `br
 
 - Every Options sheet ends in a queue button (the template enforces it; any hand-built switch panel must match).
 - A rebuild that touches more than one file is saved all at once (`sandbox-prep.mjs` does this; otherwise build in a temp folder and rename).
-- After an edit, check that the page took it (the poll or reply output, or the session's revision) and tell the owner to reload **only** when that check says it did not.
+- A file save alone does not reach an open Lavish window (Lavish 0.1.97). After an edit, send the change with `poll --agent-reply` or `reply`: that raises the session's revision and the window loads it. Check that `artifact_revision` rose and a load of it was recorded (`artifact_load` in `~/.lavish-axi/state.json`), and tell the owner to reload **only** when that check says it did not.
 - When the owner's note can be read two ways (a word, or the icon beside it), apply the likelier reading and name the other in the reply.
 - Record each opened file in the README gate log.
 

@@ -15,7 +15,7 @@ How the owner picks between things they can see: one page where the real mock fi
 ## When
 
 - Lead with the viewer for any choice the owner can see: sample mocks at Compare, variants of one element, background effects, the motion shortlist, a visual decision on a [decision page](decision-page.md).
-- Count decides the host: **two or more mocks** → `compare.html`, the viewer; **one mock** (Background, G4) → open that mock, and the same sheet docks inside it ([below](#one-mock-the-docked-sheet)).
+- Count decides the host: **two or more mocks** → `compare.html`, the viewer; **one mock** (Background, G4) → open that mock, and the same sheet docks inside it ([below](#one-mock-the-docked-sheet)). Lavish annotates elements of the page it serves, not of a mock nested in the viewer's frame, so element notes need the mock opened on its own.
 - Non-visual choices stay on Lavish's `input` playbook.
 - Screenshots and contact sheets are chat previews and README material, never the pick page.
 

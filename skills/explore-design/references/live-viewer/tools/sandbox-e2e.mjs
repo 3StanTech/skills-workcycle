@@ -94,6 +94,7 @@ function onMessage(ev) {
   else if (m.method === 'Runtime.executionContextsCleared') { for (let k = contexts.length - 1; k >= 0; k--) if (contexts[k].sessionId === m.sessionId) contexts.splice(k, 1); }
   else if (m.method === 'Target.attachedToTarget') prepSession(p.sessionId);
   else if (m.method === 'Network.requestWillBeSent') reqUrls.set(`${m.sessionId}|${p.requestId}`, p.request.url);
+  else if (m.method === 'Network.responseReceived' && p.response.status >= 400 && !/\/favicon\.ico$/.test(p.response.url) && (ours(p.response.url) || PORTABLE)) failures.push({ url: p.response.url, error: `HTTP ${p.response.status}` });
   else if (m.method === 'Network.loadingFailed') {
     const url = reqUrls.get(`${m.sessionId}|${p.requestId}`) || '?';
     if (!p.canceled && (ours(url) || PORTABLE)) failures.push({ url, error: p.errorText + (p.corsErrorStatus ? ` (CORS ${p.corsErrorStatus.corsError})` : '') + (p.blockedReason ? ` (blocked ${p.blockedReason})` : '') });
@@ -155,7 +156,8 @@ async function viewerChecks() {
   check('1 viewer and mock run at an opaque origin', vo === 'null' && mo === 'null', { viewer: vo, mock: mo });
   // 2. The open sheet fits 1080x700.
   const fit = await evalIn(IN_VIEWER, fitExpr('.osh-sheet'));
-  check('2 every sheet control inside the window', fit && fit.vw === W && fit.vh === H && fit.n > 0 && !fit.out.length, fit);
+  // Under --url the page sits inside Lavish's own chrome, so its viewport is smaller than the window.
+  check('2 every sheet control inside the window', fit && (URL_ARG || (fit.vw === W && fit.vh === H)) && fit.n > 0 && !fit.out.length, fit);
   // 3. Every option and choice applies in place.
   for (const o of cfg.options) {
     const m = applies(o, cur.mock) ? cur.mock : cfg.mocks.find((x) => applies(o, x.value)).value;
