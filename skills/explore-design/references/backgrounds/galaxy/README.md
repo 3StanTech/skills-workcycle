@@ -26,6 +26,15 @@ Copy both into the mocks folder's `background/` folder. Never edit them in place
 </script>
 ```
 
+**In Lavish (and any sandboxed review):** module scripts do not load. Bundle `starfield.js` with the mocks folder's `tools/sandbox-prep.mjs` (add it to `bundle.mods` and `starfield` to `bundle.expose` in `tools/prep.config.json`, with the file in `shared/src/`), then call it from a classic script after the bundle:
+
+```html
+<script src="shared/mock.bundle.js"></script>
+<script>Mock.starfield(document.querySelector('.sky'), { interactive: true }).focusIn();</script>
+```
+
+`starfield.js` itself is unchanged. See [live viewer](../../live-viewer.md).
+
 The canvas is decoration: `aria-hidden`, no pointer input, and nothing on the page depends on it. Pointer and scroll are read from the window.
 
 ## Options
@@ -72,7 +81,7 @@ The palette is read once per build; call `update({})` after changing tokens live
 
 ## Effects as switches
 
-Put each option above behind one live switch in the review (pattern: [backgrounds → Live-switch review](../../backgrounds.md#live-switch-review)). A good first set to show, all still off until the owner turns them on: interactive sky, focus in, depth tilt, cursor gravity (lens), and, when the page has a natural "threshold" section, the black hole with a sweep crossing. The design round that produced this recipe kept exactly that set.
+Put each option above as one option in the docked Options sheet (pattern: [backgrounds → Live-switch review](../../backgrounds.md#live-switch-review)). A good first set to show, all still off until the owner turns them on: interactive sky, focus in, depth tilt, cursor gravity (lens), and, when the page has a natural "threshold" section, the black hole with a sweep crossing. The design round that produced this recipe kept exactly that set.
 
 Focus-in animates opacity and scale only, never a blur radius ([motion house rules](../../../../implement/references/ui-build/motion.md#stagger-and-press-feedback)).
 
@@ -102,4 +111,4 @@ Measure with `horizons` off (a rim passing the sample squares swamps the star co
 
 ## At /implement
 
-Port the picked options and colours into the build, drop the switch sheet, keep the still-frame behaviour, and re-run the measure once on the built page.
+Port the picked options and colours into the build, drop the review scripts, keep the still-frame behaviour, and re-run the measure once on the built page.

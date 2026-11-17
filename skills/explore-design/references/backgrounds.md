@@ -34,17 +34,17 @@ Third-party code for any type is fetched per project from its own repository wit
 
 ## Comparing types
 
-When more than one type fits, build them as variants of one element on the winning mock: `prototype` per the [skill map](../../implement/references/ui-build/motion.md#skill-map). If the skill is installed, use it; otherwise apply the house rules in `motion.md` and say so. One type per variant, the same content in front, switching instant.
+When more than one type fits, build them as variants of one element on the winning mock: `prototype` per the [skill map](../../implement/references/ui-build/motion.md#skill-map). If the skill is installed, use it; otherwise apply the house rules in `motion.md` and say so. One type per variant, the same content in front, shown as one option in the docked sheet ("Background: none / A / B"), switching instant.
 
 ## Live-switch review
 
-Effects are chosen in context, not described.
+Effects are chosen in context, not described. They are options in the winner's docked Options sheet: the [live viewer](live-viewer.md)'s sheet, inside the mock, so the owner annotates, switches and approves on one page.
 
-- **One switch per effect**, grouped (sky, cursor, scroll, events), each with its label, where it shows on the page, its source, and a recommended value. Every switch starts **off**; the recommended set is one button away, never the default.
-- **Review links** carry the state so the owner can share or reopen a view: `?bg=rec`, `?bg=all-on`, `?bg=all-off`, or `?bg=key:value,key:value`.
-- **Still-frame switch**: one switch shows what reduced-motion and Save-Data visitors get. Under reduced motion every motion switch is inert.
-- Open the mock in Lavish per [Lavish review](lavish-review.md); the owner flips switches, annotates, and queues the pick. Each pick is written to the README gate log with the date, including the switches left off.
-- The switch sheet is review chrome, not design: it never ships.
+- **One option per effect**, grouped (sky, cursor, scroll, events), each with its label, where it shows on the page, its source, and a recommended value. Every effect starts **off** (the option's `start` value) and "Recommended set" is one control away. This is the one exception to the viewer's "recommended pre-selected" rule.
+- **Review links** carry the state so the owner can share or reopen a view: the mock still reads `?bg=rec`, `?bg=all-on`, `?bg=all-off`, or `?bg=key:value,key:value`, and the sheet's own links carry each option's value as its own param.
+- **Still frame** is a preview state with `reload: true`: it shows what reduced-motion and Save-Data visitors get. Under reduced motion every motion option is inert.
+- Open the mock in Lavish per [Lavish review](lavish-review.md); the owner flips options, annotates, and queues the pick. Each pick is written to the README gate log with the date, including what was left off.
+- The sheet and its scripts are review chrome, not design: they never ship.
 
 ## Tuning by measurement
 
@@ -61,4 +61,4 @@ Effects are chosen in context, not described.
 
 ## Hand-off
 
-The gate log lists the type, the options and colours picked, the switches left off, and the last measurements. `/implement` ports those into the build, removes the switch sheet, keeps the still frame, and measures once more on the built page.
+The gate log lists the type, the options and colours picked, the switches left off, and the last measurements. `/implement` ports those into the build, drops the review scripts (`viewer-config.js`, `options-sheet.js`, `mock-live.js`) and any review-only params, keeps the still frame, and measures once more on the built page.

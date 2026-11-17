@@ -18,12 +18,15 @@ One mocks folder per round, outside every git tree:
   ASSET-LICENSES.md      per asset: source/model, effort, license boundary
   deck-ref/              renders of the brand source (e.g. pdftoppm pages)
   assets/{brand,img,masters}/
-  shared/                tokens.css, components.css, sprites/SVG shared by all directions
+  shared/                tokens.css, components.css, sprites/SVG shared by all directions;
+                         viewer-config.js, options-sheet.js, mock-live.js (from live-viewer/)
   type-test.html         specimen page for the type gate
   mock-a.html mock-b.html mock-c.html   one sample per direction
   mock-b2.html …         extra samples of a direction, on request
-  compare.html           every sample side by side
-  background/            optional: copied background recipe files and the switch sheet
+  compare.html           the live viewer (from live-viewer/)
+  tools/                 sandbox-prep.mjs, sandbox-test.html, sandbox-e2e.mjs, lavish-warnings.mjs
+                         (from live-viewer/)
+  background/            optional: copied background recipe files
   approved/              the exported winner
 ```
 
@@ -39,13 +42,27 @@ Add a preview server entry (e.g. `.claude/launch.json`, port not in use) for the
   only when the explore doc says so.
 - **Shared base first.** Tokens, the brand's signature components (e.g. nameplate cards,
   sticky chat bar, tier tabs), and SVG line art go in `shared/` once; directions
-  restyle them through tokens rather than forking markup.
+  restyle them through tokens rather than forking markup. Keyframe names are unique
+  across shared stylesheets; a clash silently replaces one animation with another and
+  shows only with motion on.
 - **Real brand material.** Real logo file, exact palette values, real prices and names.
   Never AI-generate a logo, a real person's likeness, or readable text.
 - **Honest placeholders.** Unconfirmed facts carry a visible "Confirm with <owner>" tag;
   placeholder reviews are labelled as placeholders. Never invent testimonials.
 - **Production-ready structure.** Semantic HTML, the project's CSS approach, no build
-  step unless the project has one, relative asset paths (Lavish serves the folder).
+  step unless the project has one (`tools/sandbox-prep.mjs` is the exception when a mock
+  keeps ES modules, local JSON or font files), relative asset paths (Lavish serves the folder).
+- **Sandbox-safe, one copy.** Classic scripts only (no `type="module"`), no runtime
+  `fetch()` of local files (embed data), fonts embedded or system, every linked page
+  inside the mocks folder, every storage call in try/catch. Each mock loads the three
+  shared review scripts and takes its options from URL params and `mock-set` messages.
+  A mock made from a site build is converted in place with `tools/sandbox-prep.mjs`,
+  never copied a second time for Lavish. See [live viewer](live-viewer.md).
+- **Layout that passes Lavish first time** ([known fixes](lavish-review.md#before-the-owner-sees-it)):
+  a skip link is hidden in place (clipped to 1px, shown on focus), never off-screen;
+  folded content is `display: none`, never clipped by height or `visibility`.
+- **Page colour on `<html>`**, not `<body>`, when a fixed canvas sits at a negative
+  `z-index`; a body background covers it.
 - **Respect project hard rules** (e.g. text on panels, demo banner, noindex) in mocks
   too; a redesign may reinterpret how a rule looks, not drop it.
 
@@ -57,9 +74,11 @@ Add a preview server entry (e.g. `.claude/launch.json`, port not in use) for the
   `mock-b3.html`) and differ in layout or treatment, not copy.
 - **Count and cost first:** state the number of pages before building. Past **6 mocks per
   round**, re-confirm the count and cost with the owner.
-- **Compare:** `compare.html` shows every sample at phone and desktop width side by side
-  (Lavish `comparison` playbook), or a screenshot contact sheet in chat. The owner picks a
-  winner or a named mix; only the winner goes to G4.
+- **Compare:** `compare.html` is the [live viewer](live-viewer.md): every sample, page and
+  option switchable in place at desktop and phone width, each sample with a one-line why.
+  The sandbox test and the layout pre-flight pass before it opens. The owner queues a
+  winner or a named mix; only the winner goes to G4. A contact sheet in chat is a
+  preview, not the pick.
 
 ## Type gate
 
@@ -76,13 +95,19 @@ pairings. Directions may use different pairings; the user maps them at the gate.
    phone screens), and that the primary action stays reachable. Run the
    [page craft](../../implement/references/ui-build/page-craft.md) checks, launch
    checklist included.
-2. Show screenshots in chat (phone + desktop per sample).
-3. Compare the samples (`compare.html`, above) and record the owner's pick. When Stage 2 put
+2. Show screenshots in chat (phone + desktop per sample). Full-page shots of a page with
+   a fixed background are stitched viewport by viewport (a single tall capture shows the
+   fixed layer only at the top); check the captured page height and re-shoot a short
+   capture; fine detail (stars, hairlines, grain) is shown live or at 1:1, never judged
+   from a small crop.
+3. Compare the samples in the viewer (`compare.html`, above) and record the owner's pick;
+   a one-mock review is the mock with the docked sheet. The sandbox test and the
+   pre-flight run first. When Stage 2 put
    the background in scope, run the Background step on the winner next
    ([backgrounds](backgrounds.md)).
 4. Open Lavish per [Lavish review](lavish-review.md) on the winner for element-level
-   annotation; for a choice, a review page using the Lavish `input` playbook (radio per
-   question) returns an exact answer.
+   annotation, with the docked sheet for its options and the final pick. The `input`
+   playbook is for non-visual choices; visual ones go through the viewer.
 5. Apply annotations as targeted edits to the named element; re-screenshot only what
    changed.
 6. Record the pick in README. The approved mock is the spec for `/implement`

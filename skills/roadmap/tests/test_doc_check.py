@@ -663,6 +663,21 @@ class DocCheck(unittest.TestCase):
         _, out = self.run_check(path, "--kind", "mocks")
         self.assertEqual(len(self.warns(out, "restatement:")), 1)
 
+    # viewer (mocks) ------------------------------------------------------
+
+    def test_viewer_needs_its_sandbox_test(self):
+        def viewer_warns(sub, viewer, test):
+            path = self.write(MOCKS.format(start=start()), name="README.md", sub=sub)
+            if viewer:
+                self.write("<!doctype html>\n", name="compare.html", sub=sub)
+            if test:
+                self.write("// test\n", name="sandbox-e2e.mjs", sub=os.path.join(sub, "tools"))
+            _, out = self.run_check(path, "--kind", "mocks")
+            return len(self.warns(out, "viewer:"))
+        self.assertEqual(viewer_warns("v-with", True, True), 0)
+        self.assertEqual(viewer_warns("v-without", True, False), 1)
+        self.assertEqual(viewer_warns("v-none", False, False), 0)
+
     def test_restatement_closed_readme_is_not_enforced(self):
         path = self.write(
             MOCKS.format(start=start()).replace("# Widget mocks\n", "# Widget mocks\n\nStatus: Closed\n")

@@ -36,7 +36,9 @@ If `$ARGUMENTS` is non-empty, it is the artifact brief or the file to review. If
 
 ## Design reviews and polling
 
-Follow `~/.agents/skills/explore-design/references/lavish-review.md` for design reviews (project design system, `input` playbook picks, targeted element edits) and for polling on each host (Claude Code: tracked background `poll`; Codex and Grok: foreground `poll`; never `nohup`, `&` or `disown`).
+Follow `~/.agents/skills/explore-design/references/lavish-review.md` for design reviews (project design system, `input` playbook picks, targeted element edits, the pre-flight before a page is called ready, session hygiene) and for polling on each host (Claude Code: tracked background `poll`; Codex and Grok: foreground `poll`; never `nohup`, `&` or `disown`). Visual picks lead with a live viewer per `~/.agents/skills/explore-design/references/live-viewer.md`.
+
+Artifacts and any frames nested in them run sandboxed without same-origin (an opaque origin): module scripts, `fetch()` of local files, storage and origin-targeted `postMessage` do not work; see that reference.
 
 ## Local-only
 
@@ -53,7 +55,7 @@ Workflow, design and playbook details come from the CLI, not this file, because 
 - `npx -y lavish-axi@0.1.97 --help` for commands and the review-loop workflow.
 - `npx -y lavish-axi@0.1.97 reply --help` to post an agent reply and exit once the server accepts it, when you are not about to long-poll.
 - `npx -y lavish-axi@0.1.97 design` for design-direction priority and current snippets.
-- `npx -y lavish-axi@0.1.97 playbook <id>` for focused artifact guidance (`npx -y lavish-axi@0.1.97 playbook` lists the ids; use `input` and `comparison` for design picks).
+- `npx -y lavish-axi@0.1.97 playbook <id>` for focused artifact guidance (`npx -y lavish-axi@0.1.97 playbook` lists the ids; use `input` for non-visual picks; visual picks use the live viewer).
 
 You do not need lavish-axi installed globally. Invoke it with `npx -y lavish-axi@0.1.97 <html-file>`. If lavish-axi output shows a follow-up command starting with `lavish-axi`, run it as `npx -y lavish-axi@0.1.97 ...` instead.
 

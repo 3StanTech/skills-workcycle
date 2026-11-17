@@ -7,7 +7,7 @@ The build cycle as agent skills: explore an idea, plan it, implement it, audit t
 | Skill | Role |
 | ----- | ---- |
 | `explore` | Five-stage interactive discovery for a new feature, system or capability |
-| `explore-design` | Turn a UI, brand or image idea into an approved mock and a cold-start explore doc; an optional background step with a worked galaxy recipe |
+| `explore-design` | Turn a UI, brand or image idea into an approved mock and a cold-start explore doc; an optional background step with a worked galaxy recipe; a live viewer template for picks, with its own sandbox test |
 | `landing-page` | Plan and build one conversion-focused page: intake, page plan, approval, one direction, build on the shared floor, launch checklist; also explore-design's page-plan step |
 | `be-ambitious` | Rewrite a task into a deeper, not bigger, version; feeds explore's expert lens and outside check |
 | `create-plan` | Write a detailed, plan-only implementation plan before coding |
@@ -27,7 +27,7 @@ Hooks (`hooks/`) and `scripts/wait-ci-deploy.sh` (bounded wait for CI and deploy
 ### 1. Prerequisites
 
 - Python 3 and git.
-- Node.js, for `lavish`, `explore-design` and create-plan decision pages (they run the pinned `npx -y lavish-axi@0.1.97`, which downloads on first use).
+- Node.js, for `lavish`, `explore-design` and create-plan decision pages (they run the pinned `npx -y lavish-axi@0.1.97`, which downloads on first use). The live viewer's sandbox test and the galaxy measuring tool need Node 22+ and Chrome.
 - Optional: `gh` (and `jq` for the Netlify check) for `scripts/wait-ci-deploy.sh`.
 - Optional: eleven of [Emil Kowalski's skills](https://github.com/emilkowalski/skills), listed in `skills/implement/references/ui-build/motion.md`; the stage skills call them at their moments. Without them the house rules in that file apply. Install line in `skills/explore-design/references/sources.md`.
 - Optional: [`skills-orchestration`](https://github.com/3StanTech/skills-orchestration) for helpers, model routing and headless Claude/Codex/Grok workers. Without it, `implement` runs single-agent in your session.

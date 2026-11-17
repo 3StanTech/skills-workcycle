@@ -10,12 +10,12 @@ An HTML review page, opened in Lavish, that lets the owner answer a doc's open d
 
 ## Build
 
-Read the Lavish playbooks first: `npx -y lavish-axi@0.1.97 playbook plan` and `npx -y lavish-axi@0.1.97 playbook input` (add `comparison`, `diagram` or `code` when an exhibit needs them). Then follow four rules:
+Read the Lavish playbooks first: `npx -y lavish-axi@0.1.97 playbook plan` and `npx -y lavish-axi@0.1.97 playbook input` (add `comparison`, `diagram` or `code` when an exhibit needs them). A visual decision follows [live viewer](live-viewer.md) and its "Works inside Lavish" rules. Then follow four rules:
 
 1. **Each decision sits on the claim it changes.** Not in a separate "Open questions" list. The recommended option is pre-selected, and an option that removes a claim says so ("claim 3 goes").
 2. **The behaviours that change are the top level.** Write each as a sentence that can be true or false, inside a collapsed `details` element. Closed, the outline reads as the summary; open, it shows how and where.
 3. **An unopened decision is not agreement.** When the response arrives, any decision without a queued answer is "not answered". Re-ask the important ones in chat.
-4. **One exhibit per claim instead of a paragraph:** a mock, a diagram, a schema in the project's own language, or a short code excerpt with real `file:line`.
+4. **One exhibit per claim instead of a paragraph:** a mock, a diagram, a schema in the project's own language, or a short code excerpt with real `file:line`. When the decision is visual, the exhibit is a [live viewer](live-viewer.md) for that decision (embedded, or linked with "Open full size"), not a static image; the answer is its toggle state.
 
 Use the project's design system when the page shows its UI; plain readable styling otherwise. Keep the page scannable at phone width.
 

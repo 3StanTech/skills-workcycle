@@ -57,10 +57,13 @@ Finds the drift that makes a doc lie to the next session:
             confirmed" always counts), but no non-empty restatement.md beside
             it. "Not confirmed", "pending" and "Mostly, with corrections" do not
             count
+  viewer    a mocks README whose folder holds compare.html (the live viewer)
+            but no tools/sandbox-e2e.mjs beside it: the viewer has no sandbox
+            test
 
 A Closed (or Done) doc is history: starthere, prime and stamp are not enforced,
 nor are a closed roadmap's size, phase, log and resume checks, nor a closed mocks
-README's restatement check. selfclose applies only to Closed findings files.
+README's restatement and viewer checks. selfclose applies only to Closed findings files.
 
 Prints one JSON object to stdout ({file, kind, errors, warnings, info}).
 Exit 0 when there are no errors, 1 when there are errors, 2 on bad usage.
@@ -540,6 +543,14 @@ def main():
                 " restatement.md is missing or empty beside the README"
             )
 
+    # a live viewer must travel with its sandbox test
+    if kind == "mocks" and os.path.isfile(os.path.join(base, "compare.html")):
+        if not os.path.isfile(os.path.join(base, "tools", "sandbox-e2e.mjs")):
+            warnings.append(
+                "viewer: compare.html has no sandbox test beside it (tools/sandbox-e2e.mjs):"
+                " copy tools/ from the live-viewer template"
+            )
+
     # session log order and freshness
     title, span = find_section(secs, "Session log")
     newest_log = None
@@ -611,7 +622,7 @@ def main():
 
     # a closed doc is history: gate and compaction warnings no longer apply
     if closed:
-        moot = ("starthere:", "prime:", "stamp:", "handoff:", "restatement:")
+        moot = ("starthere:", "prime:", "stamp:", "handoff:", "restatement:", "viewer:")
         if kind == "roadmap":
             moot += ("size:", "phase:", "log:", "resume:")
         info.extend(f"(closed, not enforced) {w}" for w in warnings if w.startswith(moot))

@@ -30,7 +30,7 @@ Where the design and motion rules in these skills came from. Three lists stay ap
 | Emil Kowalski, skills: https://github.com/emilkowalski/skills (catalogue https://aiforui.dev/skills) | MIT; installed separately, not redistributed | 2026-11-14 | motion.md skill map |
 | amicro, Subhan: https://amicro.dev/ and https://github.com/Subhan-code/Amicro--Micro-transitions- | MIT; studied, nothing copied | 2026-11-08 | motion.md shortlist; galaxy recipe effects (focus in, depth tilt, cursor gravity, crossing, chromatic rim) |
 | Apple Human Interface Guidelines, Materials: https://developer.apple.com/design/human-interface-guidelines/materials | Guidance; rules rewritten | 2026-11-08 | liquid glass §2 |
-| The owner's portfolio glass overhaul (private notes, measurements and its galaxy code) | Own work | 2026-11-08 to 11-15 | liquid glass, motion.md, [backgrounds](backgrounds.md) (live-switch review, tuning by measurement), galaxy recipe |
+| The owner's portfolio glass overhaul (private notes, measurements and its galaxy code) | Own work | 2026-11-08 to 11-15 | liquid glass, motion.md, [backgrounds](backgrounds.md) (live-switch review, tuning by measurement), galaxy recipe, [live viewer](live-viewer.md) (pattern, sandbox rules, template) |
 
 ## Installed outside skills
 

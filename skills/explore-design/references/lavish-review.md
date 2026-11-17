@@ -1,17 +1,49 @@
 # Lavish review
 
-The single owner of how mocks and decision pages are reviewed in Lavish. explore-design opens Lavish itself at G4, in the optional Background step's live-switch review ([backgrounds](backgrounds.md#live-switch-review)) and for decision pages; the owner does not need to type `/lavish`. Current CLI guidance always wins over this file for commands and flags: `npx -y lavish-axi@0.1.97 --help`.
+The single owner of how mocks and decision pages are reviewed in Lavish. explore-design opens Lavish itself at Compare (the [live viewer](live-viewer.md)), at G4, in the optional Background step's live-switch review ([backgrounds](backgrounds.md#live-switch-review)) and for decision pages; the owner does not need to type `/lavish`. Current CLI guidance always wins over this file for commands and flags: `npx -y lavish-axi@0.1.97 --help`.
 
 ## Open
 
 - Run from the mock's own folder: `npx -y lavish-axi@0.1.97 <mocks>/mock-a.html`. Lavish serves that folder, so assets use relative paths (`assets/img/hero.webp`), never root-relative `/` paths.
 - Mocks render in the **project's own design system** (fonts, tokens, logo). Never restyle them with Lavish's fallback Tailwind/DaisyUI.
-- Tell the owner in one line which file is open and what to look at.
+- To compare two or more mocks, open `compare.html` (the viewer). For one mock (Background, G4), open the mock itself: the same Options sheet docks inside it, so notes, switches and the final pick share one page.
+- Tell the owner in one line which file is open and what to look at, after the [pre-flight](#before-the-owner-sees-it).
 
 ## Picks and decisions
 
-- For a choice (direction, type pairing, mix), build it into the page with the `input` playbook (`npx -y lavish-axi@0.1.97 playbook input`): native radios or checkboxes, the recommended option pre-selected, and one "Queue answer" per question that sends exactly one prompt.
-- For a side-by-side, use the `comparison` playbook. The sample-mock compare step builds `compare.html` with it: every sample at phone and desktop width, one pick (winner or named mix) queued back.
+- Any choice that can be seen leads with the [live viewer](live-viewer.md): one page, every option switched in place, one queued pick. No screenshot cards or contact sheets on the pick page.
+- For a non-visual choice, build it into the page with the `input` playbook (`npx -y lavish-axi@0.1.97 playbook input`): native radios or checkboxes, the recommended option pre-selected, and one "Queue answer" per question that sends exactly one prompt.
+- The `comparison` playbook remains for non-mock exhibits on decision pages; sample mocks are compared in the viewer.
+
+## Works inside Lavish
+
+Lavish runs every page at an opaque origin (the sandbox table and the causes: [live viewer](live-viewer.md#works-inside-lavish)).
+
+- Classic scripts only; data embedded, never fetched from a local file; fonts embedded or system, never a remote font link.
+- Every linked page lives inside the served folder; `mock-live.js` carries the state across links.
+- `postMessage` to `'*'`, checked by `e.source` and type; every storage call in try/catch.
+- Test with `node tools/sandbox-e2e.mjs`: the browser pane cannot capture sandboxed frames.
+- A mock made from a site build goes through `tools/sandbox-prep.mjs` in place; never build a second Lavish-only copy.
+
+## Before the owner sees it
+
+The pre-flight, in order, before any "ready" message:
+
+1. `node tools/sandbox-prep.mjs --check` and `node tools/sandbox-e2e.mjs` exit 0.
+2. Open the page in Lavish and start the poll.
+3. Run `node tools/lavish-warnings.mjs <file>`: Lavish's own layout findings for that page (it checks five rules at a 1080px desktop window).
+4. Fix every open finding it prints and repeat 3 until it exits 0, at most three passes; then tell the owner what remains.
+5. Only then send the one-line "open and ready" message. Exit 2 (no completed pass) is reported in that message as "layout not pre-checked", never skipped silently.
+
+After the ready message the inbox rule returns: fix only what the owner queues.
+
+**Known fixes** for the findings that recur:
+
+- A skip link is hidden in place (clipped to 1px at the top-left, restored on `:focus`), never parked off-screen.
+- Folded content is `display: none` or `hidden` (with `transition-behavior: allow-discrete` when it must fade), never clipped by height or hidden with `visibility`.
+- Decorative layers are trimmed by their own section (`overflow: clip`), never allowed to widen `main`.
+- Any fixed review control sits inside 1080×700.
+- Text never overlaps at 1080.
 
 ## Polling (per host)
 
@@ -27,13 +59,21 @@ Never use `nohup`, `&`, `disown` or a detached terminal. If the poll returns `br
 - Each annotation lands on a real element: apply it as a **targeted edit to that element**. Never regenerate the page.
 - Re-screenshot only what changed, at phone and desktop width, and show it in chat.
 - Hand the result back with `npx -y lavish-axi@0.1.97 poll <file> --agent-reply "<what changed>"` when more review follows, or `npx -y lavish-axi@0.1.97 reply <file> --agent-reply "<…>"` when it does not.
-- Layout warnings stay in the owner's Layout issues inbox; fix only the ones the owner queues.
+- Layout warnings stay in the owner's Layout issues inbox; fix only the ones the owner queues (the [pre-flight](#before-the-owner-sees-it) is the one exception, before the first ready message). Lavish checks layout at a 1080px-wide desktop window and flags controls outside the viewport, which is why the Options sheet must fit 1080×700.
+
+## Session hygiene
+
+- Every Options sheet ends in a queue button (the template enforces it; any hand-built switch panel must match).
+- A rebuild that touches more than one file is saved all at once (`sandbox-prep.mjs` does this; otherwise build in a temp folder and rename).
+- After an edit, check that the page took it (the poll or reply output, or the session's revision) and tell the owner to reload **only** when that check says it did not.
+- When the owner's note can be read two ways (a word, or the icon beside it), apply the likelier reading and name the other in the reply.
+- Record each opened file in the README gate log.
 
 ## Finish
 
 1. Record the pick and the date in the mocks README gate log.
-2. Export the approved mock as one portable file: `npx -y lavish-axi@0.1.97 export <mock> --out <mocks>/approved/<name>.html`.
-3. End the session: `npx -y lavish-axi@0.1.97 end <file>`.
+2. Export the approved mock as one portable file: `npx -y lavish-axi@0.1.97 export <mock> --out <mocks>/approved/<name>.html`, then `node tools/sandbox-e2e.mjs --portable <exported file>`; if it fails, `node tools/sandbox-prep.mjs --portable <exported file>` and re-run.
+3. End **every** session this round opened (each file in the gate log), not only the last: `npx -y lavish-axi@0.1.97 end <file>`.
 
 ## Never
 
