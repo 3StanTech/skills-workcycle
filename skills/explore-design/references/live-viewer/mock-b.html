@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en" data-mock="b">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Hearth Street Bakery · B Bold</title>
+<link rel="stylesheet" href="shared/demo.css?v=b7087e02f6" />
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="bar">
+  <span class="brand">Hearth Street Bakery</span>
+  <nav aria-label="Main">
+    <a href="mock-b.html" aria-current="page">Home</a>
+    <a href="mock-b-about.html">About</a>
+    <a href="https://example.com">Order online</a>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="more" data-menu-btn>More</button>
+  </nav>
+</header>
+<div class="menu-panel" id="more" hidden>Gift cards · Wholesale · Classes</div>
+<main id="main">
+  <section class="hero">
+    <span class="badge">Fresh at 7 am</span>
+    <h1>Bread. Butter. Before eight.</h1>
+    <p>A small neighbourhood bakery. Everything on the counter was made this morning, a few steps from where you stand.</p>
+  </section>
+  <h2>On the counter today</h2>
+  <ul class="grid" data-list></ul>
+  <section class="fold">
+    <button type="button" aria-expanded="false" aria-controls="hours" data-fold>Opening hours</button>
+    <div id="hours" hidden><p>Tuesday to Sunday, 7 am to 2 pm. Closed Mondays.</p></div>
+  </section>
+  <section>
+    <h2>How we bake</h2>
+    <p>Long, cold fermentation, flour from one mill, and no shortcuts. The menu changes with what the season gives us; come early for the croissants.</p>
+  </section>
+</main>
+<footer>Hearth Street Bakery is a fictional business used to demonstrate the live viewer.</footer>
+<script src="shared/mock.bundle.js?v=b2da1630c4"></script>
+<script src="shared/viewer-config.js?v=62bb2a5d9f"></script>
+<script src="shared/options-sheet.js?v=9dfe4abb7f"></script>
+<script src="shared/mock-live.js?v=a13585d51c"></script>
+<script>
+  Mock.renderList(document.querySelector('[data-list]'));
+  const menuBtn = document.querySelector('[data-menu-btn]'), panel = document.getElementById('more');
+  const setMenu = (open) => { panel.hidden = !open; menuBtn.setAttribute('aria-expanded', String(open)); };
+  menuBtn.addEventListener('click', () => MockLive.set('menu', panel.hidden ? 'open' : 'closed'));
+  const fold = document.querySelector('[data-fold]');
+  fold.addEventListener('click', () => { const h = document.getElementById('hours'); h.hidden = !h.hidden; fold.setAttribute('aria-expanded', String(!h.hidden)); });
+  // accent and density are styled from html[data-*] in demo.css; menu needs a handler.
+  MockLive.init({ apply: { menu: (v) => setMenu(v === 'open') } });
+</script>
+</body>
+</html>

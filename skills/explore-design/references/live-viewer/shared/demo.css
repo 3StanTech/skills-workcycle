@@ -1,0 +1,41 @@
+/* Demo mocks for the live-viewer template (fictional bakery). A project replaces these. */
+:root { --accent: #c0622b; --ink: #1d1b19; --soft: #5f5a54; --paper: #fbf7f1; --line: #e6ded3; }
+html[data-accent='cool'] { --accent: #2f6f9a; }
+* { box-sizing: border-box; }
+html { background: var(--paper); color: var(--ink); }
+body { margin: 0; font: 400 17px/1.55 Georgia, 'Times New Roman', serif; }
+a { color: var(--accent); }
+/* Skip link hidden in place (clipped to 1px at the top-left), shown on focus: never parked off-screen. */
+.skip { position: absolute; left: 0; top: 0; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.skip:focus { width: auto; height: auto; clip-path: none; padding: 8px 12px; background: #fff; z-index: 5; }
+.bar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; padding: 18px clamp(16px, 5vw, 64px); border-bottom: 1px solid var(--line); }
+.brand { font-weight: 700; font-size: 20px; margin-right: auto; }
+.bar nav { display: flex; flex-wrap: wrap; gap: 6px 18px; align-items: center; }
+.menu-btn { font: inherit; font-size: 15px; padding: 6px 12px; border: 1px solid var(--line); border-radius: 999px; background: #fff; cursor: pointer; }
+.menu-panel { margin: 0 clamp(16px, 5vw, 64px); padding: 12px 16px; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
+main { padding: 0 clamp(16px, 5vw, 64px) 48px; overflow: clip; }
+.hero { padding: 56px 0 32px; max-width: 760px; }
+.hero h1 { margin: 0 0 12px; font-size: clamp(34px, 6vw, 60px); line-height: 1.05; }
+.badge { display: inline-block; padding: 4px 12px; border-radius: 999px; background: var(--accent); color: #fff; font: 600 13px/1.4 system-ui, sans-serif; animation: pulse 2.4s ease-in-out infinite; }
+html[data-motion='off'] .badge { animation: none; }
+@keyframes pulse { 50% { opacity: .65; } }
+@media (prefers-reduced-motion: reduce) { .badge { animation: none; } }
+.grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+.card { padding: 18px; border: 1px solid var(--line); border-radius: 14px; background: #fff; }
+.card h3 { margin: 0 0 4px; font-size: 19px; }
+.card p { margin: 0; color: var(--soft); font-size: 15px; }
+.price { color: var(--accent); font-weight: 700; }
+html[data-density='tight'] .grid { gap: 8px; }
+html[data-density='tight'] .card { padding: 10px; }
+.fold { margin: 40px 0 0; }
+.fold button { font: inherit; padding: 8px 14px; border: 1px solid var(--line); border-radius: 10px; background: #fff; cursor: pointer; }
+/* Folded content is display:none (the hidden attribute), never clipped by height or visibility. */
+.fold [hidden] { display: none; }
+footer { padding: 28px clamp(16px, 5vw, 64px); border-top: 1px solid var(--line); color: var(--soft); font-size: 15px; }
+/* Direction B: bold. */
+html[data-mock='b'] body { font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; }
+html[data-mock='b'] .hero { max-width: none; padding-top: 40px; }
+html[data-mock='b'] .hero h1 { font-size: clamp(40px, 9vw, 104px); letter-spacing: -.03em; text-transform: uppercase; }
+html[data-mock='b'] .card { border-radius: 4px; border-width: 2px; border-color: var(--ink); }
+html[data-mock='b'] .bar { background: var(--ink); color: #fff; border: 0; }
+html[data-mock='b'] .bar a { color: #fff; }

@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en" data-mock="b">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>About · Hearth Street Bakery · B Bold</title>
+<link rel="stylesheet" href="shared/demo.css?v=b7087e02f6" />
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="bar">
+  <span class="brand">Hearth Street Bakery</span>
+  <nav aria-label="Main">
+    <a href="mock-b.html">Home</a>
+    <a href="mock-b-about.html" aria-current="page">About</a>
+    <a href="https://example.com">Order online</a>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="more" data-menu-btn>More</button>
+  </nav>
+</header>
+<div class="menu-panel" id="more" hidden>Gift cards · Wholesale · Classes</div>
+<main id="main">
+  <section class="hero">
+    <span class="badge">Since the corner shop opened</span>
+    <h1>Two ovens. One street.</h1>
+    <p>We bake for the people who live nearby. <a href="mock-b.html">See today's counter</a>.</p>
+  </section>
+</main>
+<footer>Hearth Street Bakery is a fictional business used to demonstrate the live viewer.</footer>
+<script src="shared/mock.bundle.js?v=b2da1630c4"></script>
+<script src="shared/viewer-config.js?v=62bb2a5d9f"></script>
+<script src="shared/options-sheet.js?v=9dfe4abb7f"></script>
+<script src="shared/mock-live.js?v=a13585d51c"></script>
+<script>
+  const menuBtn = document.querySelector('[data-menu-btn]'), panel = document.getElementById('more');
+  const setMenu = (open) => { panel.hidden = !open; menuBtn.setAttribute('aria-expanded', String(open)); };
+  menuBtn.addEventListener('click', () => MockLive.set('menu', panel.hidden ? 'open' : 'closed'));
+  MockLive.init({ apply: { menu: (v) => setMenu(v === 'open') } });
+</script>
+</body>
+</html>

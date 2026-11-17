@@ -1,0 +1,17 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>Sandbox test · a page as Lavish frames it</title>
+<!-- Frames a page with the same sandbox flags as Lavish's artifact frame (no allow-same-origin: an
+     opaque origin, where module scripts, fetch() of local files, font files and storage fail).
+     Flags read from lavish-axi 0.1.97: in the installed package's dist/cli.mjs, the iframe with
+     id="artifact" carries this sandbox attribute. After a Lavish pin bump, re-read it there and
+     update the attribute below to match.
+     ?src=<page> picks the page (default ../compare.html); ?post=<json> posts
+     {type:'mock-set', values} to it 2.5 s after load. -->
+<style>html,body{margin:0;height:100%;background:#000}iframe{border:0;width:100%;height:100%;display:block}</style>
+<iframe sandbox="allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox allow-downloads"></iframe>
+<script>
+  const q = new URLSearchParams(location.search), f = document.querySelector('iframe');
+  f.src = q.get('src') || '../compare.html';
+  if (q.get('post')) f.addEventListener('load', () => setTimeout(() => f.contentWindow.postMessage({ type: 'mock-set', values: JSON.parse(q.get('post')) }, '*'), 2500));
+</script>

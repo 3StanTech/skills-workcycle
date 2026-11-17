@@ -1,0 +1,10 @@
+{
+  "items": [
+    { "name": "Country loaf", "note": "Slow rise, dark crust.", "price": "8.00" },
+    { "name": "Rye and seed", "note": "Dense, keeps all week.", "price": "9.50" },
+    { "name": "Morning bun", "note": "Orange zest, cardamom sugar.", "price": "4.25" },
+    { "name": "Olive fougasse", "note": "Leaf-shaped, to tear and share.", "price": "6.75" },
+    { "name": "Butter croissant", "note": "Three days of folding.", "price": "3.90" },
+    { "name": "Apple galette", "note": "Seasonal fruit, flaky base.", "price": "5.50" }
+  ]
+}

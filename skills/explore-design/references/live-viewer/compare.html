@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Live viewer</title>
+<!-- Live viewer (explore-design live-viewer template): the real mock fills the window and the
+     Options sheet (shared/options-sheet.js) switches every mock, page and option in place.
+     Adapt it by editing shared/viewer-config.js only. Review chrome: it never ships. -->
+<style>
+  :root { color-scheme: dark; }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #0c0d10; }
+  .stage { position: fixed; inset: 0; overflow: hidden; }
+  .stage iframe { position: absolute; left: 0; top: 0; border: 0; transform-origin: 0 0; background: #fff; }
+</style>
+</head>
+<body>
+<div class="stage"><iframe data-frame title="Live preview of the selected mock"></iframe></div>
+<script src="shared/viewer-config.js?v=62bb2a5d9f"></script>
+<script src="shared/options-sheet.js?v=9dfe4abb7f"></script>
+<script>
+  // Desktop: render at max(window, designWidth) and scale down, keeping the real desktop layout.
+  // Phone: the frame is phoneWidth wide, centred, unscaled. Width is a preview state, not the pick.
+  const frame = document.querySelector('[data-frame]');
+  let width = 'desktop';
+  function fit() {
+    const c = window.VIEWER_CONFIG;
+    if (width === 'phone') {
+      Object.assign(frame.style, { width: c.phoneWidth + 'px', height: innerHeight + 'px', transform: 'none', left: Math.max(0, (innerWidth - c.phoneWidth) / 2) + 'px' });
+    } else {
+      const W = Math.max(innerWidth, c.designWidth), k = innerWidth / W;
+      Object.assign(frame.style, { width: W + 'px', height: Math.ceil(innerHeight / k) + 'px', transform: `scale(${k})`, left: '0px' });
+    }
+  }
+  addEventListener('resize', fit);
+  OptionsSheet.mount({ host: 'viewer', frame, setWidth: (w) => { width = w; fit(); } });
+  fit();
+</script>
+</body>
+</html>

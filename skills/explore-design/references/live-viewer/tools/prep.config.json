@@ -1,0 +1,9 @@
+{
+  "bundle": {
+    "src": "shared/src",
+    "mods": ["demo.js"],
+    "data": { "demo": "demo-data.json" },
+    "expose": ["renderList"],
+    "out": "shared/mock.bundle.js"
+  }
+}
