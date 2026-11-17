@@ -24,6 +24,11 @@ The deep version of Pillar 2. Skim what's relevant; skip what isn't.
   full-screen takeover for a small action). Success: visible confirmation —
   toast, inline check, state change. Failure: message near the point of
   action.
+- **List the hidden states first.** Before designing or reviewing a screen,
+  write its states: loading, empty, error, partial, stale, offline, permission
+  denied, over-limit. A state nobody listed is the one that ships broken.
+  Prefer one explicit state value over several booleans that can contradict
+  each other.
 - **Perceived speed**: under ~300ms shows no loading state (one that
   appears and vanishes reads as a flash); up to a few seconds — a subtle
   indicator in place; over a few seconds — explicit progress; over ~10s —

@@ -114,9 +114,10 @@ Keep it short enough to check at a glance. Mark every claim as **evidence** or *
    - Check whether the workspace already has credentials configured (`.env` or `.env.example`).
    - Research candidate services. Search the web via WebSearch or the harness's equivalent; if none is available, say so rather than guessing.
    - Note what is free and what is paid.
-3. If the idea touches data, inspect the workspace database (if one exists) for the data available.
-4. **Expert lens:** name the field, then answer [be-ambitious](../be-ambitious/SKILL.md) questions 1–3 for it (what a top professional would do, the rawest material, the methods and tools) and fold what they change into the findings. Same goal and scope: drop anything that makes the job bigger rather than better.
-5. Present findings:
+3. If the idea needs a feature the workspace has not built before, find two or three open-source projects that solve it, compare their approaches (data model, edge cases, what they chose not to do) and say which one the plan should follow, with licences noted. Reading, not copying.
+4. If the idea touches data, inspect the workspace database (if one exists) for the data available.
+5. **Expert lens:** name the field, then answer [be-ambitious](../be-ambitious/SKILL.md) questions 1–3 for it (what a top professional would do, the rawest material, the methods and tools) and fold what they change into the findings. Same goal and scope: drop anything that makes the job bigger rather than better.
+6. Present findings:
    - **What already exists** that is relevant (do not rebuild what is there).
    - **What options are available**, with pros and cons for each.
    - **Constraints or dependencies** found.
@@ -277,7 +278,7 @@ Keep it short enough to check at a glance. Mark every claim as **evidence** or *
    - Always: the command and the explore doc path, plus the output plan path if it matters.
    - Only if needed: which components or phases are in this round (when the doc lists more), decisions made after the doc was written, and any gate the user wants that the doc doesn't define.
    - A last line `implement using <model-id> <effort> <chillin|vibin|supersoldiers>` for the user to fill in, or the roster they already named, verbatim. Never pre-fill a tier: a filled value counts as the user naming it. It is the roster create-plan records in Orchestration, not a go to implement.
-   - Directly under the code block, print a short **roster guide**: (a) the model IDs and efforts available on this machine, from `python3 ~/.agents/skills/stance/scripts/route.py menu` (active families only, per `~/.agents/skills/headless/data/families.json`); without the orchestration bundle say "the session implements itself (Chillin)" instead; (b) one line per stance: chillin = the session works alone, vibin = up to 3 helpers, supersoldiers = one helper per independent task; (c) "Delete the last line to be asked."
+   - Directly under the code block, print a short **roster guide**: (a) the model IDs and efforts available on this machine, from `python3 ~/.agents/skills/stance/scripts/route.py menu` (active families only, per `~/.agents/skills/headless/data/families.json`); without the orchestration bundle say "the session implements itself (Chillin)" instead; (b) one line per stance: chillin = the session works alone (one same-model helper only for an audit effort bump), vibin = up to 3 helpers, supersoldiers = one helper per independent task; (c) "Delete the last line to be asked."
    - Never repeat constraints, links, headlines, or rules already recorded in the doc or the project's instruction files. The next agent reads those itself.
 
    Good: `/create-plan plans/explore-2026-09-29-bakery-redesign.md, production rebuild from mock-b.html only.` then, on its own line, `implement using <model-id> medium vibin` (shape only; the user fills the model).

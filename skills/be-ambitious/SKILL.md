@@ -38,7 +38,7 @@ This file is the only home of the four questions; other skills cite them by numb
 
 Name the field first (e.g. "investigative journalism", "SRE incident response", "conversion copywriting"), then answer the four questions for that field. Be concrete: name the actual thing, not the category.
 
-1. **What a top professional would do that wasn't asked for.** The two or three moves that separate expert work from competent work here, such as stating the decision the work serves, checking base rates, reproducing before fixing, or writing the counter-argument.
+1. **What a top professional would do that wasn't asked for.** The two or three moves that separate expert work from competent work here, such as stating the decision the work serves, checking base rates, reproducing before fixing, or writing the counter-argument. For existing work, also ask: starting over today with the same goal, what would be kept? What would not be rebuilt is a candidate to remove.
 2. **The rawest material.** The primary sources they would start from instead of summaries: the dataset, not the chart; the filing, not the article; the logs and the code, not the bug report; the paper's methods section, not the abstract. Say where it lives if you know.
 3. **Specific methods and tools.** Named techniques, instruments, libraries, commands or frameworks, and why each fits this task.
 4. **What, other than the user or the model, would show it is right.** An external check: a test suite or benchmark, a reproduction, ground-truth data, a known answer to compare against, a measurement, a domain expert or reviewer, a real user's behaviour. Say what result counts as a pass and what counts as a failure.
