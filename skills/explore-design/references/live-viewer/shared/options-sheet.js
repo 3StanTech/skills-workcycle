@@ -95,8 +95,9 @@
     for (const s of states) if (q.has(s.key)) state.on[s.key] = q.get(s.key) === s.on;
     if (!viewer && live) {
       state.mock = live.mock || state.mock;
+      // Lavish serves an opened page as .../index.html, so the page comes from <html data-page>.
       const file = location.pathname.split('/').pop();
-      const pg = pages.find((p) => p.file(state.mock) === file);
+      const pg = pages.find((p) => p.value === live.page) || pages.find((p) => p.file(state.mock) === file);
       if (pg) state.page = pg.value;
       for (const o of options) if (live.values[o.key] !== undefined) state.values[o.key] = live.values[o.key];
       for (const s of states) if (live.values[s.key] !== undefined) state.on[s.key] = live.values[s.key] === s.on;
@@ -124,6 +125,8 @@
     const chips = states.map((s) => `<label><input type="checkbox" name="${esc(s.key)}"${state.on[s.key] ? ' checked' : ''}> ${esc(s.label)}</label>`);
     if (chips.length) rows += row('Preview', `<div class="osh-chips">${chips.join('')}</div>`, ' data-row="__states"', 'not the pick');
     if (viewer) rows += row('Width', seg('__width', [{ value: 'desktop', label: `Desktop ${cfg.designWidth || 1440}` }, { value: 'phone', label: `Phone ${cfg.phoneWidth || 390}` }], state.width), ' data-row="__width"', 'not the pick');
+    const presets = cfg.presets || [];
+    if (presets.length) rows += row('Presets', `<div class="osh-chips">${presets.map((p) => `<button class="osh-link" type="button" data-osh-preset="${esc(p.id)}">${esc(p.label)}</button>`).join('')}</div>`, ' data-row="__presets"');
     if (!viewer) rows += row('Verdict', seg('__verdict', [{ value: 'approve', label: 'Approve' }, { value: 'changes', label: 'Changes needed' }], 'approve'), ' data-row="__verdict"');
 
     const rootEl = document.createElement('div');
@@ -182,12 +185,35 @@
       if (st) {
         state.on[n] = t.checked; paint();
         const v = t.checked ? st.on : st.off;
-        if (st.reload) { if (viewer) setSrc(); else { const p = urlValues(false); history.replaceState(null, '', location.pathname + '?' + p); location.reload(); } }
+        // Dock: keep every parameter the page was opened with (Lavish's revision and load token).
+        if (st.reload) { if (viewer) setSrc(); else { const p = new URLSearchParams(location.search); for (const [k, v] of urlValues(false)) p.set(k, v); location.search = '?' + p; } }
         else if (viewer) post({ [n]: v }); else live?.set(n, v);
         return;
       }
       state.values[n] = t.value; paint();
       if (viewer) post({ [n]: t.value }); else live?.set(n, t.value);
+    });
+
+    // Presets set several options at once (e.g. "Recommended set" when every effect starts off).
+    const presetValues = (p) => Object.fromEntries(options.filter(applies).map((o) => [o.key,
+      p.values === 'rec' ? (o.choices.find((c) => c.rec) || o.choices[0]).value : p.values === 'start' ? startValue(o) : p.values?.[o.key]]).filter(([, v]) => v !== undefined));
+    rootEl.addEventListener('click', (e) => {
+      const b = e.target.closest('[data-osh-preset]'); if (!b) return;
+      const p = presets.find((x) => x.id === b.dataset.oshPreset); if (!p) return;
+      const vals = presetValues(p);
+      for (const [k, v] of Object.entries(vals)) { state.values[k] = v; const i = form.querySelector(`input[name="${CSS_ESC(k)}"][value="${CSS_ESC(v)}"]`); if (i) i.checked = true; }
+      paint();
+      if (viewer) post(vals); else for (const [k, v] of Object.entries(vals)) live?.set(k, v);
+    });
+
+    // Viewer: a link followed inside the frame reports its mock and page, so the pick stays true.
+    if (viewer) addEventListener('message', (e) => {
+      if (!opts.frame || e.source !== opts.frame.contentWindow || e.data?.type !== 'mock-nav') return;
+      const { mock, page } = e.data;
+      if (mocks.some((m) => m.value === mock)) state.mock = mock;
+      if (pages.some((p) => p.value === page)) state.page = page;
+      for (const [n, v] of [['__mock', state.mock], ['__page', state.page]]) { const i = form.querySelector(`input[name="${n}"][value="${CSS_ESC(v)}"]`); if (i) i.checked = true; }
+      paint();
     });
 
     function setSheet(open) {

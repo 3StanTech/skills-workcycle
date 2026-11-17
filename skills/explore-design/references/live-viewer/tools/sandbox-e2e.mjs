@@ -44,8 +44,11 @@ const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.
 function serve(dir) {
   return new Promise((res) => {
     const srv = http.createServer((req, rsp) => {
-      const p = path.join(dir, decodeURIComponent(new URL(req.url, 'http://x').pathname));
-      if (!p.startsWith(dir) || !fs.existsSync(p) || fs.statSync(p).isDirectory()) { rsp.writeHead(404); rsp.end('not found'); return; }
+      let p;
+      try { p = path.resolve(dir, '.' + decodeURIComponent(new URL(req.url, 'http://x').pathname)); } catch { rsp.writeHead(400); rsp.end('bad request'); return; }
+      const inside = path.relative(dir, p);
+      if (inside.startsWith('..') || path.isAbsolute(inside) || !fs.existsSync(p) || fs.statSync(p).isDirectory()) { rsp.writeHead(404); rsp.end('not found'); return; }
+      try { if (path.relative(fs.realpathSync(dir), fs.realpathSync(p)).startsWith('..')) { rsp.writeHead(404); rsp.end('not found'); return; } } catch { rsp.writeHead(404); rsp.end('not found'); return; }
       rsp.writeHead(200, { 'content-type': MIME[path.extname(p).toLowerCase()] || 'application/octet-stream', 'cache-control': 'no-store' });
       fs.createReadStream(p).pipe(rsp);
     });
@@ -72,7 +75,16 @@ const failures = []; // { url, error }
 const scriptErrors = []; // { url, text }
 const reqUrls = new Map();
 let BASE = '', OURS = new Set();
-const ours = (u) => { try { const n = decodeURIComponent(new URL(u).pathname.split('/').pop()); return !!n && OURS.has(n); } catch { return false; } };
+// Ours: anything served from the mocks folder. Without --url that is the test's own server; with
+// --url, Lavish's artifact routes on the same origin (missing files included), or a known file name.
+const ours = (u) => {
+  try {
+    const x = new URL(u);
+    if (!URL_ARG) return !!BASE && u.startsWith(BASE + '/');
+    if (x.origin !== new URL(URL_ARG).origin) return false;
+    return x.pathname.includes('/artifact/') || OURS.has(decodeURIComponent(x.pathname.split('/').pop()));
+  } catch { return false; }
+};
 
 function send(method, params = {}, sessionId, ms = 15000) {
   return Promise.race([
@@ -128,7 +140,9 @@ async function key(k, code, text) {
 
 const IN_VIEWER = `!!window.VIEWER_CONFIG && !!document.querySelector('[data-frame]')`;
 const IN_MOCK = `!!window.MockLive && !document.querySelector('[data-frame]')`;
-const MOCK_STATE = `({ file: location.pathname.split('/').pop(), search: location.search, ds: { ...document.documentElement.dataset }, marker: window.__e2e || null, w: innerWidth, h: innerHeight, sw: document.documentElement.scrollWidth, ready: document.readyState === 'complete' })`;
+const MOCK_STATE = `({ path: location.pathname, file: location.pathname.split('/').pop(), search: location.search, ds: { ...document.documentElement.dataset }, marker: window.__e2e || null, w: innerWidth, h: innerHeight, sw: document.documentElement.scrollWidth, ready: document.readyState === 'complete' })`;
+// Page files may sit in subfolders (sub/page.html): compare the end of the full path.
+const isAt = (st, file) => !!st && (st.path === '/' + file || st.path.endsWith('/' + file));
 const toDs = (k) => k.replace(/-([a-z])/g, (_, c) => c.toUpperCase());
 const fitExpr = (scope) => `(() => { const out = []; for (const el of document.querySelectorAll('${scope} input, ${scope} button, ${scope} textarea, ${scope} a, ${scope} select')) { const r = el.getBoundingClientRect(); if (!r.width && !r.height) { out.push('hidden:' + (el.name || el.textContent.trim().slice(0, 20))); continue; } if (r.left < 0 || r.top < 0 || r.right > innerWidth + 0.5 || r.bottom > innerHeight + 0.5) out.push((el.name || el.textContent.trim().slice(0, 20)) + '@' + Math.round(r.right) + 'x' + Math.round(r.bottom)); } return { n: document.querySelectorAll('${scope} input, ${scope} button, ${scope} textarea').length, out, vw: innerWidth, vh: innerHeight }; })()`;
 const clickViewer = (name, value) => evalIn(IN_VIEWER, `(() => { const i = document.querySelector('.osh-root input[name="${name}"]${value !== undefined ? `[value="${value}"]` : ''}'); if (!i) return 'missing'; i.click(); return 'ok'; })()`);
@@ -147,7 +161,7 @@ async function viewerChecks() {
     if (mock !== cur.mock) await clickViewer('__mock', mock);
     if (page !== cur.page) await clickViewer('__page', page);
     cur = { mock, page };
-    return waitFor(IN_MOCK, MOCK_STATE, (s) => s.ready && s.file === fileOf(mock, page), 10000);
+    return waitFor(IN_MOCK, MOCK_STATE, (s) => s.ready && isAt(s, fileOf(mock, page)), 10000);
   };
   await goto(recMock, cfg.pages[0].value);
 
@@ -201,14 +215,13 @@ async function viewerChecks() {
   const nonRec = cfg.options[0] && cfg.options[0].choices.find((c) => !c.rec);
   if (nonRec) await clickViewer(cfg.options[0].key, nonRec.value);
   const plan = [];
-  for (const p of cfg.pages) plan.push([cur.mock, p.value]);
-  for (const m of cfg.mocks) plan.push([m.value, cfg.pages[cfg.pages.length - 1].value]);
+  for (const m of cfg.mocks) for (const p of (m.value === cur.mock ? [...cfg.pages].reverse() : cfg.pages)) plan.push([m.value, p.value]);
   plan.push([recMock, cfg.pages[0].value]);
   for (const [m, p] of plan) {
     if (m === cur.mock && p === cur.page) continue; // only real switches reload the frame
     const s = await goto(m, p);
     const want = nonRec ? `${cfg.options[0].key}=${nonRec.value}` : '';
-    check(`6 mock ${m} page ${p} loads ${fileOf(m, p)} with the values`, s && s.file === fileOf(m, p) && s.search.includes(want) && s.search.includes('dock=0'), s && (s.file + s.search));
+    check(`6 mock ${m} page ${p} loads ${fileOf(m, p)} with the values`, s && isAt(s, fileOf(m, p)) && s.search.includes(want) && s.search.includes('dock=0'), s && (s.file + s.search));
   }
   if (nonRec) await clickViewer(cfg.options[0].key, (cfg.options[0].choices.find((c) => c.rec) || cfg.options[0].choices[0]).value);
   // 7 and 15. Width toggle; no sideways scroll at either width.
@@ -226,15 +239,15 @@ async function viewerChecks() {
   const second = cfg.mocks[1];
   if (second) {
     await key('2', 'Digit2', '2');
-    const s = await waitFor(IN_MOCK, MOCK_STATE, (v) => v.ready && v.file === fileOf(second.value, cur.page), 6000);
-    check('12 key 2 loads the second mock', s && s.file === fileOf(second.value, cur.page), s && s.file);
+    const s = await waitFor(IN_MOCK, MOCK_STATE, (v) => v.ready && isAt(v, fileOf(second.value, cur.page)), 6000);
+    check('12 key 2 loads the second mock', s && isAt(s, fileOf(second.value, cur.page)), s && s.file);
     cur.mock = second.value;
     await evalIn(IN_VIEWER, `(() => { const t = document.querySelector('.osh-root textarea'); t.value = ''; t.focus(); return 1; })()`);
     await key('1', 'Digit1', '1');
     await sleep(800);
     const typed = await evalIn(IN_VIEWER, `document.querySelector('.osh-root textarea').value`);
     const s2 = await mockState();
-    check('12 key 1 while typing types and switches nothing', typed === '1' && s2 && s2.file === fileOf(second.value, cur.page), { typed, file: s2 && s2.file });
+    check('12 key 1 while typing types and switches nothing', typed === '1' && s2 && isAt(s2, fileOf(second.value, cur.page)), { typed, file: s2 && s2.file });
     await evalIn(IN_VIEWER, `(document.querySelector('.osh-root textarea').value = '', 1)`);
     await goto(recMock, cur.page);
   }
@@ -256,24 +269,41 @@ async function viewerChecks() {
     const bad = (f || []).filter((x) => !x.endsWith(':loaded'));
     check(`10 fonts load in mock ${m.value}`, Array.isArray(f) && !bad.length, f && (f.length ? f : 'no web fonts'));
   }
-  // 11. Links: same-folder links keep the state inside the frame; outside links open a new tab.
-  for (const m of cfg.mocks) {
-    await goto(m.value, cfg.pages[0].value);
+  // 11. Links on every page of every mock: page links keep the setup inside the frame (and the
+  //     viewer's mock and page follow); links to other sites open a new tab.
+  for (const m of cfg.mocks) for (const pg of cfg.pages) {
+    await goto(m.value, pg.value);
     const ch = cfg.options.find((o) => applies(o, m.value) && o.choices.length > 1);
     let wantVal = null;
     if (ch) { wantVal = ch.choices.find((c) => !c.rec)?.value || ch.choices[1].value; await clickViewer(ch.key, wantVal); await waitFor(IN_MOCK, MOCK_STATE, (v) => v.ds[toDs(ch.key)] === wantVal, 4000); }
-    const links = await evalIn(IN_MOCK, `(() => { const folder = location.href.split(/[?#]/)[0].replace(/[^/]*$/, ''); const here = location.pathname.split('/').pop(); const inn = [], out = []; for (const a of document.querySelectorAll('a[href]')) { if (a.closest('[data-review-dock]')) continue; const raw = a.getAttribute('href'); if (raw.startsWith('#')) continue; const u = new URL(raw, location.href); if (u.href.startsWith(folder) && /\\.html$/.test(u.pathname)) { const f = u.pathname.split('/').pop(); if (f !== here && !inn.includes(f)) inn.push(f); } else if (/^https?:$/.test(u.protocol)) out.push({ href: u.href, target: a.target }); } return { inn, out }; })()`);
-    for (const f of links?.inn || []) {
-      await evalIn(IN_MOCK, `(() => { const a = [...document.querySelectorAll('a[href]')].find((x) => !x.closest('[data-review-dock]') && new URL(x.getAttribute('href'), location.href).pathname.endsWith('/${f}')); a.click(); return 1; })()`);
-      const s = await waitFor(IN_MOCK, MOCK_STATE, (v) => v.ready && v.file === f, 8000);
-      check(`11 mock ${m.value} link to ${f} keeps the setup`, s && s.file === f && (!ch || s.ds[toDs(ch.key)] === wantVal) && s.ds.dock === '0', s && { file: s.file, value: ch && s.ds[toDs(ch.key)], dock: s.ds.dock });
-      await evalIn(IN_VIEWER, `(document.querySelector('.osh-root input[name="__page"]:checked')?.dispatchEvent(new Event('change', { bubbles: true })), 1)`);
-      await waitFor(IN_MOCK, MOCK_STATE, (v) => v.ready && v.file === fileOf(m.value, cfg.pages[0].value), 8000);
+    const links = await evalIn(IN_MOCK, `(() => { const here = location.pathname; const inn = [], out = []; for (const a of document.querySelectorAll('a[href]')) { if (a.closest('[data-review-dock]')) continue; const raw = a.getAttribute('href'); if (raw.startsWith('#')) continue; const u = new URL(raw, location.href); if (u.origin === location.origin && /\\.html$/.test(u.pathname)) { if (u.pathname !== here && !inn.some((x) => x.path === u.pathname)) inn.push({ f: u.pathname.split('/').pop(), path: u.pathname }); } else if (/^https?:$/.test(u.protocol)) out.push({ href: u.href, target: a.target }); } return { inn, out }; })()`);
+    for (const { f, path: lp } of links?.inn || []) {
+      await evalIn(IN_MOCK, `(() => { const a = [...document.querySelectorAll('a[href]')].find((x) => !x.closest('[data-review-dock]') && new URL(x.getAttribute('href'), location.href).pathname === ${JSON.stringify(lp)}); a.click(); return 1; })()`);
+      const s = await waitFor(IN_MOCK, MOCK_STATE, (v) => v.ready && v.path === lp, 8000);
+      const tgt = cfg.pages.find((p) => lp === '/' + p.files[m.value] || lp.endsWith('/' + p.files[m.value]));
+      const vs = tgt ? await waitFor(IN_VIEWER, `document.querySelector('.osh-root input[name="__page"]:checked')?.value`, (v) => v === tgt.value, 3000) : null;
+      check(`11 mock ${m.value} ${pg.value}: link to ${f} keeps the setup${tgt ? ' and the viewer follows' : ''}`, s && s.path === lp && (!ch || s.ds[toDs(ch.key)] === wantVal) && s.ds.dock === '0' && (!tgt || vs === tgt.value), s && { file: s.file, value: ch && s.ds[toDs(ch.key)], dock: s.ds.dock, viewerPage: vs });
+      // Back to the page under test with exactly one frame load, built from the viewer's current
+      // state: send the page's radio when there is a page row, else the checked mock (one-page
+      // viewers have no page row). The mock then reports its page back.
+      await evalIn(IN_VIEWER, `(() => { const pr = document.querySelector('.osh-root input[name="__page"][value="${pg.value}"]'); const el = pr || document.querySelector('.osh-root input[name="__mock"]:checked'); if (pr) pr.checked = true; el.dispatchEvent(new Event('change', { bubbles: true })); return 1; })()`);
+      cur = { mock: m.value, page: pg.value };
+      const back = await waitFor(IN_MOCK, MOCK_STATE, (v) => v.ready && isAt(v, fileOf(m.value, pg.value)), 8000);
+      if (!back || !isAt(back, fileOf(m.value, pg.value))) { check(`11 mock ${m.value} ${pg.value}: return after following ${f}`, false, back && back.path); break; }
     }
     const badOut = (links?.out || []).filter((l) => l.target !== '_blank');
-    check(`11 mock ${m.value} outside links open a new tab`, links && !badOut.length, links ? { outside: links.out.length, wrong: badOut } : 'no links read');
+    check(`11 mock ${m.value} ${pg.value}: outside links open a new tab`, links && !badOut.length, links ? { outside: links.out.length, wrong: badOut } : 'no links read');
     if (ch) await clickViewer(ch.key, (ch.choices.find((c) => c.rec) || ch.choices[0]).value);
   }
+  // 16. Presets set several options at once, in place.
+  for (const p of cfg.presets || []) {
+    const tag = `p-${p.id}`; await mark(tag);
+    await evalIn(IN_VIEWER, `(document.querySelector('.osh-root [data-osh-preset="${p.id}"]').click(), 1)`);
+    const want = Object.fromEntries(cfg.options.filter((o) => applies(o, cur.mock)).map((o) => [o.key, p.values === 'rec' ? (o.choices.find((c) => c.rec) || o.choices[0]).value : p.values === 'start' ? (o.start || (o.choices.find((c) => c.rec) || o.choices[0]).value) : p.values?.[o.key]]).filter(([, v]) => v !== undefined));
+    const s = await waitFor(IN_MOCK, MOCK_STATE, (v) => Object.entries(want).every(([k, v2]) => v.ds[toDs(k)] === v2), 4000);
+    check(`16 preset ${p.id} applies in place`, s && Object.entries(want).every(([k, v2]) => s.ds[toDs(k)] === v2) && s.marker === tag, s && { want, marker: s.marker });
+  }
+  for (const o of cfg.options) if (applies(o, cur.mock)) await clickViewer(o.key, (o.choices.find((c) => c.rec) || o.choices[0]).value);
   await goto(recMock, cfg.pages[0].value);
   // 8. Esc closes the sheet; the pill reopens it.
   await evalIn(IN_VIEWER, `document.querySelector('.osh-root input[name="__mock"]:checked').focus()`);
@@ -315,12 +345,34 @@ async function dockChecks(cfg, dockZeroUrl) {
       check(`14 dock: ${o.key}=${c.value} applies in place`, v && v.ds[toDs(o.key)] === c.value && v.marker === tag, v && { value: v.ds[toDs(o.key)], marker: v.marker });
     }
   }
+  for (const p of cfg.presets || []) {
+    const tag = `dp-${p.id}`; await mark(tag);
+    await evalIn(IN_MOCK, `(document.querySelector('.osh-root [data-osh-preset="${p.id}"]').click(), 1)`);
+    const want = Object.fromEntries(cfg.options.filter(applies).map((o) => [o.key, p.values === 'rec' ? (o.choices.find((c) => c.rec) || o.choices[0]).value : p.values === 'start' ? (o.start || (o.choices.find((c) => c.rec) || o.choices[0]).value) : p.values?.[o.key]]).filter(([, v]) => v !== undefined));
+    const v = await waitFor(IN_MOCK, MOCK_STATE, (x) => Object.entries(want).every(([k, v2]) => x.ds[toDs(k)] === v2), 3000);
+    check(`16 dock: preset ${p.id} applies in place`, v && Object.entries(want).every(([k, v2]) => v.ds[toDs(k)] === v2) && v.marker === tag, v && { want, marker: v.marker });
+  }
   const form = await evalIn(IN_MOCK, `(() => { const vis = (el) => { if (!el) return false; const r = el.getBoundingClientRect(); return r.width > 0 && r.height > 0 && r.left >= 0 && r.top >= 0 && r.right <= innerWidth + 0.5 && r.bottom <= innerHeight + 0.5; }; const verdicts = [...document.querySelectorAll('.osh-root input[name="__verdict"]')]; return { note: vis(document.querySelector('.osh-root textarea')), verdict: verdicts.length === 2 && verdicts.every((v) => vis(v)), queue: vis(document.querySelector('.osh-root [data-osh-queue]')), label: document.querySelector('.osh-root [data-osh-queue]')?.textContent || null }; })()`);
   check('14 dock: note, verdict and queue button inside the window', form && form.note && form.verdict && form.queue && /final pick/i.test(form.label || ''), form);
   const fit = await evalIn(IN_MOCK, fitExpr('.osh-sheet'));
   check('14 dock: every sheet control inside the window', fit && fit.n > 0 && !fit.out.length, fit);
   const sw = await mockState();
   check('15 dock: no sideways scroll at 1080', sw && sw.sw <= sw.w, sw && { scrollWidth: sw.sw, innerWidth: sw.w });
+  // A read-once state reloads the docked page and keeps every parameter it was opened with
+  // (Lavish's revision and load token; the harness adds keep=1 to stand in for them).
+  const ro = cfg.states.find((x) => x.reload);
+  if (ro) {
+    const before = await mockState();
+    const keys = new Set([...cfg.options.map((o) => o.key), ...cfg.states.map((x) => x.key)]);
+    const kept = [...new URLSearchParams(before?.search || '')].filter(([k]) => !keys.has(k));
+    await evalIn(IN_MOCK, `(document.querySelector('.osh-root input[name="${ro.key}"]').click(), 1)`);
+    const r = await waitFor(IN_MOCK, MOCK_STATE, (x) => x.ready && x.search.includes(`${ro.key}=${ro.on}`), 10000);
+    const after = new URLSearchParams(r?.search || '');
+    check(`14 dock: ${ro.key} reloads the page and keeps its own parameters`, r && r.ds[toDs(ro.key)] === ro.on && kept.length > 0 && kept.every(([k, v]) => after.get(k) === v), r && { kept: kept.map(([k]) => k), search: r.search.slice(0, 160) });
+    await evalIn(IN_MOCK, `(document.querySelector('.osh-pill')?.click(), document.querySelector('.osh-root input[name="${ro.key}"]').click(), 1)`);
+    const back = await waitFor(IN_MOCK, MOCK_STATE, (x) => x.ready && x.search.includes(`${ro.key}=${ro.off}`), 10000);
+    check(`14 dock: ${ro.key} back to ${ro.off} keeps them too`, back && back.ds[toDs(ro.key)] === ro.off && kept.every(([k, v]) => new URLSearchParams(back.search).get(k) === v), back && back.search.slice(0, 160));
+  }
   if (dockZeroUrl) {
     await send('Page.navigate', { url: dockZeroUrl });
     const z = await waitFor(IN_MOCK, `({ ready: document.readyState === 'complete', sheet: !!document.querySelector('.osh-root'), dock: document.documentElement.dataset.dock })`, (v) => v.ready && v.dock === '0', 8000);
@@ -372,6 +424,7 @@ try {
       else await sleep(200);
     }
     if (!hasViewer) throw new SetupError('neither the viewer (VIEWER_CONFIG and a frame) nor a mock (MockLive) appeared');
+    if (URL_ARG) console.log('note: under --url the checks run inside Lavish\'s frame at DOM level; they do not prove the owner can click through Lavish\'s own UI (its layout gate may still be showing). The owner step proves that.');
     let cfg = null;
     if (hasViewer === 'viewer') {
       await waitFor(IN_MOCK, MOCK_STATE, (v) => v.ready, 15000);
@@ -379,7 +432,7 @@ try {
       if (SHOT) { await sleep(500); const shot = await send('Page.captureScreenshot', { format: 'png' }); fs.writeFileSync(SHOT, Buffer.from(shot.data, 'base64')); console.log(`shot: ${SHOT}`); }
       if (!URL_ARG) {
         const first = cfg.pages[0].files[(cfg.mocks.find((m) => m.rec) || cfg.mocks[0]).value];
-        await send('Page.navigate', { url: `${BASE}/tools/sandbox-test.html?src=../${encodeURIComponent(first)}` });
+        await send('Page.navigate', { url: `${BASE}/tools/sandbox-test.html?src=../${encodeURIComponent(first + '?keep=1')}` });
         await dockChecks(cfg, `${BASE}/tools/sandbox-test.html?src=../${encodeURIComponent(first + '?dock=0')}`);
       }
     } else {
@@ -392,14 +445,20 @@ try {
 } catch (e) {
   console.error(`SETUP ERROR: ${e.message}`);
   if (failures.length || scriptErrors.length) console.error(JSON.stringify({ failures, scriptErrors }, null, 1));
-  code = e instanceof SetupError ? 2 : 2;
+  code = 2;
 }
-const passed = results.filter((r) => r.ok).length;
-console.log(`${passed}/${results.length} checks passed${code === 2 ? ' (setup error)' : ''}`);
-if (REPORT) fs.writeFileSync(REPORT, JSON.stringify({ when: new Date().toISOString(), url: URL_ARG || BASE, exit: code, results, failures, scriptErrors }, null, 1));
-try { ws?.close(); } catch {}
-if (proc && proc.exitCode === null) { proc.kill('SIGTERM'); await Promise.race([new Promise((r) => proc.once('exit', r)), sleep(3000)]); if (proc.exitCode === null) proc.kill('SIGKILL'); }
-try { fs.rmSync(profile, { recursive: true, force: true }); } catch {}
-if (tmpPortable) try { fs.rmSync(tmpPortable, { recursive: true, force: true }); } catch {}
-server?.close();
+try {
+  const passed = results.filter((r) => r.ok).length;
+  console.log(`${passed}/${results.length} checks passed${code === 2 ? ' (setup error)' : ''}`);
+  if (REPORT) fs.writeFileSync(REPORT, JSON.stringify({ when: new Date().toISOString(), url: URL_ARG || BASE, exit: code, results, failures, scriptErrors }, null, 1));
+} catch (e) {
+  console.error(`could not write the report: ${e.message}`);
+  code = 2;
+} finally {
+  try { ws?.close(); } catch {}
+  if (proc && proc.exitCode === null) { proc.kill('SIGTERM'); await Promise.race([new Promise((r) => proc.once('exit', r)), sleep(3000)]); if (proc.exitCode === null) proc.kill('SIGKILL'); }
+  try { fs.rmSync(profile, { recursive: true, force: true }); } catch {}
+  if (tmpPortable) try { fs.rmSync(tmpPortable, { recursive: true, force: true }); } catch {}
+  server?.close();
+}
 process.exit(code);

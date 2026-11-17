@@ -71,10 +71,11 @@ The flags were read from `lavish-axi@0.1.97` (`dist/cli.mjs`, the iframe with `i
 | `mock-a.html`, `mock-b.html` (+ `-about` pages), `shared/demo.css`, `shared/src/`, `shared/mock.bundle.js`, `tools/prep.config.json` | Demo content; replace it |
 
 1. Copy: `cp -R <skill>/references/live-viewer/. <mocks>/`. Never edit the template in place for a project.
-2. Edit `shared/viewer-config.js`; replace the demo mocks. Each mock sets `<html data-mock="<value>">`, loads `shared/viewer-config.js`, `shared/options-sheet.js` and `shared/mock-live.js` as classic scripts (in that order), and calls `MockLive.init({ apply: { key: (value) => … } })`. Keys styled from `html[data-*]` need no handler.
+2. Edit `shared/viewer-config.js`; replace the demo mocks. Each mock sets `<html data-mock="<value>" data-page="<page value>" data-lavish-live-reload-root>` (Lavish serves an opened page as `index.html`, so the page must say which it is; the last attribute makes Lavish reload on any change in the folder), loads `shared/viewer-config.js`, `shared/options-sheet.js` and `shared/mock-live.js` as classic scripts (in that order), and calls `MockLive.init({ apply: { key: (value) => … } })`. Keys styled from `html[data-*]` need no handler.
 3. **A hand-written mock:** classic scripts from the start, data inline, system or embedded fonts. Prep is needed only for ES modules (list them in `tools/prep.config.json` → `bundle`), local JSON or font files.
-4. **A mock made from a site build:** copy the build output into the mocks folder, add `shared/` and `tools/`, run `node tools/sandbox-prep.mjs`, fix what it reports, run it again. Never keep a second Lavish-only copy.
+4. **A mock made from a site build:** copy the build output into the mocks folder, add `shared/` and `tools/`, run `node tools/sandbox-prep.mjs`, fix what it reports, run it again. Never keep a second Lavish-only copy. Converted scripts are rebuilt from their sources on every run (recorded in `tools/prep.manifest.json`; an inline module moves beside its page as `<page>.module-<n>.mjs`): edit the source, never the file in `classic/`. Prep refuses what it cannot convert faithfully, with the file and line: default and namespace imports, re-exports, dynamic `import()`, `import.meta`, `await` outside an async function, destructuring exports, `export let`/`var`, and exported values the module reassigns (in a classic script importers read a value once, at load). A module it refuses can be built by the project's own bundler as a single classic (IIFE) script and loaded with a plain `<script src>`.
 5. Run `node tools/sandbox-prep.mjs` after editing any shared script (it re-stamps the `?v=` cache-bust on every page).
+6. **Presets** (`presets` in the config) are buttons that set several options at once: `values` is a map, `'rec'` (every recommended choice) or `'start'` (every start value). A mock opened with `?preset=<id>` (or the older `?bg=<id>` / `?bg=key:value,…`) starts from it.
 
 ## One mock: the docked sheet
 
@@ -82,12 +83,13 @@ The flags were read from `lavish-axi@0.1.97` (`dist/cli.mjs`, the iframe with `i
 - It hides the mock, page and width rows; an option for other mocks only is disabled.
 - The pill sits bottom-left (`dockCorner` moves it) and the sheet starts **closed**, so it never covers what the owner annotates.
 - "Open in viewer" opens `compare.html` with the current state, for the phone width.
+- A page link inside the docked mock opens the linked page without Lavish's annotation and queue tools (Lavish adds them only to the page it opened): review each page as its own session, and move between pages in the viewer, which follows links followed in its frame.
 - The owner annotates elements of the page, flips options and queues the final pick from one page.
 
 ## Verify before handing back
 
 - `node tools/sandbox-prep.mjs --check` and `node tools/sandbox-e2e.mjs` both exit 0 before a viewer or a docked mock is opened in Lavish.
-- The test serves the folder on a free port, frames `compare.html` with Lavish's flags, and checks: both frames at an opaque origin; the sheet inside 1080×700; every option and choice applied in place (no reload); disabled options; preview states; mock and page switches carrying the values; Phone and Desktop widths; Esc and the pill; the copy fallback; fonts loaded; links followed inside the frame; number keys; why-notes; the docked sheet on the first mock; no sideways scroll; and no failed request or script error in the folder. `--url <Lavish session URL>` runs it against Lavish itself; `--shot <png>` saves the sandboxed page.
+- The test serves the folder on a free port, frames `compare.html` with Lavish's flags, and checks: both frames at an opaque origin; the sheet inside 1080×700; every option and choice applied in place (no reload); disabled options; preview states; mock and page switches carrying the values; Phone and Desktop widths; Esc and the pill; the copy fallback; fonts loaded; links followed inside the frame; number keys; why-notes; presets; the docked sheet on the first mock, including a read-once state that reloads and keeps the page's own parameters; no sideways scroll; and no failed request (missing files included) or script error in the folder. It visits every mock and page and follows the links on each. `--url <Lavish session URL>` runs the same checks inside Lavish's frame at DOM level (it does not prove the owner can click through Lavish's own UI: the owner step does); `--shot <png>` saves the sandboxed page.
 - Run both again after any edit to the template in the skill.
 - After the open, the [pre-flight](lavish-review.md#before-the-owner-sees-it) reads Lavish's own layout findings before the owner is told the page is ready.
 

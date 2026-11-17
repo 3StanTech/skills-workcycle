@@ -16,7 +16,7 @@ function renderList(el) {
 
 const demoVersion = 1;
 
-window.__prepMods["shared/src/demo.js"] = { "renderList": renderList, "demoVersion": demoVersion };
+window.__prepMods["shared/src/demo.js"] = { get "renderList"() { return renderList; }, get "demoVersion"() { return demoVersion; } };
 })();
 window.Mock = Object.assign(window.Mock || {}, { "renderList": window.__prepMods["shared/src/demo.js"]["renderList"] });
 })();

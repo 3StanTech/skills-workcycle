@@ -11,6 +11,8 @@
 // states  preview states, never part of the pick: `on`/`off` values; `reload: true` for a
 //         flag the page reads once at load (the viewer reloads the frame for it).
 // dockCorner  where the docked sheet's pill sits inside a single mock (default bottom-left).
+// presets  buttons that set several options at once; values: {key: value}, 'rec' (every
+//          recommended choice) or 'start' (every start value). A mock also reads ?preset=<id>.
 window.VIEWER_CONFIG = {
   id: 'demo-pick',
   title: 'Pick the look, live',
@@ -35,6 +37,10 @@ window.VIEWER_CONFIG = {
       { value: 'airy', label: 'Airy', rec: true },
       { value: 'tight', label: 'Tight' },
     ] },
+  ],
+  presets: [
+    { id: 'rec', label: 'Recommended set', values: 'rec' },
+    { id: 'cool-tight', label: 'Cool and tight', values: { accent: 'cool', density: 'tight' } },
   ],
   states: [
     { key: 'menu', label: 'Menu', on: 'open', off: 'closed' },

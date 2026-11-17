@@ -1,12 +1,14 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-lavish-live-reload-root>
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Live viewer</title>
 <!-- Live viewer (explore-design live-viewer template): the real mock fills the window and the
      Options sheet (shared/options-sheet.js) switches every mock, page and option in place.
-     Adapt it by editing shared/viewer-config.js only. Review chrome: it never ships. -->
+     Adapt it by editing shared/viewer-config.js only. Review chrome: it never ships.
+     data-lavish-live-reload-root: Lavish reloads the open page when any file in this folder
+     changes, not only this one (shared scripts, mocks). -->
 <style>
   :root { color-scheme: dark; }
   html, body { margin: 0; height: 100%; overflow: hidden; background: #0c0d10; }
@@ -16,8 +18,8 @@
 </head>
 <body>
 <div class="stage"><iframe data-frame title="Live preview of the selected mock"></iframe></div>
-<script src="shared/viewer-config.js?v=62bb2a5d9f"></script>
-<script src="shared/options-sheet.js?v=9dfe4abb7f"></script>
+<script src="shared/viewer-config.js?v=9d7e820ecf"></script>
+<script src="shared/options-sheet.js?v=1eda422a21"></script>
 <script>
   // Desktop: render at max(window, designWidth) and scale down, keeping the real desktop layout.
   // Phone: the frame is phoneWidth wide, centred, unscaled. Width is a preview state, not the pick.

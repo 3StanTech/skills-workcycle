@@ -29,11 +29,11 @@ Lavish runs every page at an opaque origin (the sandbox table and the causes: [l
 
 The pre-flight, in order, before any "ready" message:
 
-1. `node tools/sandbox-prep.mjs --check` and `node tools/sandbox-e2e.mjs` exit 0.
+1. For a viewer or a docked mock: `node tools/sandbox-prep.mjs --check` and `node tools/sandbox-e2e.mjs` exit 0. A page with no viewer or mock contract (a decision page on the `input` playbook) skips this step and goes straight to 2.
 2. Open the page in Lavish and start the poll. Lavish opens the owner's browser itself, and that window runs its layout check a few seconds after the load.
-3. Run `node tools/lavish-warnings.mjs <file>`: Lavish's own layout findings for that page (it checks five rules at a 1080px desktop window). Lavish records a pass only when the findings change, so a clean page shows as "no pass recorded" once the load is seen and the wait runs out; that counts as clean.
-4. Fix every open finding it prints and repeat 3 until it exits 0, at most three passes; then tell the owner what remains.
-5. Only then send the one-line "open and ready" message. Exit 2 (the page never loaded in a browser) is reported in that message as "layout not pre-checked", never skipped silently.
+3. Run `node tools/lavish-warnings.mjs <file>`: Lavish's own layout findings for that page (it checks five rules at a 1080px desktop window). Lavish records a pass only when the findings change and keeps no "page ready" record, so a clean page cannot be confirmed: the tool exits 3 ("no findings recorded, unconfirmed") once the load has started and the wait runs out.
+4. Fix every open finding it prints (exit 1) and repeat 3, at most three passes; then tell the owner what remains.
+5. Only then send the one-line "open and ready" message. Exit 3 is reported in it as "no layout findings recorded (Lavish cannot confirm a clean pass)"; exit 2 (the page never loaded, or Lavish recorded a load failure) as "layout not pre-checked". Neither is skipped silently.
 
 After the ready message the inbox rule returns: fix only what the owner queues.
 
@@ -64,8 +64,9 @@ Never use `nohup`, `&`, `disown` or a detached terminal. If the poll returns `br
 ## Session hygiene
 
 - Every Options sheet ends in a queue button (the template enforces it; any hand-built switch panel must match).
-- A rebuild that touches more than one file is saved all at once (`sandbox-prep.mjs` does this; otherwise build in a temp folder and rename).
-- A file save alone does not reach an open Lavish window (Lavish 0.1.97). After an edit, send the change with `poll --agent-reply` or `reply`: that raises the session's revision and the window loads it. Check that `artifact_revision` rose and a load of it was recorded (`artifact_load` in `~/.lavish-axi/state.json`), and tell the owner to reload **only** when that check says it did not.
+- A rebuild that touches more than one file is written in full before any file is replaced (`sandbox-prep.mjs` writes every file to a temp name, then renames them back to back, pages last; otherwise build in a temp folder and rename).
+- Lavish reloads the open window when the opened file changes, and when any file in its folder changes if the page's `<html>` carries `data-lavish-live-reload-root` (the template's pages do, so an edit to a shared script or another mock reloads too). An editor that saves by replacing the file can slip past a single-file watch. After an edit, check that the session's `artifact_revision` rose and a load of it started (`artifact_load` in `~/.lavish-axi/state.json`), and tell the owner to reload **only** when that check says it did not.
+- In a docked mock, a page link opens the linked page without Lavish's annotation and queue tools (Lavish adds them only to the page it opened). Review each page as its own Lavish session; the viewer is the place to move between pages.
 - When the owner's note can be read two ways (a word, or the icon beside it), apply the likelier reading and name the other in the reply.
 - Record each opened file in the README gate log.
 
