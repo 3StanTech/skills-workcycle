@@ -78,7 +78,7 @@ E2E specs (Playwright) that encode an owner-approved scenario count as case 1.
 - **Change-detector tests:** they fail on any edit rather than on wrong behaviour. This includes tests that read source files as strings, snapshot internal structure, or assert exact markup or class names that users never see.
 - **Mocking the unit under test,** or mocking so much that the test checks the mock.
 - **TDD by default.** Agent-written failing tests first, then code, measured worse and costlier for agents. Use it only when the owner asks.
-- **Papering over a flaky test:** skipping it, adding sleeps, or re-running until it passes. Find the cause. If it cannot be found, delete the test and list it (file, test name, why) in the report.
+- **Papering over a flaky test:** skipping it, adding sleeps, or re-running until it passes. Find the cause. If it cannot be found and the change added the test, delete it and list it (file, test name, why) in the report; an existing test is deleted only with the owner's yes, and stays running until then.
 - **Reflex regression tests.** After a bug fix, add a test only when no existing behaviour test or scenario could have caught the bug; otherwise fix the existing test's data or assertion.
 
 ## Existing tests

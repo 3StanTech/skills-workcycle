@@ -55,14 +55,14 @@ Depth omitted: run triage and ask one depth question with its verdict as the rec
 
 ## Modes
 
-- **`report`:** run Phases 0–4 and 7 only. The findings file stays `Status: Open` and gains `## Fix queue` (each unambiguous fix: file, locus, fix) plus `Recorded at: <repo>@<HEAD sha>` per repo (file mtimes for `--files` scopes).
+- **`report`:** run Phases 0–4 and 7 only. The findings file stays `Status: Open` and gains `## Fix queue` (each unambiguous fix: file, locus, fix) plus `Recorded at: <repo>@<HEAD sha>` per repo, with the content hash (`git hash-object <file>`) of each scoped file that differs from that commit (file mtimes for `--files` scopes).
 - **`fix <findings-file>`:** read the file. If any repo HEAD or file changed since `Recorded at`, re-check that each queued finding still applies; drop and note those that do not. Then run Phases 5–7 on the queue and set Status as below.
 
 ## Findings file
 
 `<handoffs-root>/audits/<YYYY-MM-DD>-<slug>.md` (`<handoffs-root>` as in `~/.agents/skills/handoff/SKILL.md`), outside git, written from Phase 1 onward and updated after each phase: a `## Start here` block (goal and scope, `Verified` with each repo's HEAD, Read first, Next = `/work-audit fix <this path>` or the commit flow, "No `/prime` or `/handoff` needed"), brief (with the triage lines), findings (structured as in Phase 3), triage, fixes, `## Re-check` (whenever fixes ran), checks, `## Filed, not fixed`, `## Open items` (questions and unfixed findings), and `Status: Open | Closed`. It is the resume point for a cut-off audit; `/handoff now` points at it. Set `Status: Closed` with open items "none" at the end of a clean run; `/end` archives closed files to `audits/archive/`. A run with leftovers (Phase 6) closes only when every Leftovers line is FIXED with `Verified by` different from `Fixed by`, or accepted open by the owner; `doc_check.py --kind findings` refuses a Closed file otherwise. Filed items are not leftovers (they never went through a fix): a file may be Closed with filed items once the owner has answered the Phase 7 question for each, or the request said "no questions".
 
-`## Re-check` begins with `Judged at: <repo>@<sha>` per repo, plus the dirty scoped files in `session` scope (file mtimes for `--files` scopes, as `Recorded at` does). Under it, copy the final re-check's verdict for every item it covered (each re-checked finding and each NEW item) into `### Verdicts`, then give every PARTIAL, NOT FIXED or NEW item a Leftovers line with the same id:
+`## Re-check` begins with `Judged at: <repo>@<sha>` per repo, plus each scoped file that differs from that commit, with its content hash (`git hash-object <file>`), in every git scope (`session`, `range`, `plan`, `roadmap`); file mtimes for `--files` scopes, as `Recorded at` does. Under it, copy the final re-check's verdict for every item it covered (each re-checked finding and each NEW item) into `### Verdicts`, then give every PARTIAL, NOT FIXED or NEW item a Leftovers line with the same id:
 
 ```markdown
 ### Verdicts
@@ -140,15 +140,15 @@ When the brief lists incident checklist items, the auditor returns one line per 
 
 ### Phase 4 — Triage (main session)
 
-Deduplicate, discard false positives, and confirm or correct each proposed score. Then sort into **unambiguous fixes scoring 5+** (fix pass), **the two pause cases** (questions to the human), **filed** (under 5, written to `## Filed, not fixed`) and **non-issues**. A filed finding whose fix another finding depends on is fixed with it, and the report says why. An unambiguous fix that depends on an open question **waits**.
+Deduplicate, discard false positives, and confirm or correct each proposed score. Then sort into **unambiguous fixes scoring 5+** (fix pass), **the two pause cases** (questions to the human), **filed** (under 5, written to `## Filed, not fixed`) and **non-issues**. A filed finding whose fix another finding depends on is fixed with it, and the report says why. A pre-existing one waits for the owner's answer to it (Phase 4 for a security finding, else Phase 7), and so does the finding that depends on it: chosen, the two run Phases 5–6 together; not chosen (declined, or "no questions"), the dependent goes to `## Open items` as blocked by it, and the report says so. An unambiguous fix that depends on an open question **waits**.
 
-A **pre-existing** finding is filed whatever its score, with `· Pre-existing` after the score; a pre-existing **security** finding becomes an owner question now, not in Phase 7.
+A **pre-existing** finding is filed whatever its score, with `· Pre-existing` after the score; a pre-existing **security** finding becomes an owner question now, not in Phase 7: chosen, it joins this cycle's fix pass (in `report` mode, `## Fix queue`) and its line reads `Fix requested by owner YYYY-MM-DD`; declined, `Accepted by owner YYYY-MM-DD`; under "no questions" it stays `Filed`, listed first in the report and in `## Open items`.
 
 Review the threshold after three audits: if nothing was filed, or the owner asked to fix most filed items, say so in the report.
 
 ### Phase 5 — Fix pass
 
-Fixes go to the named implementer as ordinary repairs (stance §6 ladder), **partitioned by file** (never two writers on one file). **Fix agents never touch git** (no `add`/`stash`/`commit`). Sequential: one file at a time under the same rule. Pre-existing findings are not sent to the fixer and are not logged against it.
+Fixes go to the named implementer as ordinary repairs (stance §6 ladder), **partitioned by file** (never two writers on one file). **Fix agents never touch git** (no `add`/`stash`/`commit`). Sequential: one file at a time under the same rule. Pre-existing findings go to the fixer only when the owner chose them (the Phase 4 security question or the Phase 7 question), together with any finding that waited on them; they keep their Origin and are not logged against the fixer.
 
 ### Phase 6 — Re-verify
 
@@ -167,17 +167,17 @@ The re-check (auditor tier) confirms fixes hold and nothing new broke, **by exec
   - Log it at close: `route.py log … --repaired-by fresh-helper --note "effort-bump <from>→<to>"`.
 - **When the bump does not apply, ask the owner** (redesign / escalate to Full / a tier they name / accept as open): the fixer is already at the model's top level; the second re-check also leaves items; or `route.py` is unavailable. There is no second automatic bump. When the same file or function produced leftovers twice, recommend "stop and redesign" and say why. A standing go to commit and push covers releasing verified work, not deciding what counts as verified.
 
-**Stale verdicts.** Before Release and before Closed, compare the current state with `Judged at`. A scoped file that changed since then has a stale verdict: re-check that file only, with the history brief, before releasing or closing.
+**Stale verdicts.** Before Release and before Closed, compare the current state with `Judged at` (repo SHAs, which scoped files differ from them, and each one's content hash), in every scope. A scoped file that changed since then (edited again, newly dirty, or committed) has a stale verdict: re-check that file only, with the history brief, before releasing or closing.
 
 **Engine coverage:** when the audited work has owner-approved scenarios, the re-check lists each code path the fixes changed against the scenario engines that cover it, and states which were rerun after the fix. A covered path with an engine not rerun is a NEW finding ("coverage gap"), so it is a leftover.
 
-**Release (explicit go only):** with "commit and push" (or equivalent) in the request, after a clean re-verify the dispatcher stages exactly the reported fix set, commits with no attribution, pushes, and runs `~/.agents/scripts/wait-ci-deploy.sh` in the foreground, reporting its result. Without a go: never commit.
+**Release (explicit go only):** with "commit and push" (or equivalent) in the request, after a clean re-verify and after every owner question that can add to the fix set is settled (Phase 4 pause cases and the pre-existing security question, the Phase 7 filed-item question), with any re-check their chosen fixes started clean, the dispatcher stages exactly the reported fix set, commits with no attribution, pushes, and runs `~/.agents/scripts/wait-ci-deploy.sh` in the foreground, reporting its result. With no such question (no filed items, or "no questions") or none chosen, nothing more is waited for: the release follows the clean re-verify. `report` mode never releases. Without a go: never commit.
 
 ### Phase 7 — Report
 
 Short summary: scope, depth and verdict, what was audited, fixed, and waiting on the human, and the findings file path. The fixed list must be exactly the set the commit step picks up. End with "Clean — run the commit flow when ready", or with the release result when a go was given. In `report` mode, end with the Fix queue count and `/work-audit fix <findings-file>`.
 
-**Filed items:** list them with their scores. When any exist, ask the owner one multi-select question: which to fix (none preselected; pre-existing items scoring 5 or more listed first). Chosen items run Phases 5–6 and their lines read `Fix requested by owner YYYY-MM-DD`; the rest read `Accepted by owner YYYY-MM-DD`. Under "no questions" they stay `Filed` and the report says so.
+**Filed items:** list them with their scores; items already answered in Phase 4 are listed with that answer, not asked again. When any others exist, ask the owner one multi-select question: which to fix (none preselected; pre-existing items scoring 5 or more listed first). Chosen items, with any finding that waited on them (Phase 4), run Phases 5–6 (in `report` mode they join `## Fix queue` and run only under `/work-audit fix`) and their lines read `Fix requested by owner YYYY-MM-DD`; the rest read `Accepted by owner YYYY-MM-DD`. Under "no questions" they stay `Filed` and the report says so.
 
 **Coverage (required):** parallel or sequential; depth; lenses skipped; not-ours files left alone; loop cap hit or extra incomplete-fix cycle used; effort bump used (from → to); leftovers and who verified each; filed count; judge files changed; checklist items matched (ids), or "no incident checklist". Never imply parallel coverage for a sequential run.
 
