@@ -142,7 +142,10 @@ over because a launch failed or verification found a defect.
    `/work-audit full <scope>` as the next step. Audit findings return to the named implementer as ordinary repairs (stance §6
    ladder). Cross-reference and consistency checks (new files referenced, project docs updated,
    naming conventions) are the audit's ripple lens. In WarFleet the reviewing Admiral's final
-   review applies instead.
+   review applies instead. **In a cloud session** (`CLAUDE_CODE_REMOTE=true`, including a
+   Claude Project's cloud threads) settle triage, depth and auditor here, then hand the audit
+   to the owner's machine per work-audit → *Cloud sessions* instead of running it, and report
+   the run as "audit pending (local)".
 
 **Delegated tasks** (stance §6): run the packet's acceptance commands yourself when a helper
 reports `STATUS: done`; only a pass counts. A failed smoke test launches the row's fallback; a

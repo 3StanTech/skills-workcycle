@@ -82,6 +82,17 @@ Under `## Filed, not fixed`, one line per filed finding (`· Pre-existing` after
 
 **Last write:** run the cold-start gate (`~/.agents/skills/handoff/references/cold-start-gate.md`) on the findings file at the end of Phase 7, and whenever an audit stops early; a Closed file needs only the doc check.
 
+## Cloud sessions: the audit runs on the owner's machine
+
+The audit stage (audit, fixes, re-checks, report) never runs in a cloud session (`CLAUDE_CODE_REMOTE=true`, including a Claude Project's cloud threads), so auditors use the CLIs and subscriptions signed in on the owner's machine. In a cloud session, do this instead of Phase 0:
+
+1. Ask the owner for the go to commit and push the work branch, and the stage docs the audit reads (plan, roadmap, findings file) when their handoffs root is a git repo. The machine sees cloud work only through the remote. Without the go, stop and say the audit cannot be handed off.
+2. Record each repo's pushed branch and full SHA, and write the paste line: `/work-audit <light|full> <scope>` naming the branch, the range and the plan path, plus the auditor tier when one is named.
+3. Tell the owner how to start it on their machine: in a Claude Project, a thread on their computer in the repo's folder (**Work locally** in the **+** menu, or ask the project conversation to run that thread on their computer); outside a project, a local session in the repo. Then paste the line.
+4. Stop. The work's state is "audit pending (local)", never complete.
+
+On the machine, the receiving session fetches and checks out the branch and confirms HEAD matches the recorded SHA (a mismatch is reported in one line before anything runs), then runs the audit from Phase 0 as usual. Fixes, re-checks and any release happen there; a push still needs its go.
+
 ## Flow (7 phases)
 
 Phases 0, 1 and 4 run in the main session. The rest go to agents when available, else sequential passes.

@@ -30,6 +30,7 @@ The same four aims as [explore](../explore/SKILL.md) (the goal, the problem, the
 - **Never AI-generate** a logo, a real person's likeness, or readable text. Layer text, prices and logos in code.
 - **Honest content.** Unconfirmed facts carry a visible "Confirm with <owner>" tag and go in `owner-questions.md`. Never invent testimonials or product facts.
 - A named implementer ("implement using …") is recorded verbatim in the doc and starts nothing.
+- **Cloud sessions** (`CLAUDE_CODE_REMOTE=true`, including a Claude Project's cloud threads): Lavish cannot run there. Every Lavish step runs in a thread on the owner's machine, or uses the Artifact stand-in when the machine is off, per [Lavish review → Cloud sessions](references/lavish-review.md#cloud-sessions).
 
 ---
 
@@ -122,7 +123,7 @@ The mocks folder must survive a session limit with nothing lost (`~/AGENTS.md` �
 - Never generate images unless the imagery answer includes AI and the owner approved model, effort and count; probe first.
 - Never build more sample mocks than the stated count; past 6 per round, re-confirm first.
 - Never ask the owner to approve a filename; show the image or screenshot.
-- Never run `lavish-axi share` or publish mocks.
+- Never run `lavish-axi share` or publish mocks; the only exception is the private Artifact stand-in in a cloud session ([Lavish review → Cloud sessions](references/lavish-review.md#cloud-sessions)).
 - Never invent scope, facts, testimonials or prices; tag placeholders.
 - Log every image prompt in `generation-prompts.md` and every asset's source and licence in `ASSET-LICENSES.md`.
 

@@ -44,6 +44,8 @@ Artifacts and any frames nested in them run sandboxed without same-origin (an op
 
 Do not run `lavish-axi share`. Do not publish to ht-ml.app.
 
+**Cloud sessions** (`CLAUDE_CODE_REMOTE=true`, including a Claude Project's cloud threads): do not start Lavish; the owner's browser cannot reach a server in the cloud VM. Run the step on the owner's machine or use the Artifact stand-in, per `~/.agents/skills/explore-design/references/lavish-review.md` → Cloud sessions.
+
 ## Not for production sites
 
 Do not use Lavish as an editor for project source pages. It is an annotation loop for agent-written HTML artifacts and mocks.

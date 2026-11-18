@@ -50,7 +50,7 @@ Ask **at least one round** of clarifying questions before writing the plan, even
 
 Skip this step only when the request explicitly opts out ("no questions", "just plan it"). If more questions surface while writing, ask another round rather than inventing answers.
 
-**Auditor, always:** in this round ask for the final-review auditor (model + effort, two questions, no "(Recommended)" label on a tier) and the audit depth (Light / Full / ask after triage), even when no implementer was named. Offer the tiers `python3 ~/.agents/skills/stance/scripts/route.py menu` lists, none preselected. Skip only what the request already names. Record both in Orchestration.
+**Auditor, always:** in this round ask for the final-review auditor (model + effort, two questions, no "(Recommended)" label on a tier) and the audit depth (Light / Full / ask after triage), even when no implementer was named. Offer the tiers `python3 ~/.agents/skills/stance/scripts/route.py menu` lists, none preselected. Skip only what the request already names. Record both in Orchestration. The audit always runs on the owner's machine: when implement runs in a cloud session it pushes the work and hands the audit off (work-audit → Cloud sessions), so a plan meant for a cloud session ends its build steps with that push (owner's go), never with the audit itself.
 
 **Roadmap phase:** always ask, every phase, for the implementer roster (model, effort and stance, unless the request already named them) and for permission before creating test infrastructure (databases, branches, preview deploys), even when the previous phase's answer looks obvious. If a test environment recorded in the roadmap is still valid, offer it as the first option.
 
