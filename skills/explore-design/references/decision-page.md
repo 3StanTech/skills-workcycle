@@ -21,7 +21,7 @@ Use the project's design system when the page shows its UI; plain readable styli
 
 ## Location and flow
 
-1. Save the page beside the doc, outside git: `<doc-dir>/<doc-slug>.review.html`.
+1. Save the page beside the doc, outside every product repo: `<doc-dir>/<doc-slug>.review.html`.
 2. Open and poll it per [Lavish review](lavish-review.md).
 3. Apply each answer to the **Markdown doc** (the source of truth), then reply in Lavish with what changed.
 4. If the answers change the shape of the doc, update the page and send it again.

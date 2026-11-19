@@ -39,7 +39,7 @@ Good scenario cases include failure paths: bad input, empty input, a dependency 
 | API or backend | `curl` or a small script against a test database or branch, never production | A script with definite pass/fail output |
 | Data change | A query before and after on a test branch | Both query results |
 
-Save artifacts outside git (the session scratchpad, or the project's handoffs folder), unless the plan keeps a Playwright spec in the project's existing test directory. Creating databases, branches or preview deploys for testing needs the owner's permission per plan or phase.
+Save artifacts outside every product repo (the session scratchpad, or the work folder's `runs/`; without a workcycle root, the project's `<handoffs-root>`; `handoff` skill → Paths), unless the plan keeps a Playwright spec in the project's existing test directory. Creating databases, branches or preview deploys for testing needs the owner's permission per plan or phase.
 
 When the project has a `verify` skill (the project's local skills folder), start there. When a session had to work out how to boot and drive the app and no such skill exists, propose one in the report: the start command, the test database or branch, the entry URL or command, the test login from the project's own fixtures. Write it only on the owner's go, and keep it locally ignored.
 

@@ -4,7 +4,7 @@ Status: Open
 Last updated: <YYYY-MM-DD HH:MM> (<timezone>)
 Project: `<path>` · Plan: `<path, or none>` · Previous handoff: `<path, or none>`
 Paste in the new session: `resume from <this file's path>`
-It lives outside Git, is never committed, and holds no secrets.
+It lives outside every product repo (only a private workcycle repo may track it) and holds no secrets.
 
 <!-- Optional: only after `/handoff now`. Delete this block on resume once Start here holds its state. -->
 ## Interrupted <YYYY-MM-DD HH:MM> (urgent stop)

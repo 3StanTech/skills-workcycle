@@ -7,7 +7,7 @@ import time
 import unittest
 from pathlib import Path
 
-SOURCE = Path(os.environ.get("CREATE_PLAN_GUARD_SCRIPT", Path.home() / ".agents/hooks/create-plan-no-implement.py"))
+SOURCE = Path(os.environ.get("CREATE_PLAN_GUARD_SCRIPT", Path.home() / ".agents/hooks/create-plan-no-implement.py")).resolve()
 SCRIPT = SOURCE  # each test class points this at a copy with its own dependency setup
 TEST_HOME = None  # HOME for the guard process; None keeps the real one
 WRAPPER = str(Path.home() / ".agents/skills/headless/scripts/run-grok.sh")
@@ -350,6 +350,15 @@ def workcycle_root_cases():
         assert code == 0, (code, err)
         code, err = mock_pre(product)
         assert code == 2 and "explore-design mock round" in err, (code, err)
+        nested = os.path.join(root, "Demo", "clone")  # a separate repo under the root gets no exception
+        os.makedirs(nested)
+        subprocess.run(["git", "init", "-q", nested], check=True)
+        code, err = mock_pre(nested)
+        assert code == 2 and "explore-design mock round" in err, ("nested", code, err)
+        for text in ("## Workcycle root (disabled)\n`" + root + "`\n", "## Workcycle root\n` `\n"):
+            cfg.write_text(text, encoding="utf-8")  # disabled or blank: the old rule blocks git trees
+            code, err = mock_pre(mocks)
+            assert code == 2 and "explore-design mock round" in err, (text, code, err)
     finally:
         cfg.unlink()
 

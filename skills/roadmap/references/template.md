@@ -3,7 +3,7 @@
 Status: Active
 Last updated: <YYYY-MM-DD> (<what changed, one line>)
 Project: `<repo path>` · State: `<master.md path>` · Suggest `/end` at: <e.g. after Phase 2 and after the final phase> (the owner's `/end` always folds)
-Read this first in every session for this initiative. Update it last. It lives outside Git, is never committed, and holds no secrets.
+Read this first in every session for this initiative. Update it last. It lives outside every product repo (only a private workcycle repo may track it) and holds no secrets.
 
 ## Resume here
 

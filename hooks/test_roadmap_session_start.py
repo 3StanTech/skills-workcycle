@@ -168,6 +168,55 @@ class RoadmapSessionStart(unittest.TestCase):
         write(os.path.join(repo, "new.txt"), "x\n")
         self.assertIn("Git is ahead of the docs: 1 uncommitted change(s)", self.run_hook(repo))
 
+    def test_disabled_or_blank_root_is_unset(self):
+        write(os.path.join(self.root, "roadmap-old", "ROADMAP.md"), ROADMAP.format(status="Active"))
+        cfg = os.path.join(self.tmp, ".agents", "local", "workcycle.md")
+        wf = os.path.join(self.tmp, "WF")
+        write(os.path.join(wf, "App", "2026-11-19-new", "ROADMAP.md"), ROADMAP.format(status="Active"))
+        for text in (f"## Workcycle root (disabled)\n\n`{wf}`\n", "## Workcycle root\n\n` `\n", "## Workcycle root\n\n``\n"):
+            write(cfg, text)
+            ctx = self.run_hook(self.repo)
+            self.assertIn("roadmap-old", ctx, text)  # the -handoffs rule still applies
+            self.assertNotIn("2026-11-19-new", ctx, text)
+
+    def test_override_row_without_folder_is_skipped(self):
+        wf = os.path.join(self.tmp, "WF")
+        self.config(wf, [(self.repo, " ")])
+        write(os.path.join(wf, "App", "2026-11-19-demo", "ROADMAP.md"), ROADMAP.format(status="Active"))
+        write(os.path.join(wf, "2026-11-19-stray", "ROADMAP.md"), ROADMAP.format(status="Active"))
+        ctx = self.run_hook(self.repo)
+        self.assertIn(os.path.join(wf, "App", "2026-11-19-demo"), ctx)  # basename rule, not the root
+        self.assertNotIn("2026-11-19-stray", ctx)
+
+    def test_projectless_session_uses_general(self):
+        wf = os.path.join(self.tmp, "WF")
+        self.config(wf)
+        loose = os.path.join(self.tmp, "loose")
+        os.makedirs(loose)
+        write(os.path.join(wf, "General", "2026-11-19-misc", "handoffs", "2026-11-19-misc.md"), "# H\n\nStatus: Open\n")
+        self.assertIn("2026-11-19-misc.md", self.run_hook(loose))
+        os.remove(os.path.join(self.tmp, ".agents", "local", "workcycle.md"))
+        self.assertEqual(self.run_hook(loose), "")  # no root: nothing to look in
+
+    def test_urgent_stop_in_mocks_readme(self):
+        wf = os.path.join(self.tmp, "WF")
+        self.config(wf)
+        work = os.path.join(wf, "App", "2026-11-19-hero")
+        write(os.path.join(work, "mocks", "README.md"), "# Mocks\n\n## Interrupted\n\n- step\n")
+        write(os.path.join(work, "mocks", "a", "notes.md"), "## Interrupted\n")  # mock assets stay skipped
+        ctx = self.run_hook(self.repo)
+        self.assertTrue(ctx.startswith("URGENT STOP"), ctx[:80])
+        self.assertIn(os.path.join(work, "mocks", "README.md"), ctx)
+        self.assertNotIn("notes.md", ctx)
+
+    def test_legacy_rule_keeps_roadmap_glob_and_relative_pointer(self):
+        write(os.path.join(self.root, "other", "ROADMAP.md"), ROADMAP.format(status="Active"))
+        write(os.path.join(self.repo, "docs", "ROADMAP.md"), ROADMAP.format(status="Active"))
+        write(os.path.join(self.repo, "master.md"), "# App\n\n## Active roadmaps\n\n- Demo (Active, Phase 1): docs/ROADMAP.md\n")
+        ctx = self.run_hook(self.repo)
+        self.assertIn(os.path.join(self.repo, "docs", "ROADMAP.md"), ctx)
+        self.assertNotIn(os.path.join("other", "ROADMAP.md"), ctx)
+
     def test_bad_input_never_fails(self):
         r = subprocess.run([sys.executable, SCRIPT], input="not json", capture_output=True, text=True)
         self.assertEqual(r.returncode, 0)

@@ -122,17 +122,24 @@ def workcycle_root() -> str | None:
         text = (Path.home() / ".agents" / "local" / "workcycle.md").read_text(encoding="utf-8")
     except OSError:
         return None
-    m = re.search(r"^## Workcycle root[^\n]*\n(.*?)(?=^## |\Z)", text, re.M | re.S)
-    found = re.search(r"`([^`]+)`", m.group(1)) if m else None
-    return os.path.realpath(os.path.expanduser(found.group(1).strip())) if found else None
+    m = re.search(r"^## Workcycle root[ \t]*\n(.*?)(?=^## |\Z)", text, re.M | re.S)  # exact heading
+    found = re.search(r"`([^`]*)`", m.group(1)) if m else None
+    value = found.group(1).strip() if found else ""
+    return os.path.realpath(os.path.expanduser(value)) if value else None  # blank means unset
 
 
 def in_workcycle_root(path: str) -> bool:
+    """True when the git work tree that owns `path` is the workcycle root itself, so a separate
+    repo nested under the root (a product clone, a fixture) does not inherit the exception."""
     root = workcycle_root()
     if not root:
         return False
-    real = os.path.realpath(os.path.expanduser(path))
-    return real == root or real.startswith(root + os.sep)
+    try:
+        out = subprocess.run(["git", "-C", os.path.expanduser(path), "rev-parse", "--show-toplevel"],
+                             capture_output=True, text=True, timeout=5)
+    except (OSError, subprocess.TimeoutExpired):
+        return False
+    return out.returncode == 0 and os.path.realpath(out.stdout.strip()) == root
 
 
 def mock_launch_allowed(cmd: str) -> bool:

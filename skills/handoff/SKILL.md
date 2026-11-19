@@ -21,7 +21,7 @@ Make the current work resumable cold: update the doc that owns it (or write one 
 
 **Paths.** The single owner of where workcycle files go; the other skills point here. Read `~/.agents/local/workcycle.md` first.
 
-- **With a `## Workcycle root` section:** the project's **workcycle folder** is `<root>/<name>`. `<name>` is the `## Workcycle folders (overrides)` entry for the project path (longest prefix wins), else the basename of the nearest folder holding `master.md`, else of the git root; no project → `<root>/General`. Each piece of work gets a **work folder**, `<workcycle folder>/<YYYY-MM-DD>-<slug>/`, created by its first stage (explore, explore-design, a plan or page plan with no explore doc, a handoff nothing owns); later stages write into the work folder of the doc they were given. Inside, created when needed: `plans/` (explore docs, plans, page plans), `handoffs/`, `audits/`, `runs/`, `mocks/`, and `ROADMAP.md` for a roadmap. The project's `master.md` and other gitignored context files live at the workcycle folder's root, and the project keeps symlinks to them. Finished work folders move to `<workcycle folder>/_archive/` (end, roadmap Close).
+- **With a `## Workcycle root` section:** the project's **workcycle folder** is `<root>/<name>`. `<name>` is the `## Workcycle folders (overrides)` entry for the project path (longest prefix wins), else the basename of the nearest folder holding `master.md`, else of the git root; no project → `<root>/General`. Each piece of work gets a **work folder**, `<workcycle folder>/<YYYY-MM-DD>-<slug>/`, created by its first stage (explore, explore-design, a plan or page plan with no explore doc, a handoff nothing owns); later stages write into the work folder of the doc they were given. Inside, created when needed: `plans/` (explore docs, plans, page plans), `handoffs/`, `audits/`, `runs/`, `mocks/`, and `ROADMAP.md` for a roadmap. The project's `master.md` and other gitignored context files live at the workcycle folder's root, and the project keeps symlinks to them. Finished work folders move to `<workcycle folder>/_archive/` when eligible (`end` skill step 11 owns the rule).
 - **Without it (the default):** `<handoffs-root>` is: project is a git repo → `<project-parent>/<project-name>-handoffs/`; project folder is not a git repo (it may contain one) → `<project>/handoffs/`; no project → the no-project handoffs folder in `~/.agents/local/workcycle.md`, else `~/.agents/handoffs/`. A roadmap's work folder is `<handoffs-root>/roadmap-<slug>/`; other docs use `<handoffs-root>/plans/`, `audits/` and its root.
 
 Elsewhere in these skills `<handoffs-root>` means the workcycle folder when a root is set, and **work folder** means the folder above. Neither is ever inside a product repo; the workcycle root may be its own private repo.
@@ -42,8 +42,8 @@ Elsewhere in these skills `<handoffs-root>` means the workcycle folder when a ro
 
 1. **Owning doc:** §1.
 2. **Secure the scratchpad.** It is session-specific and can disappear.
-   - Secrets move to `<handoffs-root>/.secrets-<slug>/` (dir 0700, files 0600), referenced by path only, never printed.
-   - Reusable scripts and evidence move to the work folder (`runs/`).
+   - Secrets move to the **secret folder** `<handoffs-root>/.secrets-<slug>/` (dir 0700, files 0600), referenced by path only, never printed. When the workcycle root is a git repo, its `.gitignore` must exclude `.secrets-*/`; check with `git check-ignore` before writing. This is the only place the skills put secret files.
+   - Reusable scripts and evidence move to the work folder (`runs/`); without a workcycle root and no roadmap, to `<handoffs-root>`.
    - Launch configs that pointed at the scratchpad are repointed.
 3. **Stop or record running things.** Stop dev servers (`preview_stop`) and background jobs. Record each headless helper in the owning doc as its full registry entry `{"engine","id","task","lane","topic"}`; the resuming session imports those entries per headless contract §3 (imported entries). For in-session subagents, record the packet and a WIP note to relaunch from; they cannot be resumed from a new session. Reset browser viewport emulation.
 4. **Verify current state** with cheap checks: `git status --short`, `git branch --show-current`, `git log --oneline -5`, ahead/behind the remote; the plan's `**Status:**`; test branches or databases the next session reuses and their expiry. Anything not checked goes under **Not verified**.
@@ -61,7 +61,7 @@ Elsewhere in these skills `<handoffs-root>` means the workcycle folder when a ro
    | Sandbox limits | delegated lanes without network, ports or JDK; move those steps to the dispatcher or CI |
 
    A failed probe becomes a doc change (a new step, an owner pre-flight item, a guard), never "check later".
-6. **Owner pre-flight and authority.** List what the owner must do before the session starts, with exact paths and commands; create empty secret files in advance (0600, outside every git tree) so the owner only pastes a value. Separate what is pre-approved from what needs a go at the time (deleting branches, commits, pushes, merges, deploys, production writes, billing).
+6. **Owner pre-flight and authority.** List what the owner must do before the session starts, with exact paths and commands; create empty secret files in advance in the secret folder (step 2) so the owner only pastes a value. Separate what is pre-approved from what needs a go at the time (deleting branches, commits, pushes, merges, deploys, production writes, billing).
 7. **Align and hand over.**
    - The roadmap's Resume here, any handoff pointer and the doc say the same thing.
    - Carry due reminders: copy any `next close` line from `master.md` → `## Reminders` into Open questions and show it in the reply (leave it; `/end` clears it).
@@ -73,7 +73,7 @@ Elsewhere in these skills `<handoffs-root>` means the workcycle folder when a ro
 Order is set by what is lost first. Do these in strict order.
 
 1. **One write first, within the first minute:** an `## Interrupted <YYYY-MM-DD HH:MM> (urgent stop)` block at the top of the owning doc's Start here, or a handoff file when nothing owns the work (template block). It holds the goal, what was in flight (`file:line`, uncommitted edits, the half-done step), the single next action, and the paste line.
-2. **Copy scratch secrets and scripts out** in one command (secrets to `.secrets-<slug>/` with 0700/0600).
+2. **Copy scratch secrets and scripts out** in one command (secrets to the secret folder, §2 step 2, ignore check included).
 3. **Stop or record running things** (§2 step 3). Never kill a helper mid-write without recording what it was writing.
 4. **Snapshot git state into the block** (branch, HEAD, dirty files). Never commit or push.
 5. **If time remains,** continue §2 from step 4. Otherwise list every skipped §2 step under `Unverified (urgent stop)` in the block, so the resume session runs them first.
