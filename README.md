@@ -160,6 +160,17 @@ PY
 rm -rf ~/.agents/bundles/skills-workcycle
 ```
 
+## Cloud sessions (Claude Code on the web, Claude Projects threads)
+
+A cloud session reads nothing from your machine's `~/.claude` or `~/.agents`. One way to give it these skills, your policy and the hooks, tested 2026-11:
+
+1. **A private marketplace repo of your own** with `.claude-plugin/marketplace.json`. List this bundle as a plugin with `"source": {"source": "url", "url": "https://github.com/3StanTech/skills-workcycle.git"}`; a plugin built from a public repo follows its default branch, so a push here reaches the next cloud session. Anything private (your `AGENTS.md`, a cloud copy of `~/.agents/local/workcycle.md`) must sit **inside the marketplace repo** as a relative-source plugin: a plugin sourced from a separate private repo does not sync.
+2. **Add the marketplace** on claude.ai (Customize > Plugins > Add > Add marketplace, "Sync automatically" on) and install its plugins. They also install on your own machine, so every hook they register must exit at once unless `CLAUDE_CODE_REMOTE=true`; otherwise each hook runs twice there.
+3. **A SessionStart hook in the private plugin** links the synced skill folders (`~/.claude/plugins/synced/<org>_<account>/<plugin>/`) into `~/.agents/skills/` (the paths the skills cross-reference), links `hooks/` and `scripts/` into `~/.agents/`, writes `~/.agents/local/workcycle.md` with the clone paths (attached repos are cloned to `/home/user/<repo>`), and links `~/AGENTS.md` and `~/.claude/CLAUDE.md` (a `CLAUDE.md` written by a SessionStart hook loads in the same session). It then runs `hooks/roadmap-session-start.sh` once per attached project.
+4. **Attach the repo that holds your `Workcycle root`** (when it is a git repo) to each Project, so stage docs are readable there; the cold-start gate's publish step pushes them back.
+
+Lavish and the audit stage stay on your machine: in a cloud session they hand off (`explore-design` → Lavish review → Cloud sessions; `work-audit` → Cloud sessions). `gh` is not signed in inside cloud sessions, so CI checks (`scripts/wait-ci-deploy.sh`) run on your machine. Skills whose frontmatter sets `disable-model-invocation` (for example `remind`) stay slash-command only, as on your machine.
+
 ## Dependencies
 
 - Python 3 and git.
