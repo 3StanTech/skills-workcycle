@@ -38,7 +38,7 @@ If `~/.agents/local/workcycle.md` lists steps under `/end extra steps`, run them
 1. **Roadmap.** When a roadmap governs the session's work, run the `roadmap` skill's Update step, passing the fold date.
 2. **In-flight work.** If the session stopped mid-task and no resumable file captures it (a plan's Start here, the roadmap's Resume here, or a handoff), rewrite that plan's Start here, or write a handoff with the `handoff` skill. Follow `~/AGENTS.md` → Resumable outputs.
 3. **Design corrections.** When the session held corrections to a UI's look or motion, run `learn-taste` per the [motion skill map](../implement/references/ui-build/motion.md#skill-map): it proposes rules and writes only what the owner approves. If it is not installed, list the corrections as candidate rules in the report and say so.
-4. **Uncommitted files.** For each repo the session touched, report `N uncommitted files in <repo>` from `git status --short`. Never stage, commit or push.
+4. **Uncommitted files.** For each repo the session touched, report `N uncommitted files in <repo>` from `git status --short`. Never stage, commit or push, with one exception: with a workcycle root that is a git repo, publish the folded context files and any archive moves through the cold-start gate's step 8 (`publish_workcycle.py --stage end <project workcycle folder>`), which asks the owner unless `workcycle.md` grants a standing go.
 5. **Cleanup offer.** Run the [cleanup pass](references/cleanup-pass.md) unless this workcycle already has a `Cleanup:` marker (the governing roadmap's header, or the project's newest CHANGELOG entry) or the session created nothing to clean.
 
 ## 5. Report

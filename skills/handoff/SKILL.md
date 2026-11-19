@@ -47,7 +47,7 @@ Elsewhere in these skills `<handoffs-root>` means the workcycle folder when a ro
    - Launch configs that pointed at the scratchpad are repointed.
 3. **Stop or record running things.** Stop dev servers (`preview_stop`) and background jobs. Record each headless helper in the owning doc as its full registry entry `{"engine","id","task","lane","topic"}`; the resuming session imports those entries per headless contract §3 (imported entries). For in-session subagents, record the packet and a WIP note to relaunch from; they cannot be resumed from a new session. Reset browser viewport emulation.
 4. **Verify current state** with cheap checks: `git status --short`, `git branch --show-current`, `git log --oneline -5`, ahead/behind the remote; the plan's `**Status:**`; test branches or databases the next session reuses and their expiry. Anything not checked goes under **Not verified**.
-5. **Run the gate's steps 1–5** (`references/cold-start-gate.md`) on the owning doc: Start here, chat decisions, scratchpad sweep, paths, probes. Read the doc as a fresh session given only its path, on any host, with no `/prime`, roadmap Resume or chat history. Facts from other files the session would otherwise open (other repos' `master.md`, IDs, versions, quotas) are copied in as a short dated list with source paths. A mid-task pause probes beyond the next stage, read-only, recording each result with a date:
+5. **Run the gate's steps 1–5, and step 8 once the files are written** (`references/cold-start-gate.md`) on the owning doc: Start here, chat decisions, scratchpad sweep, paths, probes. Read the doc as a fresh session given only its path, on any host, with no `/prime`, roadmap Resume or chat history. Facts from other files the session would otherwise open (other repos' `master.md`, IDs, versions, quotas) are copied in as a short dated list with source paths. A mid-task pause probes beyond the next stage, read-only, recording each result with a date:
 
    | Assumption | Probe |
    |---|---|
@@ -75,7 +75,7 @@ Order is set by what is lost first. Do these in strict order.
 1. **One write first, within the first minute:** an `## Interrupted <YYYY-MM-DD HH:MM> (urgent stop)` block at the top of the owning doc's Start here, or a handoff file when nothing owns the work (template block). It holds the goal, what was in flight (`file:line`, uncommitted edits, the half-done step), the single next action, and the paste line.
 2. **Copy scratch secrets and scripts out** in one command (secrets to the secret folder, §2 step 2, ignore check included).
 3. **Stop or record running things** (§2 step 3). Never kill a helper mid-write without recording what it was writing.
-4. **Snapshot git state into the block** (branch, HEAD, dirty files). Never commit or push.
+4. **Snapshot git state into the block** (branch, HEAD, dirty files). Never commit or push a product repo. Then publish the workcycle docs (gate step 8): the one push an urgent stop makes, and the only way the block survives a cloud session.
 5. **If time remains,** continue §2 from step 4. Otherwise list every skipped §2 step under `Unverified (urgent stop)` in the block, so the resume session runs them first.
 
 ## 4. Resume

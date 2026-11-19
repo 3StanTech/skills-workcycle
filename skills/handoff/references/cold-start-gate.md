@@ -34,6 +34,17 @@ or `/prime`: a new session on any host starts the next stage from its paste line
 7. **Next-stage start.** The skill that reads the doc first re-checks its Verified line cheaply
    (HEAD, `git status --short`, the paths it will act on). A mismatch is reported in one line and
    folded into the doc before work starts.
+8. **Publish.** When the doc sits under a `Workcycle root` (`handoff` skill → Paths) that is the top of a
+   git work tree, publish its work folder so a session on another host (a cloud thread, the Mac)
+   resumes from the pushed copy:
+   `python3 ~/.agents/skills/handoff/scripts/publish_workcycle.py --stage <stage> <work folder>`.
+   It pulls with `--ff-only`, commits only the paths given, refuses anything that looks like a
+   secret, and pushes without force. It runs only when `~/.agents/local/workcycle.md` has a
+   `## Workcycle publish` section granting a standing go; on exit 3 ask the owner ("Push the
+   workcycle docs for <work folder>?") and, on a yes, publish with the same command after adding
+   nothing else. Exit 4 (pull or push failed) and 5 (secret) stop and go to the owner with the
+   script's message. Skip this step when no root is set or the root is not a git repo. In a cloud
+   session (`CLAUDE_CODE_REMOTE=true`) never skip it: the VM's files do not outlast the session.
 
 ## When create-plan is next
 
@@ -50,4 +61,4 @@ the roadmap's Resume here and Environments, and the closing plan's Start here.
 Then run step 6 with `--repo` on each refreshed doc: `doc_check.py` warns when the next stage is
 create-plan and the repo's HEAD is missing.
 
-Mid-task pauses and urgent stops stay with the `handoff` skill (pause mode reuses steps 1–6).
+Mid-task pauses and urgent stops stay with the `handoff` skill (pause mode reuses steps 1–6 and 8).

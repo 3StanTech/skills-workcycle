@@ -117,6 +117,9 @@ Some skills read an untracked `~/.agents/local/workcycle.md` when it exists, for
 |---|---|
 | `~/Projects/clients/acme-site` | `Clients/Acme` |
 
+## Workcycle publish
+standing go: commit and push the stage's work folder after the secret check; never force-push.
+
 ## work-audit client roots
 - `~/Projects/clients`
 
@@ -124,7 +127,7 @@ Some skills read an untracked `~/.agents/local/workcycle.md` when it exists, for
 (any extra close steps `/end` should run, with which projects they apply to)
 ```
 
-Sections: `Projects root` (prime, end), `No-project handoffs folder` (handoff, roadmap; default `~/.agents/handoffs/`), `Workcycle root` and `Workcycle folders (overrides)` (every skill and both hooks; optional: one folder holding every project's workcycle files as dated work folders, see the `handoff` skill's Paths; without it the `-handoffs` layout stays), `Project rules` (end), `Mocks folders` (explore-design), `work-audit client roots` (work-audit triage), `/end extra steps` (end).
+Sections: `Projects root` (prime, end), `No-project handoffs folder` (handoff, roadmap; default `~/.agents/handoffs/`), `Workcycle root` and `Workcycle folders (overrides)` (every skill and both hooks; optional: one folder holding every project's workcycle files as dated work folders, see the `handoff` skill's Paths; without it the `-handoffs` layout stays), `Workcycle publish` (the cold-start gate's step 8: when the workcycle root is a git repo, a standing go to commit and push each stage's work folder at the end of the stage; without it the skills ask first), `Project rules` (end), `Mocks folders` (explore-design), `work-audit client roots` (work-audit triage), `/end extra steps` (end).
 
 ### 7. Verify
 
@@ -133,6 +136,7 @@ Sections: `Projects root` (prime, end), `No-project handoffs folder` (handoff, r
 cd ~/.agents/bundles/skills-workcycle
 python3 -m unittest discover -s skills/work-audit/tests
 python3 -m unittest discover -s skills/roadmap/tests
+python3 -m unittest discover -s skills/handoff/tests
 CREATE_PLAN_GUARD_SCRIPT=$PWD/hooks/create-plan-no-implement.py python3 -m unittest discover -s hooks -p 'test_*.py'
 ```
 

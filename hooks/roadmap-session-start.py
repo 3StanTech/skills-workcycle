@@ -10,6 +10,8 @@ Finds the project from the session cwd (nearest master.md and/or git root), then
   4. due reminders in master.md `## Reminders` (when: next session, or a passed date)
   5. one line when git is ahead of the docs (uncommitted changes, or HEAD newer than the
      active roadmap's Last updated)
+  6. one line when the workcycle root is a git repo behind or ahead of its upstream (last fetched
+     state; no fetch here), so stage docs are pulled before editing and pushed before stopping
 
 <handoffs-root> follows the handoff skill's Paths: with a `## Workcycle root` in
 ~/.agents/local/workcycle.md it is <root>/<name> (the overrides table, else the basename of the
@@ -229,6 +231,25 @@ def git_ahead(git_root, roadmap_paths):
     return "Git is ahead of the docs: " + "; ".join(bits) + ". Check before trusting the docs' state."
 
 
+def workcycle_sync(root):
+    """Behind/ahead of upstream for a workcycle root that is its own git work tree."""
+    if not root or not os.path.isdir(os.path.join(root, ".git")):
+        return ""
+    try:
+        counts = git_out(root, "rev-list", "--left-right", "--count", "HEAD...@{u}").split()
+    except (OSError, subprocess.TimeoutExpired):
+        return ""
+    if len(counts) != 2 or counts == ["0", "0"]:
+        return ""
+    ahead, behind = int(counts[0]), int(counts[1])
+    bits = []
+    if behind:
+        bits.append(f"{behind} commit(s) behind its upstream as last fetched: pull (git pull --ff-only) before editing stage docs")
+    if ahead:
+        bits.append(f"{ahead} unpushed commit(s): publish them (cold-start gate step 8)")
+    return f"Workcycle files repo {root}: " + "; ".join(bits) + "."
+
+
 def due_reminders(master_dir):
     if not master_dir:
         return []
@@ -278,6 +299,9 @@ def build(cwd):
         ahead = git_ahead(git_root, roadmaps)
         if ahead:
             parts.append(ahead)
+    sync = workcycle_sync(config[0])
+    if sync:
+        parts.append(sync)
     return "\n\n".join(parts)
 
 

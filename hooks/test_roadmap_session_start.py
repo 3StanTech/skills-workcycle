@@ -217,6 +217,45 @@ class RoadmapSessionStart(unittest.TestCase):
         self.assertIn(os.path.join(self.repo, "docs", "ROADMAP.md"), ctx)
         self.assertNotIn(os.path.join("other", "ROADMAP.md"), ctx)
 
+    def test_workcycle_root_behind_or_ahead_of_upstream(self):
+        env = {**os.environ, "HOME": self.tmp, "GIT_AUTHOR_NAME": "t", "GIT_AUTHOR_EMAIL": "t@example.com",
+               "GIT_COMMITTER_NAME": "t", "GIT_COMMITTER_EMAIL": "t@example.com"}
+        def git(*args, cwd):
+            subprocess.run(["git", *args], cwd=cwd, env=env, check=True, capture_output=True)
+        remote = os.path.join(self.tmp, "remote.git")
+        wf = os.path.join(self.tmp, "Workcycle Files")
+        git("init", "-q", "--bare", "-b", "main", remote, cwd=self.tmp)
+        git("clone", "-q", remote, wf, cwd=self.tmp)
+        write(os.path.join(wf, "App", "2026-11-19-demo", "ROADMAP.md"), ROADMAP.format(status="Active"))
+        git("add", "-A", cwd=wf)
+        git("commit", "-q", "-m", "a", cwd=wf)
+        git("push", "-q", "-u", "origin", "main", cwd=wf)
+        self.config(wf)
+        self.assertNotIn("Workcycle files repo", self.run_hook(self.repo))  # in sync
+        write(os.path.join(wf, "App", "note.md"), "x\n")
+        git("add", "-A", cwd=wf)
+        git("commit", "-q", "-m", "b", cwd=wf)
+        self.assertIn("1 unpushed commit(s)", self.run_hook(self.repo))
+        other = os.path.join(self.tmp, "other")
+        git("clone", "-q", remote, other, cwd=self.tmp)
+        write(os.path.join(other, "General", "c.md"), "c\n")
+        git("add", "-A", cwd=other)
+        git("commit", "-q", "-m", "c", cwd=other)
+        git("push", "-q", cwd=other)
+        git("fetch", "-q", cwd=wf)
+        ctx = self.run_hook(self.repo)
+        self.assertIn("1 commit(s) behind", ctx)
+        self.assertIn("1 unpushed commit(s)", ctx)
+
+    def test_workcycle_root_without_upstream_is_silent(self):
+        wf = os.path.join(self.tmp, "WF")
+        subprocess.run(["git", "init", "-q", wf], check=True)
+        write(os.path.join(wf, "App", "2026-11-19-demo", "ROADMAP.md"), ROADMAP.format(status="Active"))
+        self.config(wf)
+        ctx = self.run_hook(self.repo)
+        self.assertIn("Active roadmap:", ctx)
+        self.assertNotIn("Workcycle files repo", ctx)
+
     def test_bad_input_never_fails(self):
         r = subprocess.run([sys.executable, SCRIPT], input="not json", capture_output=True, text=True)
         self.assertEqual(r.returncode, 0)
