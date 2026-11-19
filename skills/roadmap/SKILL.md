@@ -27,12 +27,9 @@ Find the roadmap in this order (first match wins):
 
 1. A path the user gave.
 2. The project `master.md` section `## Active roadmaps` (one line per roadmap).
-3. `<handoffs-root>/roadmap-*/ROADMAP.md` whose header says `Status: Active`.
+3. `<handoffs-root>/*/ROADMAP.md` (with a workcycle root) or `<handoffs-root>/roadmap-*/ROADMAP.md` whose header says `Status: Active`.
 
-`<handoffs-root>` is the project's outside-Git process folder, the same one `handoff` and `prime` use:
-- project is a git repo: `<project-parent>/<project-name>-handoffs/`
-- project folder is not a git repo (it may contain one): `<project>/handoffs/`
-- no project: the no-project handoffs folder in `~/.agents/local/workcycle.md`, else `~/.agents/handoffs/`
+`<handoffs-root>`, the workcycle folder and work folders are defined once in the `handoff` skill's **Paths**. A roadmap's folder is its work folder: `<handoffs-root>/<YYYY-MM-DD>-<slug>/` with a workcycle root, `<handoffs-root>/roadmap-<slug>/` without one.
 
 If several active roadmaps match and the user did not name one, ask a decision-point question. If none exists and the trigger was not "start a roadmap", say so and offer step 3.
 
@@ -64,7 +61,7 @@ Only the chained Update then Status runs two modes in one invocation. Create and
 
 1. **Read the sources once:** the explore doc, any approved mock or design, the first plan if one exists, and the newest handoff for this work.
 2. **Ask one decision-point round** for anything the sources do not settle: the `/end` milestones (when agents should *suggest* a fold; recommend after the middle phase and after the final phase), the slug, and any locked decision that is still ambiguous.
-3. **Create the folder** `<handoffs-root>/roadmap-<slug>/` with `ROADMAP.md`. Put the initiative's explore doc and phase plans in `plans/` there, implement run records in `runs/`, and mid-task handoffs in `handoffs/`. Owner-only secret files may sit beside them with mode 600.
+3. **Create the folder**, the roadmap's work folder (reuse the explore doc's work folder when it has one; `handoff` skill → Paths), with `ROADMAP.md`. Put the initiative's explore doc and phase plans in `plans/` there, implement run records in `runs/`, and mid-task handoffs in `handoffs/`. Owner-only secret files may sit beside them with mode 600.
 4. **Fill the template, distilling instead of copying.** Copy only what defines the goal: vision, definition of done, users, phase order, must-have / can-wait, out of scope, and locked UX decisions as one line each. For everything else, write the path to the source and say which section to open when.
 5. **Point to it from `master.md`.** Add one line under `## Active roadmaps` (create the section if missing): `- <Initiative> (Active, Phase <N>): <path to ROADMAP.md>`. This is the only `master.md` edit this skill makes; everything else waits for `/end`.
 6. **Supersede the handoffs.** Add this first line to every older handoff for this work: `> **Superseded for resuming:** read <path to ROADMAP.md> first. Kept as history.`
@@ -119,18 +116,18 @@ Run this after the final phase is Closed and its `/end` fold has run.
 
 1. Replace the header's `Status:` line with `Status: Closed <date> · Final SHA <sha>` (never add a second Status line), and replace Resume here with `Initiative closed. Nothing to resume.` plus any Deferred owner reminders still open.
 2. In `master.md`, change the roadmap's line under `## Active roadmaps` to `(Closed <date>)`. Remove it once the owner says it is no longer useful.
-3. Keep the folder as history. Never delete it.
+3. Keep the folder as history. Never delete it. With a workcycle root, offer moving it to `<handoffs-root>/_archive/` (owner's yes) and point the `master.md` line at the new path.
 4. **Cleanup offer:** unless the roadmap header already carries a `Cleanup:` line, run the [cleanup pass](../end/references/cleanup-pass.md) for this initiative and add its marker under `Status:`.
 
 ---
 
 ## Output
 
-- Roadmap: `<handoffs-root>/roadmap-<slug>/ROADMAP.md`, with `plans/`, `runs/` and `handoffs/` beside it. One file per initiative, overwritten in place, never a dated copy.
+- Roadmap: `<work folder>/ROADMAP.md`, with `plans/`, `runs/` and `handoffs/` beside it. One file per initiative, overwritten in place, never a dated copy.
 - `master.md`: one pointer line under `## Active roadmaps`.
 - Status mode: chat only, no file.
 
-If the working directory is a git repository, write outputs to the project folder outside the git tree, or to the session scratchpad — never commit AI-process artifacts.
+Write outputs to the work folder, never inside a product repo, or to the session scratchpad; never commit AI-process artifacts to a product repo.
 
 ## Guardrails
 

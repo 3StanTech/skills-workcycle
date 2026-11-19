@@ -17,7 +17,7 @@ The motion skills are Emil Kowalski's (`emilkowalski/skills`, installed separate
 
 | Moment | Skill | How to call |
 |---|---|---|
-| explore-design: comparing variants of one element (a header, a background, a motion pass) | `prototype` | read `~/.agents/skills/prototype/SKILL.md` and follow it, inside explore-design's limits: build the variants in the mocks folder (outside git), carry the pick into the winning mock only, show the variants as one option in the live viewer's sheet (`explore-design/references/live-viewer.md`), keep the variant files in the mocks folder as resumable evidence (prototype's keep-on-request case; skip its delete-the-surface step), and leave production integration to `/implement` |
+| explore-design: comparing variants of one element (a header, a background, a motion pass) | `prototype` | read `~/.agents/skills/prototype/SKILL.md` and follow it, inside explore-design's limits: build the variants in the mocks folder (outside product repos), carry the pick into the winning mock only, show the variants as one option in the live viewer's sheet (`explore-design/references/live-viewer.md`), keep the variant files in the mocks folder as resumable evidence (prototype's keep-on-request case; skip its delete-the-surface step), and leave production integration to `/implement` |
 | explore-design G4: motion pass on the winning mock | `find-animation-opportunities` | invoke; show its shortlist as options in the mock's docked Options sheet (`explore-design/references/live-viewer.md`) |
 | implement: adding one animation | `animate` | invoke |
 | implement: several elements moving together | `choreograph` | invoke |

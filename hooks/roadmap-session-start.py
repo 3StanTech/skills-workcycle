@@ -2,13 +2,18 @@
 """SessionStart: surface the project's active roadmap (and newest open handoff).
 
 Finds the project from the session cwd (nearest master.md and/or git root), then:
+  0. urgent stops: any doc under <handoffs-root> with an `## Interrupted` heading (first)
   1. roadmaps listed under `## Active roadmaps` in master.md (not marked Closed)
-  2. <handoffs-root>/roadmap-*/ROADMAP.md whose header says `Status: Active`
-  3. the newest open handoff in <handoffs-root>/ (not Superseded, not Done)
+  2. <handoffs-root>/*/ROADMAP.md whose header says `Status: Active`
+  3. the newest open handoff in <handoffs-root>/ or <handoffs-root>/*/handoffs/ (not Superseded, not Done)
   4. due reminders in master.md `## Reminders` (when: next session, or a passed date)
+  5. one line when git is ahead of the docs (uncommitted changes, or HEAD newer than the
+     active roadmap's Last updated)
 
-<handoffs-root> is <repo-parent>/<repo-name>-handoffs/ for a git repo, or
-<project>/handoffs/ for a non-git project folder (roadmap and handoff skills).
+<handoffs-root> follows the handoff skill's Paths: with a `## Workcycle root` in
+~/.agents/local/workcycle.md it is <root>/<name> (the overrides table, else the basename of the
+master.md folder, else of the git root); without one it is <repo-parent>/<repo-name>-handoffs/
+for a git repo, or <project>/handoffs/ for a non-git project folder.
 
 Emits Claude Code / Codex SessionStart JSON with additionalContext, or nothing when
 the project has neither. Read-only, no network, never blocks: any error exits 0.
@@ -19,12 +24,17 @@ import glob
 import json
 import os
 import re
+import subprocess
 import sys
 
 HOME = os.path.expanduser("~")
 RESUME_CAP = 1500
+CONFIG = os.path.join(HOME, ".agents", "local", "workcycle.md")
+INTERRUPTED = re.compile(r"^#{2,6} Interrupted", re.M)
+SKIP_DIRS = {"runs", "_archive", "mocks", "node_modules", ".git"}
+DATE = re.compile(r"\d{4}-\d\d-\d\d")
 HANDOFF_NAME = re.compile(r"^\d{4}-\d\d-\d\d-.+\.md$")
-PATH_IN_LINE = re.compile(r"`([^`]+\.md)`|:\s*(\S+\.md)\s*$")
+PATH_IN_LINE = re.compile(r"`([^`]+\.md)`|:\s*((?:~|/)[^`]*?\.md)\s*$")  # paths may hold spaces
 STATUS_VALUE = re.compile(r"\bStatus\**:\**\s*(.*)", re.I)
 
 
@@ -50,7 +60,35 @@ def find_project(cwd):
     return master_dir, git_root
 
 
-def handoff_roots(master_dir, git_root):
+def load_config():
+    """(root, overrides) from workcycle.md; root None means the old -handoffs rule."""
+    text = read(CONFIG)
+    m = re.search(r"`([^`]+)`", section(text, "Workcycle root"))
+    root = os.path.realpath(os.path.expanduser(m.group(1).strip())) if m else None
+    overrides = []
+    for line in section(text, "Workcycle folders (overrides)").splitlines():
+        cells = [c.strip().strip("`").strip() for c in line.strip().strip("|").split("|")]
+        if len(cells) < 2 or not cells[0] or set(cells[0]) <= set("-: ") or cells[0].lower() == "project path":
+            continue
+        overrides.append((os.path.realpath(os.path.expanduser(cells[0])), cells[1].strip("/")))
+    overrides.sort(key=lambda o: len(o[0]), reverse=True)
+    return root, overrides
+
+
+def workcycle_folder(cwd, master_dir, git_root, root, overrides):
+    real = os.path.realpath(cwd)
+    for path, name in overrides:
+        if real == path or real.startswith(path + os.sep):
+            return os.path.join(root, name)
+    base = master_dir or git_root
+    return os.path.join(root, os.path.basename(base)) if base else os.path.join(root, "General")
+
+
+def handoff_roots(master_dir, git_root, cwd=None, config=(None, [])):
+    root, overrides = config
+    if root:
+        folder = workcycle_folder(cwd or master_dir or git_root, master_dir, git_root, root, overrides)
+        return [folder] if os.path.isdir(folder) else []
     roots = []
     if git_root:
         roots.append(os.path.join(os.path.dirname(git_root), os.path.basename(git_root) + "-handoffs"))
@@ -98,7 +136,7 @@ def active_roadmaps(master_dir, roots):
             if m:
                 found.append(os.path.expanduser(m.group(1) or m.group(2)))
     for root in roots:
-        found.extend(sorted(glob.glob(os.path.join(root, "roadmap-*", "ROADMAP.md"))))
+        found.extend(sorted(glob.glob(os.path.join(glob.escape(root), "*", "ROADMAP.md"))))
     out, seen = [], set()
     for p in found:
         p = os.path.realpath(p)
@@ -116,16 +154,65 @@ def active_roadmaps(master_dir, roots):
 def newest_open_handoff(roots):
     best = None
     for root in roots:
-        for name in os.listdir(root):
-            if not HANDOFF_NAME.match(name):
+        candidates = [os.path.join(root, n) for n in os.listdir(root)]
+        candidates += glob.glob(os.path.join(glob.escape(root), "*", "handoffs", "*.md"))
+        for p in candidates:
+            name = os.path.basename(p)
+            if not HANDOFF_NAME.match(name) or not os.path.isfile(p):
                 continue
-            p = os.path.join(root, name)
             head = read(p)[:1500]
             if "superseded" in head.lower() or header(head, "Status").lower().startswith("done"):
                 continue
             if best is None or name > os.path.basename(best):
                 best = p
     return best
+
+
+def urgent_stops(roots, limit=2000):
+    hits, seen = [], 0
+    for root in roots:
+        base_depth = root.rstrip(os.sep).count(os.sep)
+        for d, dirs, files in os.walk(root):
+            dirs[:] = [x for x in dirs if x not in SKIP_DIRS and not x.startswith(".")]
+            if d.count(os.sep) - base_depth >= 4:
+                dirs[:] = []
+            for f in files:
+                if not f.endswith(".md"):
+                    continue
+                seen += 1
+                if seen > limit:
+                    return hits
+                p = os.path.join(d, f)
+                if INTERRUPTED.search(read(p)[:65536]):
+                    hits.append(p)
+    return hits
+
+
+def git_out(git_root, *args):
+    r = subprocess.run(["git", "-C", git_root, *args], capture_output=True, text=True, timeout=2)
+    return r.stdout.strip() if r.returncode == 0 else ""
+
+
+def git_ahead(git_root, roadmap_paths):
+    if not git_root:
+        return ""
+    try:
+        dirty = len([l for l in git_out(git_root, "status", "--porcelain").splitlines() if l.strip()])
+        head = git_out(git_root, "log", "-1", "--format=%cs %h")
+    except (OSError, subprocess.TimeoutExpired):
+        return ""
+    newer = False
+    if head and roadmap_paths:
+        m = DATE.search(header(read(roadmap_paths[0]), "Last updated"))
+        newer = bool(m) and head.split()[0] > m.group(0)
+    if not dirty and not newer:
+        return ""
+    bits = []
+    if dirty:
+        bits.append(f"{dirty} uncommitted change(s)")
+    if newer:
+        bits.append(f"HEAD {head.split()[1]} ({head.split()[0]}) is newer than the roadmap's Last updated")
+    return "Git is ahead of the docs: " + "; ".join(bits) + ". Check before trusting the docs' state."
 
 
 def due_reminders(master_dir):
@@ -144,9 +231,14 @@ def build(cwd):
     master_dir, git_root = find_project(cwd)
     if not master_dir and not git_root:
         return ""
-    roots = handoff_roots(master_dir, git_root)
+    roots = handoff_roots(master_dir, git_root, cwd, load_config())
     parts = []
-    for p in active_roadmaps(master_dir, roots):
+    stops = urgent_stops(roots)
+    if stops:
+        parts.append("URGENT STOP (handoff skill §4): resume from " + ", ".join(stops)
+                     + " first; run its Unverified (urgent stop) steps before anything else.")
+    roadmaps = active_roadmaps(master_dir, roots)
+    for p in roadmaps:
         text = read(p)
         resume = section(text, "Resume here")
         if len(resume) > RESUME_CAP:
@@ -167,6 +259,10 @@ def build(cwd):
     due = due_reminders(master_dir)
     if due:
         parts.append("Due reminders (remind skill; show them to the user now, do not act on them):\n" + "\n".join(due))
+    if parts:
+        ahead = git_ahead(git_root, roadmaps)
+        if ahead:
+            parts.append(ahead)
     return "\n\n".join(parts)
 
 

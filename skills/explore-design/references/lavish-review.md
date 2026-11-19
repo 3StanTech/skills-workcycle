@@ -81,11 +81,11 @@ Never use `nohup`, `&`, `disown` or a detached terminal. If the poll returns `br
 
 Lavish never runs in a cloud session (`CLAUDE_CODE_REMOTE=true`, including a Claude Project's cloud threads): its server would run inside the cloud VM, which the owner's browser cannot reach, and the VM pauses while the poll waits. No tunnel, no `LAVISH_AXI_ALLOWED_HOSTS` workaround, no `share`. Every Lavish step (Compare, Background, G4, decision pages) goes one of two ways instead; ask which (decision point):
 
-1. **On the owner's machine (Recommended when it is on).** Rewrite the mocks README's Start here at the current gate, then ask for the go to commit and push the repo that holds the mocks folder. The handoffs root must be a git repo the machine can pull; if it is not, say so and use route 2. Give the paste line `resume from <mocks README path>`. The owner starts it in a thread on their computer: in a Claude Project, **Work locally** in the **+** menu (or ask the project conversation to run that thread on their computer); outside a project, a local session. That thread pulls, runs the Lavish step as usual, rewrites Start here, pushes with the owner's go, and the cloud work resumes from the README.
+1. **On the owner's machine (Recommended when it is on).** Rewrite the mocks README's Start here at the current gate, then ask for the go to commit and push the repo that holds the mocks folder. The workcycle root (or handoffs root) must be a git repo the machine can pull; if it is not, say so and use route 2. Give the paste line `resume from <mocks README path>`. The owner starts it in a thread on their computer: in a Claude Project, **Work locally** in the **+** menu (or ask the project conversation to run that thread on their computer); outside a project, a local session. That thread pulls, runs the Lavish step as usual, rewrites Start here, pushes with the owner's go, and the cloud work resumes from the README.
 2. **Artifact stand-in (the machine is off).** Publish the page as a private Claude Artifact and collect the owner's comments on it in place of Lavish annotations; picks the docked sheet would queue are asked as decision points in chat. Without the Artifact tool, show screenshots in chat. "Works inside Lavish" and the pre-flight still apply. Note in the README that this gate ran without Lavish.
 
 ## Never
 
 - `lavish-axi share` (it publishes to a third-party host).
-- Lavish files inside a git working tree (Lavish's own default is `.lavish/` in the current folder, so always pass a path in the mocks folder).
+- Lavish files inside a product repo (Lavish's own default is `.lavish/` in the current folder, so always pass a path in the mocks folder).
 - Using Lavish as an editor for production source pages.

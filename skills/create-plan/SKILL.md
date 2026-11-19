@@ -67,9 +67,9 @@ Save to:
 - Use today's date
 - Replace `<slug>` with a short kebab-case name (e.g. `add-guest-research-command`, `restructure-outputs`)
 
-If the working directory is a git repository, write outputs to the project folder outside the git tree, or to the session scratchpad — never commit AI-process artifacts.
+`plans/` is the work folder's (`handoff` skill → Paths): the explore doc's work folder when one was given, the roadmap's when a roadmap governs the work, else a new work folder. Never write into a product repo; never commit AI-process artifacts to one.
 
-When a roadmap governs the work, save the plan in that roadmap's folder instead: `<handoffs-root>/roadmap-<slug>/plans/YYYY-MM-DD-<slug>.md`, and add the **Carried from roadmap** section shown in the format below (omit that section otherwise).
+When a roadmap governs the work, save the plan in that roadmap's work folder (`<work folder>/plans/YYYY-MM-DD-<slug>.md`; without a workcycle root, `<handoffs-root>/roadmap-<slug>/plans/`), and add the **Carried from roadmap** section shown in the format below (omit that section otherwise).
 
 Fill every section of the format below. Replace all placeholders with specific, actionable content. Be thorough — implement will execute this plan and needs enough detail to proceed without ambiguity. Follow existing patterns; study similar files before proposing new structures.
 

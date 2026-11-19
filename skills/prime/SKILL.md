@@ -31,7 +31,8 @@ the projects root in `~/.agents/local/workcycle.md` (if absent, the folders besi
 Before routing anywhere, run `grep -rlE '^#{2,6} Interrupted' <handoffs-root>` (handoffs,
 plans, explore docs, mocks READMEs, roadmap folders; `handoff` skill for the path). Surface
 any hit first, before the roadmap agenda or any other thread, and name its
-`Unverified (urgent stop)` steps.
+`Unverified (urgent stop)` steps. When the `roadmap-session-start` hook's output is already in
+context, it has printed urgent stops and a git-ahead-of-docs line: do not repeat them.
 
 ## 2b. Route to the roadmap when one governs the work
 
@@ -53,7 +54,7 @@ Then read, silently, in this order:
 | Source | How much |
 |---|---|
 | Project `master.md` | all (current state only); note any `## Reminders` and `## Active roadmaps` |
-| Newest open handoff | `<handoffs-root>/YYYY-MM-DD-<slug>.md`, skipping files marked Superseded or `Status: Done` (`handoff` skill for paths) || `CHANGELOG.md` | newest entry only, and only when there is neither a roadmap nor a handoff |
+| Newest open handoff | `<handoffs-root>/YYYY-MM-DD-<slug>.md` or, with a workcycle root, `<handoffs-root>/*/handoffs/*.md`, skipping files marked Superseded or `Status: Done` (`handoff` skill for paths) || `CHANGELOG.md` | newest entry only, and only when there is neither a roadmap nor a handoff |
 | Memory files | only the 0–3 entries in the index that clearly bear on the opening task |
 | Git | `git status --short`, `git branch --show-current`, `git log --oneline -5` |
 

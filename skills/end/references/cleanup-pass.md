@@ -18,6 +18,8 @@ Only items this workcycle created, with evidence (the session's own tool calls, 
 - Leftovers on the machine: temp browser profiles, preview servers still listening, background jobs.
 - Large evidence that nothing references any more, marked "evidence, keep by default".
 
+Finished work folders are not cleanup: `/end` step 11 offers moving them to `_archive/`.
+
 Never list: the roadmap folder itself, plans, explore docs, findings files, approved mocks, anything committed, anything the owner made, and anything another project or session may still use. Uncertain ownership is a question, never a candidate.
 
 ## How

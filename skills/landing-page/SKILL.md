@@ -28,7 +28,7 @@ A landing page wins one intent: **one offer → one audience → one primary act
 
 - **Honest content.** Follow the floor's [content honesty](../implement/references/ui-build/page-craft.md#content-honesty) rules: no invented testimonials, names, client logos, numbers, prices or guarantees. A fact the owner has not given is asked; if it stays unanswered it becomes a visible "Confirm with <owner>" placeholder and a line in an owner-questions list. Never "assume and continue".
 - **Plan before build.** Nothing is built until the owner approves the page plan.
-- **Project first.** The build follows the project's stack, components and brand. With no project, build a static page in a folder the owner names, outside every git tree unless the owner says otherwise.
+- **Project first.** The build follows the project's stack, components and brand. With no project, build a static page in a folder the owner names, outside every product repo unless the owner says otherwise.
 - **The floor is not repeated here.** States, accessibility, motion safety, the launch checklist and the banned-word list live in [ui-build](../implement/references/ui-build.md), [page craft](../implement/references/ui-build/page-craft.md) and [web](../explore-design/references/web.md) §8.
 
 ---
@@ -100,7 +100,7 @@ Too many CTAs above the fold; a vague promise ("streamline", "optimize"); a feat
 
 ### Where the plan goes
 
-- **Standalone:** save it to `plans/page-plan-YYYY-MM-DD-<slug>.md` in the project folder, outside the git tree (a git project uses its handoffs folder, as explore does). Give it a Start here block and run the cold-start gate (`~/.agents/skills/handoff/references/cold-start-gate.md`; its checker detects a `# Page plan:` title as `--kind pageplan`), so the build can resume in a new session with `/landing-page <plan path>`.
+- **Standalone:** save it to `plans/page-plan-YYYY-MM-DD-<slug>.md` in the work folder's `plans/`, outside product repos, as explore does (`handoff` skill → Paths). Give it a Start here block and run the cold-start gate (`~/.agents/skills/handoff/references/cold-start-gate.md`; its checker detects a `# Page plan:` title as `--kind pageplan`), so the build can resume in a new session with `/landing-page <plan path>`.
 - **Inside explore-design:** write the same content to the mocks folder's `content.md`, the only copy source for every mock, and the open facts to `owner-questions.md`. Then return to explore-design.
 
 **STOP** for approval of the plan. Apply corrections and show what changed.

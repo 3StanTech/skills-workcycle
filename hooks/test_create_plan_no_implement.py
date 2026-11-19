@@ -330,6 +330,30 @@ def find_launch_guard():
     return None
 
 
+def workcycle_root_cases():
+    """A mocks folder inside the configured workcycle root passes even though that root is a git repo;
+    a product repo is still blocked. Without the setting the old rule holds (covered in main)."""
+    root = git_repo()
+    mocks = os.path.join(root, "Demo", "2026-11-19-hero", "mocks")
+    os.makedirs(mocks)
+    product = git_repo()
+    cfg = Path(TEST_HOME) / ".agents" / "local" / "workcycle.md"
+    cfg.parent.mkdir(parents=True, exist_ok=True)
+    cfg.write_text("## Workcycle root\n`" + root + "`\n", encoding="utf-8")
+    try:
+        sid = "test-workcycle-root-mocks"
+        run({"hook_event_name": "UserPromptSubmit", "session_id": sid, "prompt": "/explore-design hero"})
+        def mock_pre(cwd):
+            return run({"hook_event_name": "PreToolUse", "session_id": sid, "prompt": "",
+                        "tool_name": "Bash", "tool_input": {"command": WRAPPER + " --cwd '" + cwd + "' --lane B"}})
+        code, err = mock_pre(mocks)
+        assert code == 0, (code, err)
+        code, err = mock_pre(product)
+        assert code == 2 and "explore-design mock round" in err, (code, err)
+    finally:
+        cfg.unlink()
+
+
 class Setup(unittest.TestCase):
     """Each class builds the condition it asserts: a private copy of the hook, with or
     without the launch guard beside it and a HOME that cannot supply one."""
@@ -375,6 +399,9 @@ class CreatePlanGuardWithLaunchGuard(Setup):
 
     def test_transcript_cases(self):
         transcript_cases()
+
+    def test_workcycle_root_cases(self):
+        workcycle_root_cases()
 
 
 class CreatePlanGuardWithoutLaunchGuard(Setup):

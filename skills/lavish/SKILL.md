@@ -30,9 +30,9 @@ If `$ARGUMENTS` is non-empty, it is the artifact brief or the file to review. If
 
 ## Artifact location
 
-- **Existing mocks or artifacts:** open them in place when their folder is outside every git working tree (for example `Clients/<client>/redesign-mocks/mock-a.html`). Lavish serves the HTML's own folder, so relative asset paths like `assets/img/hero.webp` keep working. Never use root-relative `/` paths.
+- **Existing mocks or artifacts:** open them in place when their folder is outside every product repo (for example a work folder's `mocks/mock-a.html`). Lavish serves the HTML's own folder, so relative asset paths like `assets/img/hero.webp` keep working. Never use root-relative `/` paths.
 - **New standalone artifacts:** write them under `~/.lavish-axi/artifacts/`, with a dated slug filename such as `2026-09-18-plan-review.html`. Copy any local assets beside the file.
-- Never write Lavish artifacts into a git working tree.
+- Never write Lavish artifacts into a product repo.
 
 ## Design reviews and polling
 

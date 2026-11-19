@@ -6,7 +6,7 @@ live in [medium and providers](medium-and-providers.md).
 
 ## Folder
 
-One mocks folder per round, outside every git tree:
+One mocks folder per round, outside every product repo (location: explore-design → Boundary):
 
 ```
 <mocks>/

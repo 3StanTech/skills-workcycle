@@ -7,7 +7,7 @@ A later /implement (or explicit now-implement) is a new turn and is allowed.
 
 Mock round: a typed /explore-design turn sets the flag to "mocks". Subagents are then
 allowed, and headless launches only with --cwd set to an existing folder outside every
-git work tree (mocks never touch product source). A later /implement clears the flag.
+git work tree or inside the workcycle root (mocks never touch product source). A later /implement clears the flag.
 An /explore turn whose owner answers explore's step-0 question with "Switch to
 explore-design" is upgraded to the mock round the same way.
 
@@ -116,8 +116,28 @@ def in_git_tree(path: str) -> bool:
     return out.returncode == 0 and out.stdout.strip() == "true"
 
 
+def workcycle_root() -> str | None:
+    """The `## Workcycle root` folder from ~/.agents/local/workcycle.md (handoff skill → Paths), or None."""
+    try:
+        text = (Path.home() / ".agents" / "local" / "workcycle.md").read_text(encoding="utf-8")
+    except OSError:
+        return None
+    m = re.search(r"^## Workcycle root[^\n]*\n(.*?)(?=^## |\Z)", text, re.M | re.S)
+    found = re.search(r"`([^`]+)`", m.group(1)) if m else None
+    return os.path.realpath(os.path.expanduser(found.group(1).strip())) if found else None
+
+
+def in_workcycle_root(path: str) -> bool:
+    root = workcycle_root()
+    if not root:
+        return False
+    real = os.path.realpath(os.path.expanduser(path))
+    return real == root or real.startswith(root + os.sep)
+
+
 def mock_launch_allowed(cmd: str) -> bool:
-    """Every launching segment must name a --cwd that exists outside any git work tree."""
+    """Every launching segment must name a --cwd that exists outside any product repo:
+    outside every git work tree, or inside the workcycle root (its own private repo)."""
     for toks in launch_segments(cmd):
         cwd = None
         for i, tok in enumerate(toks):
@@ -125,7 +145,9 @@ def mock_launch_allowed(cmd: str) -> bool:
                 cwd = toks[i + 1]
             elif tok.startswith("--cwd="):
                 cwd = tok.split("=", 1)[1]
-        if not cwd or not os.path.isdir(os.path.expanduser(cwd)) or in_git_tree(cwd):
+        if not cwd or not os.path.isdir(os.path.expanduser(cwd)):
+            return False
+        if in_git_tree(cwd) and not in_workcycle_root(cwd):
             return False
     return True
 
@@ -326,7 +348,7 @@ def main() -> None:
             sys.exit(0)
         block(
             "BLOCKED: explore-design mock round. Headless launches must use a wrapper with --cwd set to "
-            "an existing mocks folder outside every git work tree. Product source waits for /implement.\n"
+            "an existing mocks folder outside every product repo (the workcycle root counts as outside). Product source waits for /implement.\n"
             "Do not strip this guard or edit the flag file to bypass it."
         )
 

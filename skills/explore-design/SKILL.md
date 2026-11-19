@@ -25,7 +25,7 @@ The same four aims as [explore](../explore/SKILL.md) (the goal, the problem, the
 
 ## Boundary
 
-- **No product source.** Mocks, images, specimens and Lavish pages live only in a mocks folder outside every git tree: `<project>/<slug>-mocks/` for a non-git project folder, `<project-parent>/<project>-handoffs/<slug>-mocks/` for a git repo, or the mocks rule in `~/.agents/local/workcycle.md` when it has one for this work. The plan-only hook enforces this for headless launches.
+- **No product source.** Mocks, images, specimens and Lavish pages live only in a mocks folder outside every product repo: with a workcycle root, the work folder's `mocks/` (`handoff` skill → Paths); otherwise `<project>/<slug>-mocks/` for a non-git project folder, `<project-parent>/<project>-handoffs/<slug>-mocks/` for a git repo, or the mocks rule in `~/.agents/local/workcycle.md` when it has one for this work. The plan-only hook enforces this for headless launches.
 - **Image workers** need an explicit model and effort from the owner (`~/AGENTS.md` → Delegation) and launch through the `headless` wrappers with `--cwd` set to the mocks folder. One worker at a time.
 - **Never AI-generate** a logo, a real person's likeness, or readable text. Layer text, prices and logos in code.
 - **Honest content.** Unconfirmed facts carry a visible "Confirm with <owner>" tag and go in `owner-questions.md`. Never invent testimonials or product facts.
@@ -101,7 +101,7 @@ Follow explore's Stage 4: components with effort and dependencies, minimum versi
 
 ## 5. Write the explore doc
 
-1. Write `plans/explore-YYYY-MM-DD-<slug>.md` in **explore's §5 format** (outside git), including its Start here block and Decisions made in chat. Copy "Confirmed restatement" from `restatement.md`, never rewrite it from memory. Fill **Design decisions** with the approved mock file, its export, the mocks folder and every gate decision. The approved mock is the spec for `/implement` (`~/.agents/skills/implement/references/mock-to-code.md`).
+1. Write `plans/explore-YYYY-MM-DD-<slug>.md` in **explore's §5 format** (in the work folder, outside product repos), including its Start here block and Decisions made in chat. Copy "Confirmed restatement" from `restatement.md`, never rewrite it from memory. Fill **Design decisions** with the approved mock file, its export, the mocks folder and every gate decision. The approved mock is the spec for `/implement` (`~/.agents/skills/implement/references/mock-to-code.md`).
 2. When decisions remain open, build a [decision page](references/decision-page.md) beside the doc and open it in Lavish.
 3. **Run the cold-start gate** (`~/.agents/skills/handoff/references/cold-start-gate.md`) on the mocks README and then on the explore doc, including its "When create-plan is next" section.
 4. End with the ready-to-paste prompt, trimmed to what the doc does not already say:
@@ -119,7 +119,7 @@ The mocks folder must survive a session limit with nothing lost (`~/AGENTS.md` �
 
 ## Guardrails
 
-- Never touch product source; never write mocks into a git tree.
+- Never touch product source; never write mocks into a product repo.
 - Never generate images unless the imagery answer includes AI and the owner approved model, effort and count; probe first.
 - Never build more sample mocks than the stated count; past 6 per round, re-confirm first.
 - Never ask the owner to approve a filename; show the image or screenshot.

@@ -61,7 +61,7 @@ A new blocking hook, guard or CI gate ships with two modes. In **observe** mode 
 - **Browser scripts retry once on puppeteer "detached Frame" errors** and log the retry (one named tool error, logged; not a licence to retry a failing check).
 - **One current script per scenario.** Each evidence folder has a `scripts/README.md` listing one current script per scenario with its expected output. Superseded scripts move to `scripts/old/` and are never listed in a plan's re-run list.
 
-Example: `<project>-handoffs/<slug>-mocks/verify/scripts/timed-reload.cjs` (Node timer plus a database truth check).
+Example: `<work folder>/mocks/verify/scripts/timed-reload.cjs` (Node timer plus a database truth check).
 
 ## Allowed automated tests
 

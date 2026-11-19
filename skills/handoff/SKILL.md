@@ -19,15 +19,20 @@ Make the current work resumable cold: update the doc that owns it (or write one 
 
 **Template:** `references/template.md`. **Gate:** `references/cold-start-gate.md` (the stage skills run it as their last step; pause mode reuses it). **Checker:** `~/.agents/skills/roadmap/scripts/doc_check.py`.
 
-**Paths.** `<handoffs-root>` is: project is a git repo → `<project-parent>/<project-name>-handoffs/`; project folder is not a git repo (it may contain one) → `<project>/handoffs/`; no project → the no-project handoffs folder in `~/.agents/local/workcycle.md`, else `~/.agents/handoffs/`.
+**Paths.** The single owner of where workcycle files go; the other skills point here. Read `~/.agents/local/workcycle.md` first.
+
+- **With a `## Workcycle root` section:** the project's **workcycle folder** is `<root>/<name>`. `<name>` is the `## Workcycle folders (overrides)` entry for the project path (longest prefix wins), else the basename of the nearest folder holding `master.md`, else of the git root; no project → `<root>/General`. Each piece of work gets a **work folder**, `<workcycle folder>/<YYYY-MM-DD>-<slug>/`, created by its first stage (explore, explore-design, a plan or page plan with no explore doc, a handoff nothing owns); later stages write into the work folder of the doc they were given. Inside, created when needed: `plans/` (explore docs, plans, page plans), `handoffs/`, `audits/`, `runs/`, `mocks/`, and `ROADMAP.md` for a roadmap. The project's `master.md` and other gitignored context files live at the workcycle folder's root, and the project keeps symlinks to them. Finished work folders move to `<workcycle folder>/_archive/` (end, roadmap Close).
+- **Without it (the default):** `<handoffs-root>` is: project is a git repo → `<project-parent>/<project-name>-handoffs/`; project folder is not a git repo (it may contain one) → `<project>/handoffs/`; no project → the no-project handoffs folder in `~/.agents/local/workcycle.md`, else `~/.agents/handoffs/`. A roadmap's work folder is `<handoffs-root>/roadmap-<slug>/`; other docs use `<handoffs-root>/plans/`, `audits/` and its root.
+
+Elsewhere in these skills `<handoffs-root>` means the workcycle folder when a root is set, and **work folder** means the folder above. Neither is ever inside a product repo; the workcycle root may be its own private repo.
 
 ---
 
 ## 1. Find the owning doc
 
-1. **A roadmap governs the work** (`master.md` lists it under `## Active roadmaps`, or the user named it): run the `roadmap` skill's Update **steps 1–7 only** (state, Resume here, log, budget, checker); this skill owns the pause, so skip Update step 8 and continue §2 here. If the work is mid-plan, also rewrite the current phase plan's Start here. Write a handoff only for in-flight detail neither doc should hold, in `roadmap-<slug>/handoffs/`, and link it from the roadmap's `In-flight handoff:` line.
+1. **A roadmap governs the work** (`master.md` lists it under `## Active roadmaps`, or the user named it): run the `roadmap` skill's Update **steps 1–7 only** (state, Resume here, log, budget, checker); this skill owns the pause, so skip Update step 8 and continue §2 here. If the work is mid-plan, also rewrite the current phase plan's Start here. Write a handoff only for in-flight detail neither doc should hold, in the roadmap's work folder (`handoffs/`), and link it from the roadmap's `In-flight handoff:` line.
 2. **A plan, explore doc or mocks README owns it:** rewrite **that doc's Start here** (status, verified state, numbered next actions, paste prompt). No second file.
-3. **Nothing owns it:** write a handoff file at `<handoffs-root>/<YYYY-MM-DD>-<slug>.md` from the template. If one for the same thread exists from today, rewrite it. If an earlier one exists, set `Previous handoff:` and add `> **Superseded:** resume from <new path>.` as the old file's first line.
+3. **Nothing owns it:** write a handoff file from the template at `<work folder>/handoffs/<YYYY-MM-DD>-<slug>.md` (without a workcycle root: `<handoffs-root>/<YYYY-MM-DD>-<slug>.md`). If one for the same thread exists from today, rewrite it. If an earlier one exists, set `Previous handoff:` and add `> **Superseded:** resume from <new path>.` as the old file's first line.
 
 **Roadmap promotion:** if the work now has 2 or more proposed phases, or this is its third handoff, ask: promote to a roadmap (Recommended) / keep handing off. On promote, run `roadmap` Create, seeded from this state.
 
@@ -38,7 +43,7 @@ Make the current work resumable cold: update the doc that owns it (or write one 
 1. **Owning doc:** §1.
 2. **Secure the scratchpad.** It is session-specific and can disappear.
    - Secrets move to `<handoffs-root>/.secrets-<slug>/` (dir 0700, files 0600), referenced by path only, never printed.
-   - Reusable scripts and evidence move to the handoffs folder.
+   - Reusable scripts and evidence move to the work folder (`runs/`).
    - Launch configs that pointed at the scratchpad are repointed.
 3. **Stop or record running things.** Stop dev servers (`preview_stop`) and background jobs. Record each headless helper in the owning doc as its full registry entry `{"engine","id","task","lane","topic"}`; the resuming session imports those entries per headless contract §3 (imported entries). For in-session subagents, record the packet and a WIP note to relaunch from; they cannot be resumed from a new session. Reset browser viewport emulation.
 4. **Verify current state** with cheap checks: `git status --short`, `git branch --show-current`, `git log --oneline -5`, ahead/behind the remote; the plan's `**Status:**`; test branches or databases the next session reuses and their expiry. Anything not checked goes under **Not verified**.
@@ -87,10 +92,10 @@ When a session starts with "resume from <path>":
 
 ## Output
 
-- The owning doc's rewritten Start here; or `<handoffs-root>/<YYYY-MM-DD>-<slug>.md`; or `roadmap-<slug>/handoffs/<YYYY-MM-DD>-<slug>.md` when a roadmap governs the work.
+- The owning doc's rewritten Start here; or `<work folder>/handoffs/<YYYY-MM-DD>-<slug>.md` (the roadmap's work folder when a roadmap governs the work; without a workcycle root, `<handoffs-root>/<YYYY-MM-DD>-<slug>.md` or `roadmap-<slug>/handoffs/…`).
 - Chat: path, next action, paste line.
 
-Outputs stay outside every git tree; never commit them.
+Outputs stay outside every product repo; never commit them to one (the workcycle root's own private repo is the exception).
 
 ## Guardrails
 

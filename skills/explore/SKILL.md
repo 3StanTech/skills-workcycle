@@ -174,7 +174,7 @@ Keep it short enough to check at a glance. Mark every claim as **evidence** or *
 
    (today's date and a short kebab-case slug when Stage 1 was skipped). Keep its "Confirmed restatement" as saved; never rewrite it from memory.
 
-   If the working directory is a git repository, write outputs to the project folder outside the git tree, or to the session scratchpad. Never commit AI-process artifacts.
+   `plans/` is the work folder's (`handoff` skill → Paths); Stage 1's draft creates the work folder. Never write into a product repo; use the work folder or the session scratchpad, and never commit AI-process artifacts to a product repo.
 
 2. Use this format:
 
@@ -270,7 +270,7 @@ Keep it short enough to check at a glance. Mark every claim as **evidence** or *
 
 3. **Run the cold-start gate** (`~/.agents/skills/handoff/references/cold-start-gate.md`) on the doc as the last write, including its "When create-plan is next" section, so a new session can start create-plan from the paste line alone.
 
-4. **Roadmap chosen in Stage 4?** Create it now, in this same turn: save the explore doc in `<handoffs-root>/roadmap-<slug>/plans/` and run the `roadmap` skill's Create from it. The owner's Stage 4 answer is the approval Create asks for, so do not ask again, and never hand the owner a `/roadmap` command to paste. Take the recommended `/end` milestones and the slug unless the owner said otherwise, and say which you took. The explore doc's Next line then names only `/create-plan <doc> Phase 1 only`.
+4. **Roadmap chosen in Stage 4?** Create it now, in this same turn: keep the explore doc in its work folder (without a workcycle root, move it to `<handoffs-root>/roadmap-<slug>/plans/`) and run the `roadmap` skill's Create from it. The owner's Stage 4 answer is the approval Create asks for, so do not ask again, and never hand the owner a `/roadmap` command to paste. Take the recommended `/end` milestones and the slug unless the owner said otherwise, and say which you took. The explore doc's Next line then names only `/create-plan <doc> Phase 1 only`.
 
 5. Report the file path and recommend `/create-plan`, feeding this explore doc as context. That is the only next step: explore never recommends `/implement`, however well-defined the idea, because an explore doc is not a plan and implementing from it skips the plan the owner approves.
 

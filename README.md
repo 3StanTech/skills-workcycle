@@ -109,6 +109,14 @@ Some skills read an untracked `~/.agents/local/workcycle.md` when it exists, for
 ## No-project handoffs folder
 `~/Projects/handoffs/`
 
+## Workcycle root
+`~/Projects/Workcycle Files/`
+
+## Workcycle folders (overrides)
+| Project path | Workcycle folder |
+|---|---|
+| `~/Projects/clients/acme-site` | `Clients/Acme` |
+
 ## work-audit client roots
 - `~/Projects/clients`
 
@@ -116,7 +124,7 @@ Some skills read an untracked `~/.agents/local/workcycle.md` when it exists, for
 (any extra close steps `/end` should run, with which projects they apply to)
 ```
 
-Sections: `Projects root` (prime, end), `No-project handoffs folder` (handoff, roadmap; default `~/.agents/handoffs/`), `Project rules` (end), `Mocks folders` (explore-design), `work-audit client roots` (work-audit triage), `/end extra steps` (end).
+Sections: `Projects root` (prime, end), `No-project handoffs folder` (handoff, roadmap; default `~/.agents/handoffs/`), `Workcycle root` and `Workcycle folders (overrides)` (every skill and both hooks; optional: one folder holding every project's workcycle files as dated work folders, see the `handoff` skill's Paths; without it the `-handoffs` layout stays), `Project rules` (end), `Mocks folders` (explore-design), `work-audit client roots` (work-audit triage), `/end extra steps` (end).
 
 ### 7. Verify
 
