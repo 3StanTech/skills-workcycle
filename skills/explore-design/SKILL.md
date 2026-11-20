@@ -123,7 +123,7 @@ The mocks folder must survive a session limit with nothing lost (`~/AGENTS.md` �
 - Never generate images unless the imagery answer includes AI and the owner approved model, effort and count; probe first.
 - Never build more sample mocks than the stated count; past 6 per round, re-confirm first.
 - Never ask the owner to approve a filename; show the image or screenshot.
-- Never run `lavish-axi share` or publish mocks; the only exception is the private Artifact stand-in in a cloud session ([Lavish review → Cloud sessions](references/lavish-review.md#cloud-sessions)).
+- Never run `lavish-axi share` or publish mocks anywhere public; the exceptions are the private Artifact stand-in in a cloud session ([Lavish review → Cloud sessions](references/lavish-review.md#cloud-sessions)) and pushing the mocks folder to the private workcycle root through the cold-start gate's step 8.
 - Never invent scope, facts, testimonials or prices; tag placeholders.
 - Log every image prompt in `generation-prompts.md` and every asset's source and licence in `ASSET-LICENSES.md`.
 

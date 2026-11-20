@@ -80,18 +80,18 @@ Under `## Filed, not fixed`, one line per filed finding (`· Pre-existing` after
 
 **Light short form:** Start here, Brief (incl. triage lines), Findings, Fixes, Re-check (`Judged at`, Verdicts, Leftovers), Checks, Filed, not fixed, Open items, Status.
 
-**Last write:** run the cold-start gate (`~/.agents/skills/handoff/references/cold-start-gate.md`) on the findings file at the end of Phase 7, and whenever an audit stops early; a Closed file needs only the doc check.
+**Last write:** run the cold-start gate (`~/.agents/skills/handoff/references/cold-start-gate.md`) on the findings file at the end of Phase 7, and whenever an audit stops early; a Closed file needs only the doc check and the publish step (gate step 8).
 
 ## Cloud sessions: the audit runs on the owner's machine
 
 The audit stage (audit, fixes, re-checks, report) never runs in a cloud session (`CLAUDE_CODE_REMOTE=true`, including a Claude Project's cloud threads), so auditors use the CLIs and subscriptions signed in on the owner's machine. In a cloud session, do this instead of Phase 0:
 
-1. Ask the owner for the go to commit and push the work branch, and the stage docs the audit reads (plan, roadmap, findings file) when their handoffs root is a git repo. The machine sees cloud work only through the remote. Without the go, stop and say the audit cannot be handed off.
+1. Ask the owner for the go to commit and push the work branch: the machine sees cloud work only through the remote. Without the go, stop and say the audit cannot be handed off. The stage docs the audit reads (plan, roadmap, findings file) publish to the private workcycle root through cold-start gate step 8 (its standing go, or its own ask when there is none), never needing a second go.
 2. Record each repo's pushed branch and full SHA, and write the paste line: `/work-audit <light|full> <scope>` naming the branch, the range and the plan path, plus the auditor tier when one is named.
 3. Tell the owner how to start it on their machine: in a Claude Project, a thread on their computer in the repo's folder (**Work locally** in the **+** menu, or ask the project conversation to run that thread on their computer); outside a project, a local session in the repo. Then paste the line.
 4. Stop. The work's state is "audit pending (local)", never complete.
 
-On the machine, the receiving session fetches and checks out the branch and confirms HEAD matches the recorded SHA (a mismatch is reported in one line before anything runs), then runs the audit from Phase 0 as usual. Fixes, re-checks and any release happen there; a push still needs its go.
+On the machine, the receiving session pulls the workcycle root and maps the plan path (`handoff` skill → Paths → Another host's paths), fetches and checks out the branch and confirms HEAD matches the recorded SHA (a mismatch is reported in one line before anything runs), then runs the audit from Phase 0 as usual. Fixes, re-checks and any release happen there; a push still needs its go.
 
 ## Flow (7 phases)
 
@@ -225,7 +225,7 @@ When the scope touches UI motion, lens 2 also applies `animation-performance` an
 
 ## Guardrails
 
-- **Never commit** without an explicit go; never stash or rewrite history.
+- **Never commit** product work without an explicit go; never stash or rewrite history. Stage docs and the findings file reach the private workcycle root only through gate step 8 (its standing go or its own ask).
 - **Never fix not-ours or uncertain files** without a human decision.
 - **Never auto-apply** irreversible destruction or ambiguous fixes.
 - **No report file inside a product repository**; the findings file lives in the work folder (`handoff` skill → Paths), which may be a private workcycle repo.

@@ -35,7 +35,7 @@ Where the design and motion rules in these skills came from. Three lists stay ap
 | Ian, N versions when stuck: https://x.com/ianneo_ai/status/2121964281394876559 | Post; rules rewritten | 2026-11-17 | [Lavish review](lavish-review.md) and G4 "stuck pick" |
 | Kubai087, five anti-slop rules: https://x.com/Kubai087/status/2121615225816494303 | Post; rules rewritten (tokens, radius and spacing were already in the floor) | 2026-11-17 | [usability.md](../../implement/references/ui-build/usability.md) "Choose components by meaning" and "Cut copy that does no work" |
 | BoardUI: https://www.boardui.com/ | Candidate dashboard kit: React Aria, Tailwind 4, TanStack Table; free tier and paid Pro; read its licence when first used; nothing copied | 2026-11-17 | Reference only, for dashboard work |
-| The owner's portfolio glass overhaul (private notes, measurements and its galaxy code) | Own work | 2026-11-08 to 11-15 | liquid glass, motion.md, [backgrounds](backgrounds.md) (live-switch review, tuning by measurement), galaxy recipe, [live viewer](live-viewer.md) (pattern, sandbox rules, template) |
+| Earlier glass-design work by this bundle's maintainer (measurements and galaxy code, not published) | Own work | 2026-11-08 to 11-15 | liquid glass, motion.md, [backgrounds](backgrounds.md) (live-switch review, tuning by measurement), galaxy recipe, [live viewer](live-viewer.md) (pattern, sandbox rules, template) |
 
 ## Installed outside skills
 

@@ -22,7 +22,8 @@ or `/prime`: a new session on any host starts the next stage from its paste line
 5. **Next-stage probes only**, read-only, each result dated in the doc:
    - before create-plan: HEAD and `git status --short` of each repo the Verified line names;
    - before implement: `git status --short` and HEAD of the plan's repos, `gh auth status` when the
-     plan pushes, and the expiry of any test infrastructure it reuses;
+     plan uses `gh` (CI waits, PRs; a cloud session pushes with git and has no `gh` login), and the
+     expiry of any test infrastructure it reuses;
    - before work-audit fix: the findings file's `Recorded at` SHAs still match;
    - phase plans: anything the plan's Environments names.
 
@@ -33,18 +34,25 @@ or `/prime`: a new session on any host starts the next stage from its paste line
    Start here.
 7. **Next-stage start.** The skill that reads the doc first re-checks its Verified line cheaply
    (HEAD, `git status --short`, the paths it will act on). A mismatch is reported in one line and
-   folded into the doc before work starts.
-8. **Publish.** When the doc sits under a `Workcycle root` (`handoff` skill → Paths) that is the top of a
-   git work tree, publish its work folder so a session on another host (a cloud thread, the Mac)
-   resumes from the pushed copy:
-   `python3 ~/.agents/skills/handoff/scripts/publish_workcycle.py --stage <stage> <work folder>`.
-   It pulls with `--ff-only`, commits only the paths given, refuses anything that looks like a
-   secret, and pushes without force. It runs only when `~/.agents/local/workcycle.md` has a
-   `## Workcycle publish` section granting a standing go; on exit 3 ask the owner ("Push the
-   workcycle docs for <work folder>?") and, on a yes, publish with the same command after adding
-   nothing else. Exit 4 (pull or push failed) and 5 (secret) stop and go to the owner with the
-   script's message. Skip this step when no root is set or the root is not a git repo. In a cloud
-   session (`CLAUDE_CODE_REMOTE=true`) never skip it: the VM's files do not outlast the session.
+   folded into the doc before work starts. A doc written on another host is read through
+   `handoff` skill → Paths → Another host's paths (pull first, then map the root prefix).
+8. **Publish, last** (after step 6's stamp, so the pushed copy is the final one; an urgent stop also
+   publishes once early, `handoff` skill §3). When the doc sits under a `Workcycle root` (`handoff`
+   skill → Paths) that is the top of a git work tree, publish its work folder so a session on
+   another host (a cloud thread, the Mac) resumes from the pushed copy: `python3
+   ~/.agents/skills/handoff/scripts/publish_workcycle.py --stage <stage> <work folder>`. It refuses
+   while anything is already staged in the root, pulls with `--ff-only`, commits only the paths
+   given (never the whole root; the root's commit hooks run), refuses earlier unpushed commits
+   (checked one by one) that touch other paths and anything that looks like a secret, pushes the
+   commit to the upstream branch without force (refusing a remote with several push URLs or one that
+   differs from its fetch URL), and confirms the remote branch holds it. A line `standing go: yes …`
+   or `standing go: commit and push …` in `~/.agents/local/workcycle.md` → `## Workcycle publish` (not in a
+   code block; any other `standing go:` value there withholds it) lets it run unasked; on exit 3
+   ask the owner ("Push the workcycle docs for <work folder>?") and, on a yes, run the same command
+   with `--owner-approved`. Exit 4 (staged files, pull, push, scope, commit or HEAD-moved problem)
+   and 5 (secret) stop and go to the owner with the script's message. Skip this step when no root is set or the
+   root is not a git repo. In a cloud session (`CLAUDE_CODE_REMOTE=true`) never skip it: the VM's
+   files do not outlast the session.
 
 ## When create-plan is next
 

@@ -11,7 +11,7 @@ argument-hint: <what the artifact should show, or the HTML file to review>
 disable-model-invocation: true
 user-invocable: true
 metadata:
-  author: Tristan Dolfo, adapted from Kun Chen (kunchenguid/lavish-axi)
+  author: 3StanTech, adapted from Kun Chen (kunchenguid/lavish-axi)
   hermes-tags: html, review, artifacts, visualization
   hermes-category: productivity
 ---

@@ -132,7 +132,7 @@ Write outputs to the work folder, never inside a product repo, or to the session
 ## Guardrails
 
 - **Never store secrets.** Point to owner-only files by path. A checker ERROR blocks the write from counting as done.
-- **Never commit or publish the roadmap,** and never put AI attribution in it or in anything it feeds.
+- **Never commit the roadmap to a product repo or publish it anywhere public,** and never put AI attribution in it or in anything it feeds. Pushing it to the private workcycle root through the cold-start gate's step 8 is the one exception.
 - **Never append to Resume here,** and never let it disagree with the phase table.
 - **Never change a Locked decision without the owner.** Supersede it with a new ID; never edit or renumber it in place.
 - **Never copy whole source docs.** Distil the goal-defining parts; link the rest.

@@ -24,6 +24,8 @@ Make the current work resumable cold: update the doc that owns it (or write one 
 - **With a `## Workcycle root` section:** the project's **workcycle folder** is `<root>/<name>`. `<name>` is the `## Workcycle folders (overrides)` entry for the project path (longest prefix wins), else the basename of the nearest folder holding `master.md`, else of the git root; no project → `<root>/General`. Each piece of work gets a **work folder**, `<workcycle folder>/<YYYY-MM-DD>-<slug>/`, created by its first stage (explore, explore-design, a plan or page plan with no explore doc, a handoff nothing owns); later stages write into the work folder of the doc they were given. Inside, created when needed: `plans/` (explore docs, plans, page plans), `handoffs/`, `audits/`, `runs/`, `mocks/`, and `ROADMAP.md` for a roadmap. The project's `master.md` and other gitignored context files live at the workcycle folder's root, and the project keeps symlinks to them. Finished work folders move to `<workcycle folder>/_archive/` when eligible (`end` skill step 11 owns the rule).
 - **Without it (the default):** `<handoffs-root>` is: project is a git repo → `<project-parent>/<project-name>-handoffs/`; project folder is not a git repo (it may contain one) → `<project>/handoffs/`; no project → the no-project handoffs folder in `~/.agents/local/workcycle.md`, else `~/.agents/handoffs/`. A roadmap's work folder is `<handoffs-root>/roadmap-<slug>/`; other docs use `<handoffs-root>/plans/`, `audits/` and its root.
 
+- **Another host's paths:** a doc written on another host names paths under that host's workcycle root (a cloud session's `/home/user/workcycle-files/…`, the owner machine's own root). Before opening one, pull the root when it is a git repo (`git -C <root> pull --ff-only`), then read the path with the other host's root prefix replaced by this host's root (the part after `workcycle-files/` or after the local root is the same on both). Write new paths with this host's root as usual.
+
 Elsewhere in these skills `<handoffs-root>` means the workcycle folder when a root is set, and **work folder** means the folder above. Neither is ever inside a product repo; the workcycle root may be its own private repo.
 
 ---
@@ -47,7 +49,7 @@ Elsewhere in these skills `<handoffs-root>` means the workcycle folder when a ro
    - Launch configs that pointed at the scratchpad are repointed.
 3. **Stop or record running things.** Stop dev servers (`preview_stop`) and background jobs. Record each headless helper in the owning doc as its full registry entry `{"engine","id","task","lane","topic"}`; the resuming session imports those entries per headless contract §3 (imported entries). For in-session subagents, record the packet and a WIP note to relaunch from; they cannot be resumed from a new session. Reset browser viewport emulation.
 4. **Verify current state** with cheap checks: `git status --short`, `git branch --show-current`, `git log --oneline -5`, ahead/behind the remote; the plan's `**Status:**`; test branches or databases the next session reuses and their expiry. Anything not checked goes under **Not verified**.
-5. **Run the gate's steps 1–5, and step 8 once the files are written** (`references/cold-start-gate.md`) on the owning doc: Start here, chat decisions, scratchpad sweep, paths, probes. Read the doc as a fresh session given only its path, on any host, with no `/prime`, roadmap Resume or chat history. Facts from other files the session would otherwise open (other repos' `master.md`, IDs, versions, quotas) are copied in as a short dated list with source paths. A mid-task pause probes beyond the next stage, read-only, recording each result with a date:
+5. **Run the gate's steps 1–5** (`references/cold-start-gate.md`) on the owning doc: Start here, chat decisions, scratchpad sweep, paths, probes. Read the doc as a fresh session given only its path, on any host, with no `/prime`, roadmap Resume or chat history. Facts from other files the session would otherwise open (other repos' `master.md`, IDs, versions, quotas) are copied in as a short dated list with source paths. A mid-task pause probes beyond the next stage, read-only, recording each result with a date:
 
    | Assumption | Probe |
    |---|---|
@@ -66,17 +68,18 @@ Elsewhere in these skills `<handoffs-root>` means the workcycle folder when a ro
    - The roadmap's Resume here, any handoff pointer and the doc say the same thing.
    - Carry due reminders: copy any `next close` line from `master.md` → `## Reminders` into Open questions and show it in the reply (leave it; `/end` clears it).
    - Gate step 6: `python3 ~/.agents/skills/roadmap/scripts/doc_check.py --text [--kind <kind>] [--repo <repo>] <file>`. Fix every ERROR; fix each WARN or say why it stays. Then note "cold-start pass <YYYY-MM-DD>" in Start here (the handoff file's header for a handoff).
+   - Gate step 8 (publish) last, once the stamp is written.
    - Reply with three lines: the path, the most important next action, and the paste line `resume from <path>`.
 
 ## 3. Urgent mode (`/handoff now`)
 
 Order is set by what is lost first. Do these in strict order.
 
-1. **One write first, within the first minute:** an `## Interrupted <YYYY-MM-DD HH:MM> (urgent stop)` block at the top of the owning doc's Start here, or a handoff file when nothing owns the work (template block). It holds the goal, what was in flight (`file:line`, uncommitted edits, the half-done step), the single next action, and the paste line.
+1. **One write first, within the first minute:** an `## Interrupted <YYYY-MM-DD HH:MM> (urgent stop)` block at the top of the owning doc's Start here, or a handoff file when nothing owns the work (template block). It holds the goal, what was in flight (`file:line`, uncommitted edits, the half-done step), the single next action, the paste line, and `Unverified (urgent stop): §2 steps 4–7`, so the block is complete at any moment.
 2. **Copy scratch secrets and scripts out** in one command (secrets to the secret folder, §2 step 2, ignore check included).
 3. **Stop or record running things** (§2 step 3). Never kill a helper mid-write without recording what it was writing.
-4. **Snapshot git state into the block** (branch, HEAD, dirty files). Never commit or push a product repo. Then publish the workcycle docs (gate step 8): the one push an urgent stop makes, and the only way the block survives a cloud session.
-5. **If time remains,** continue §2 from step 4. Otherwise list every skipped §2 step under `Unverified (urgent stop)` in the block, so the resume session runs them first.
+4. **Snapshot git state into the block** (branch, HEAD, dirty files). Never commit or push a product repo. Then publish the workcycle docs once (gate step 8): the early recovery copy, and the only way the block survives a cloud session.
+5. **If time remains,** run §2 steps 4–6 and step 7's alignment and doc check (not its publish or reply), removing each step from `Unverified (urgent stop)` once done. When none is left, publish a second, final time and reply as §2 step 7 says; otherwise the early copy stands and the resume session runs whatever stays listed first.
 
 ## 4. Resume
 
@@ -100,7 +103,7 @@ Outputs stay outside every product repo; never commit them to one (the workcycle
 ## Guardrails
 
 - **Never store secrets,** credentials, tokens or connection strings in a doc. A checker ERROR means the handoff is not done.
-- **Never commit or publish a handoff,** and never put AI attribution in it.
+- **Never commit a handoff to a product repo or publish it anywhere public,** and never put AI attribution in it. Pushing it to the private workcycle root through gate step 8 is the one exception.
 - **Never append checkpoints.** Rewrite the doc or handoff, or supersede it.
 - **Never write a parallel handoff** when a roadmap, plan, explore doc or mocks README owns the work.
 - **Never state an unverified claim as current state.**

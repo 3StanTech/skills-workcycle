@@ -299,7 +299,7 @@ After writing the plan:
 4. Name the next step explicitly: run `/implement plans/YYYY-MM-DD-<slug>.md` (or pass that path as the implement argument)
 5. If a roadmap governs the work, run the `roadmap` skill's Update step: set the phase row to Planned with the plan path, record the owner decisions from step 2 under Locked decisions, rewrite Resume here, and add a session-log line
 
-6. **Run the cold-start gate** (`~/.agents/skills/handoff/references/cold-start-gate.md`) on the plan as the last write: Start here, chat decisions, scratchpad sweep, paths, the implement probes (repos' HEAD and status, `gh auth status` when the plan pushes, expiry of reused test infrastructure), `doc_check.py`, stamp. A new session then starts `/implement` from the paste line alone.
+6. **Run the cold-start gate** (`~/.agents/skills/handoff/references/cold-start-gate.md`) on the plan as the last write: Start here, chat decisions, scratchpad sweep, paths, the implement probes (repos' HEAD and status, `gh auth status` when the plan uses `gh` (CI waits, PRs; a plain git push needs no `gh` login), expiry of reused test infrastructure), `doc_check.py`, stamp. A new session then starts `/implement` from the paste line alone.
 
 **Decision page:** with 4+ open decisions or a plan over ~15 KB, also build a Lavish decision page (`~/.agents/skills/explore-design/references/decision-page.md`); the Markdown plan stays the source of truth.
 
