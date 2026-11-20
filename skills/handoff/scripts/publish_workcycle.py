@@ -10,10 +10,11 @@ staged and committed; anything else already staged or changed in the repo is lef
 Runs only when ~/.agents/local/workcycle.md has a `## Workcycle publish` section that grants a
 standing go (its text contains "standing go"); otherwise it exits 3 and the skill asks the owner.
 Steps: pull --ff-only when an upstream exists, stage the paths, refuse secrets, commit, push
-(never force).
+(never force). A repo with a remote but no upstream (e.g. a detached HEAD in a fresh cloud clone)
+is refused before committing, since a commit there would never reach the remote.
 
 Exit codes: 0 published or nothing to publish · 2 bad usage or a path outside the root ·
-3 not configured (ask the owner) · 4 pull or push failed (ask the owner) · 5 secret found.
+3 not configured (ask the owner) · 4 pull or push failed, or nowhere to push (ask the owner) · 5 secret found.
 """
 
 import argparse
@@ -88,6 +89,11 @@ def main(argv=None):
         rel.append(os.path.relpath(real, root))
 
     upstream = git(root, "rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{u}").returncode == 0
+    if not upstream and git(root, "remote").stdout.strip():
+        why = "HEAD is detached" if git(root, "symbolic-ref", "-q", "HEAD").returncode else "the branch has no upstream"
+        say(f"not published: {why}, so a push would go nowhere; nothing committed. Check out the default "
+            "branch (git checkout main) or set its upstream, then run this again; ask the owner if unsure")
+        return 4
     if upstream and not a.dry_run:
         pull = git(root, "pull", "--ff-only", "--quiet")
         if pull.returncode != 0:
@@ -119,7 +125,7 @@ def main(argv=None):
         return 4
     sha = git(root, "rev-parse", "--short", "HEAD").stdout.strip()
     if not upstream:
-        say(f"committed {sha} ({len(changed)} file(s)); no upstream, not pushed")
+        say(f"committed {sha} ({len(changed)} file(s)); the repo has no remote, so nothing to push")
         return 0
     push = git(root, "push", "--quiet")
     if push.returncode != 0:

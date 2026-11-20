@@ -60,6 +60,17 @@ class PublishWorkcycle(unittest.TestCase):
         self.assertNotIn("Other/notes.md", files)
         self.assertIn("?? Other/", self.git("status", "--short"))
 
+    def test_detached_head_is_refused_before_committing(self):
+        # a fresh cloud clone starts detached: a commit there never reaches the remote
+        self.config()
+        head = self.git("rev-parse", "HEAD")
+        self.git("checkout", "-q", "--detach")
+        code, out = self.run_script(self.work)
+        self.assertEqual(code, 4, out)
+        self.assertIn("HEAD is detached", out)
+        self.assertEqual(self.git("rev-parse", "HEAD"), head)
+        self.assertEqual(self.remote_files(), ["README.md"])
+
     def test_without_standing_go_asks(self):
         self.config(publish=None)
         code, out = self.run_script(self.work)
